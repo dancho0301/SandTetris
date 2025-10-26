@@ -1,0 +1,388 @@
+//
+//  GameView.swift
+//  sandtetris
+//
+//  Created by dancho on 2025/10/26.
+//
+
+import SwiftUI
+
+struct GameView: View {
+    @State private var gameModel = GameModel()
+
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                // ヘッダー部分（スコア、難易度、次のピース）
+                HeaderView(
+                    score: gameModel.score,
+                    nextPiece: gameModel.nextPiece,
+                    colorCount: gameModel.colorCount,
+                    onColorCountChange: { newCount in
+                        gameModel.setColorCount(newCount)
+                        gameModel.setupNewGame()
+                        gameModel.startGame()
+                    }
+                )
+                .frame(height: geometry.size.height * 0.15)
+                .padding(.horizontal)
+
+                // ゲームエリア（砂とテトリスピースが表示される）
+                GameAreaView(gameModel: gameModel)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .cornerRadius(16)
+                    .padding()
+
+                // 操作ガイド
+                ControlGuideView()
+                    .padding(.bottom, 20)
+            }
+        }
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [Color(red: 0.95, green: 0.95, blue: 1.0), Color(red: 1.0, green: 0.95, blue: 0.95)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+        )
+        .onAppear {
+            gameModel.startGame()
+        }
+    }
+}
+
+// ヘッダービュー（スコア、難易度、次のピース表示）
+struct HeaderView: View {
+    let score: Int
+    let nextPiece: TetrisPiece?
+    let colorCount: Int
+    let onColorCountChange: (Int) -> Void
+
+    var body: some View {
+        HStack(spacing: 15) {
+            // スコア表示
+            VStack(alignment: .leading, spacing: 4) {
+                Text("スコア")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("\(score)")
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // 難易度設定
+            VStack(spacing: 4) {
+                Text("難易度")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                HStack(spacing: 4) {
+                    Button(action: { onColorCountChange(max(1, colorCount - 1)) }) {
+                        Image(systemName: "minus.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(colorCount > 1 ? .blue : .gray)
+                    }
+                    .disabled(colorCount <= 1)
+
+                    Text("\(colorCount)色")
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .frame(minWidth: 40)
+
+                    Button(action: { onColorCountChange(min(7, colorCount + 1)) }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(colorCount < 7 ? .blue : .gray)
+                    }
+                    .disabled(colorCount >= 7)
+                }
+            }
+
+            // 次のピース表示
+            VStack(spacing: 4) {
+                Text("次のピース")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                NextPiecePreview(piece: nextPiece)
+            }
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+    }
+}
+
+// 次のピースプレビュー
+struct NextPiecePreview: View {
+    let piece: TetrisPiece?
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 8)
+            .fill(Color.white)
+            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+            .frame(width: 70, height: 70)
+            .overlay(
+                Group {
+                    if let piece = piece {
+                        PieceShapeView(piece: piece, cellSize: 12)
+                    } else {
+                        Text("?")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.gray.opacity(0.5))
+                    }
+                }
+            )
+    }
+}
+
+// ゲームエリアビュー
+struct GameAreaView: View {
+    let gameModel: GameModel
+    @State private var dragStartLocation: CGPoint?
+    @State private var lastDragX: CGFloat = 0
+    @State private var lastDragY: CGFloat = 0
+    @State private var moveThreshold: CGFloat = 0
+    @State private var hasDropped: Bool = false
+    @State private var dropMoveThreshold: CGFloat = 0
+
+    var body: some View {
+        GeometryReader { geometry in
+            let cellWidth = geometry.size.width / CGFloat(GameModel.gridWidth)
+            let cellHeight = geometry.size.height / CGFloat(GameModel.gridHeight)
+
+            ZStack {
+                // グリッド背景
+                GridBackgroundView()
+
+                // 砂とピースの表示
+                Canvas { context, size in
+                    // グリッド内の砂を描画（粒子レベル）
+                    for y in 0..<GameModel.gridHeight {
+                        for x in 0..<GameModel.gridWidth {
+                            let cell = gameModel.grid[y][x]
+                            if case .sand(let color) = cell {
+                                let rect = CGRect(
+                                    x: CGFloat(x) * cellWidth + 0.5,
+                                    y: CGFloat(y) * cellHeight + 0.5,
+                                    width: cellWidth - 1,
+                                    height: cellHeight - 1
+                                )
+                                context.fill(
+                                    Path(roundedRect: rect, cornerRadius: 1),
+                                    with: .color(color)
+                                )
+                            }
+                        }
+                    }
+
+                    // 現在のピースを描画（ピースグリッド座標系）
+                    if let piece = gameModel.currentPiece {
+                        let pieceCellWidth = cellWidth * CGFloat(GameModel.particleSubdivision)
+                        let pieceCellHeight = cellHeight * CGFloat(GameModel.particleSubdivision)
+
+                        for (dy, row) in piece.shape.enumerated() {
+                            for (dx, cell) in row.enumerated() {
+                                if cell {
+                                    let pieceGridX = gameModel.currentPosition.x + dx
+                                    let pieceGridY = gameModel.currentPosition.y + dy
+
+                                    if pieceGridY >= 0 && pieceGridY < GameModel.pieceGridHeight &&
+                                       pieceGridX >= 0 && pieceGridX < GameModel.pieceGridWidth {
+                                        let rect = CGRect(
+                                            x: CGFloat(pieceGridX) * pieceCellWidth + 1,
+                                            y: CGFloat(pieceGridY) * pieceCellHeight + 1,
+                                            width: pieceCellWidth - 2,
+                                            height: pieceCellHeight - 2
+                                        )
+                                        context.fill(
+                                            Path(roundedRect: rect, cornerRadius: 3),
+                                            with: .color(piece.color)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        if dragStartLocation == nil {
+                            dragStartLocation = value.startLocation
+                            lastDragX = value.location.x
+                            lastDragY = value.location.y
+                            moveThreshold = cellWidth * 0.8
+                            dropMoveThreshold = cellHeight * 0.8
+                            hasDropped = false
+                        } else {
+                            handleDragChange(start: value.startLocation, current: value.location, cellWidth: cellWidth, cellHeight: cellHeight)
+                        }
+                    }
+                    .onEnded { value in
+                        handleGestureEnd(start: value.startLocation, end: value.location)
+                        dragStartLocation = nil
+                        lastDragX = 0
+                        lastDragY = 0
+                        moveThreshold = 0
+                        dropMoveThreshold = 0
+                        hasDropped = false
+                    }
+            )
+        }
+    }
+
+    private func handleDragChange(start: CGPoint, current: CGPoint, cellWidth: CGFloat, cellHeight: CGFloat) {
+        let dx = current.x - start.x
+        let dy = current.y - start.y
+        let tapThreshold: CGFloat = 20
+        let hardDropThreshold: CGFloat = 100
+
+        // タップ判定範囲内なら何もしない
+        if abs(dx) < tapThreshold && abs(dy) < tapThreshold {
+            return
+        }
+
+        // 下方向への移動が大きな閾値を超えたら急速落下（一度だけ）
+        if !hasDropped && dy > hardDropThreshold {
+            gameModel.hardDrop()
+            hasDropped = true
+            return
+        }
+
+        // 左右方向のドラッグ
+        let deltaX = current.x - lastDragX
+        if deltaX > moveThreshold {
+            gameModel.moveRight()
+            lastDragX = current.x
+        } else if deltaX < -moveThreshold {
+            gameModel.moveLeft()
+            lastDragX = current.x
+        }
+
+        // 下方向のドラッグ（通常落下）
+        let deltaY = current.y - lastDragY
+        if deltaY > dropMoveThreshold {
+            gameModel.moveDown()
+            lastDragY = current.y
+        }
+    }
+
+    private func handleGestureEnd(start: CGPoint, end: CGPoint) {
+        let dx = end.x - start.x
+        let dy = end.y - start.y
+        let tapThreshold: CGFloat = 20
+
+        // タップ判定（移動も落下もしていない場合）
+        if abs(dx) < tapThreshold && abs(dy) < tapThreshold {
+            gameModel.rotate()
+        }
+    }
+}
+
+// グリッド背景
+struct GridBackgroundView: View {
+    let columns = GameModel.pieceGridWidth
+    let rows = GameModel.pieceGridHeight
+
+    var body: some View {
+        GeometryReader { geometry in
+            let cellWidth = geometry.size.width / CGFloat(columns)
+            let cellHeight = geometry.size.height / CGFloat(rows)
+
+            Canvas { context, size in
+                context.stroke(
+                    Path { path in
+                        // 縦線
+                        for i in 0...columns {
+                            let x = CGFloat(i) * cellWidth
+                            path.move(to: CGPoint(x: x, y: 0))
+                            path.addLine(to: CGPoint(x: x, y: size.height))
+                        }
+
+                        // 横線
+                        for i in 0...rows {
+                            let y = CGFloat(i) * cellHeight
+                            path.move(to: CGPoint(x: 0, y: y))
+                            path.addLine(to: CGPoint(x: size.width, y: y))
+                        }
+                    },
+                    with: .color(.gray.opacity(0.2)),
+                    lineWidth: 1
+                )
+            }
+        }
+    }
+}
+
+// 操作ガイド
+struct ControlGuideView: View {
+    var body: some View {
+        HStack(spacing: 20) {
+            GuideItem(icon: "hand.tap", text: "タップで回転")
+            GuideItem(icon: "arrow.left.and.right", text: "左右スワイプで移動")
+            GuideItem(icon: "arrow.down", text: "下スワイプで急速落下")
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.7))
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        )
+    }
+}
+
+// ガイドアイテム
+struct GuideItem: View {
+    let icon: String
+    let text: String
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.blue)
+            Text(text)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// ピースの形状表示ビュー
+struct PieceShapeView: View {
+    let piece: TetrisPiece
+    let cellSize: CGFloat
+
+    var body: some View {
+        VStack(spacing: 1) {
+            ForEach(0..<piece.shape.count, id: \.self) { y in
+                HStack(spacing: 1) {
+                    ForEach(0..<piece.shape[y].count, id: \.self) { x in
+                        if piece.shape[y][x] {
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(piece.color)
+                                .frame(width: cellSize, height: cellSize)
+                        } else {
+                            Color.clear
+                                .frame(width: cellSize, height: cellSize)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    GameView()
+}
