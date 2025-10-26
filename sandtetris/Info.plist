@@ -8,5 +8,7 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+	<key>CFBundleDisplayName</key>
+	<string>砂テトリス</string>
 </dict>
 </plist>
