@@ -125,6 +125,9 @@ class GameModel {
 
         // 砂が落下して繋がった場合のライン消去チェック
         checkAndClearLines()
+
+        // 砂が画面上部まで詰まったかチェック
+        checkGameOverBySandOverflow()
     }
 
     // 砂の物理シミュレーション
@@ -392,6 +395,32 @@ class GameModel {
         #else
         return true // macOSの場合は簡略化
         #endif
+    }
+
+    // 砂が画面上部まで詰まったかチェック
+    private func checkGameOverBySandOverflow() {
+        // ピースが生成される上部エリア（ピースグリッド座標で上から3行分）をチェック
+        let checkRows = 3 // ピースグリッド座標での行数
+        let checkHeight = checkRows * GameModel.particleSubdivision // 粒子グリッド座標での行数
+
+        // 上部エリアの砂粒子をカウント
+        var sandCount = 0
+        let totalCells = GameModel.gridWidth * checkHeight
+
+        for y in 0..<checkHeight {
+            for x in 0..<GameModel.gridWidth {
+                if case .sand(_) = grid[y][x] {
+                    sandCount += 1
+                }
+            }
+        }
+
+        // 上部エリアの50%以上が砂で埋まっている場合はゲームオーバー
+        let fillRatio = Double(sandCount) / Double(totalCells)
+        if fillRatio >= 0.5 {
+            gameState = .gameOver
+            stopTimer()
+        }
     }
 
     // 次のピースを生成
