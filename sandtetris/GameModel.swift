@@ -73,7 +73,7 @@ class GameModel {
 
     // 色数（難易度）を変更
     func setColorCount(_ count: Int) {
-        colorCount = min(max(count, 1), 7) // 1〜7色の範囲
+        colorCount = min(max(count, 2), 7) // 2〜7色の範囲
     }
 
     // ゲーム開始

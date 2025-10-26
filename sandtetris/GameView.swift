@@ -85,12 +85,12 @@ struct HeaderView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 HStack(spacing: 4) {
-                    Button(action: { onColorCountChange(max(1, colorCount - 1)) }) {
+                    Button(action: { onColorCountChange(max(2, colorCount - 1)) }) {
                         Image(systemName: "minus.circle.fill")
                             .font(.system(size: 20))
-                            .foregroundColor(colorCount > 1 ? .blue : .gray)
+                            .foregroundColor(colorCount > 2 ? .blue : .gray)
                     }
-                    .disabled(colorCount <= 1)
+                    .disabled(colorCount <= 2)
 
                     Text("\(colorCount)色")
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
