@@ -122,6 +122,9 @@ class GameModel {
 
         // 砂の物理シミュレーション
         updateSandPhysics()
+
+        // 砂が落下して繋がった場合のライン消去チェック
+        checkAndClearLines()
     }
 
     // 砂の物理シミュレーション
