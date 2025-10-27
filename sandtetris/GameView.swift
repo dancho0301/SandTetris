@@ -153,6 +153,7 @@ struct GameAreaView: View {
     @State private var dragDirection: DragDirection? = nil
     @State private var lastMoveTime: Date = Date()
     @State private var lastLocation: CGPoint = .zero
+    @State private var dragStartPieceX: Int? // ドラッグ開始時のピースのX座標
 
     enum DragDirection {
         case horizontal
@@ -232,6 +233,7 @@ struct GameAreaView: View {
                             dragDirection = nil
                             lastMoveTime = Date()
                             lastLocation = value.location
+                            dragStartPieceX = gameModel.currentPosition.x // ドラッグ開始時のピースX座標を記録
                         } else {
                             handleDragChange(start: value.startLocation, current: value.location, screenWidth: geometry.size.width, cellHeight: cellHeight)
                         }
@@ -245,6 +247,7 @@ struct GameAreaView: View {
                         dragDirection = nil
                         lastMoveTime = Date()
                         lastLocation = .zero
+                        dragStartPieceX = nil
                     }
             )
             .allowsHitTesting(gameModel.gameState != .gameOver)
@@ -286,6 +289,7 @@ struct GameAreaView: View {
             dragStartLocation = current  // 新しいスタート位置を設定
             lastDragY = current.y
             hasDropped = false
+            dragStartPieceX = gameModel.currentPosition.x // 現在のピース位置を新しい基準点として記録
         }
 
         // 位置が変わったら更新
@@ -311,8 +315,8 @@ struct GameAreaView: View {
         // 方向が決まったら、その方向のみで処理
         switch dragDirection {
         case .horizontal:
-            // 横移動：指の位置に追従
-            movePieceToFingerPosition(fingerX: current.x, screenWidth: screenWidth)
+            // 横移動：最初のタッチ位置からの移動量に基づいて移動
+            movePieceByDelta(deltaX: dx, screenWidth: screenWidth)
 
         case .vertical:
             // 下方向への移動が大きな閾値を超えたら急速落下（一度だけ）
@@ -334,19 +338,22 @@ struct GameAreaView: View {
         }
     }
 
-    // 指の位置にピースを移動させる
-    private func movePieceToFingerPosition(fingerX: CGFloat, screenWidth: CGFloat) {
-        guard let piece = gameModel.currentPiece else { return }
+    // 最初のタッチ位置からの移動量に基づいてピースを移動させる
+    private func movePieceByDelta(deltaX: CGFloat, screenWidth: CGFloat) {
+        guard let piece = gameModel.currentPiece,
+              let startPieceX = dragStartPieceX else { return }
 
-        // ピースの幅を取得
-        let pieceWidth = piece.shape[0].count
-
-        // 指のX座標からピースグリッドのX座標を計算
         // 画面幅をピースグリッド幅で割って、1グリッドあたりのスクリーン幅を計算
         let gridCellWidth = screenWidth / CGFloat(GameModel.pieceGridWidth)
 
-        // 指の位置をピースグリッド座標に変換（ピースの中心が指の位置になるように）
-        let targetX = Int((fingerX / gridCellWidth).rounded()) - pieceWidth / 2
+        // X方向の移動量をピースグリッド座標の移動量に変換
+        let gridDeltaX = Int((deltaX / gridCellWidth).rounded())
+
+        // 目標位置を計算（開始位置 + 移動量）
+        let targetX = startPieceX + gridDeltaX
+
+        // ピースの幅を取得
+        let pieceWidth = piece.shape[0].count
 
         // 範囲チェック
         let clampedX = max(0, min(targetX, GameModel.pieceGridWidth - pieceWidth))
@@ -436,7 +443,7 @@ struct ControlGuideView: View {
     var body: some View {
         HStack(spacing: 20) {
             GuideItem(icon: "hand.tap", text: "タップで回転")
-            GuideItem(icon: "hand.point.up.left", text: "横ドラッグで指に追従")
+            GuideItem(icon: "hand.point.up.left", text: "横ドラッグで移動")
             GuideItem(icon: "arrow.down", text: "下スワイプで急速落下")
         }
         .padding(.horizontal)
