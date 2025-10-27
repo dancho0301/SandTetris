@@ -209,6 +209,17 @@ struct GameAreaView: View {
                         }
                     }
                 }
+
+                // ゲームオーバー画面
+                if gameModel.gameState == .gameOver {
+                    GameOverView(
+                        score: gameModel.score,
+                        onRetry: {
+                            gameModel.setupNewGame()
+                            gameModel.startGame()
+                        }
+                    )
+                }
             }
             .contentShape(Rectangle())
             .gesture(
@@ -235,6 +246,7 @@ struct GameAreaView: View {
                         hasDropped = false
                     }
             )
+            .allowsHitTesting(gameModel.gameState != .gameOver)
         }
     }
 
@@ -380,6 +392,88 @@ struct PieceShapeView: View {
                 }
             }
         }
+    }
+}
+
+// ゲームオーバー画面
+struct GameOverView: View {
+    let score: Int
+    let onRetry: () -> Void
+
+    var body: some View {
+        ZStack {
+            // 半透明の背景
+            Color.black.opacity(0.7)
+                .ignoresSafeArea()
+
+            // ゲームオーバーカード
+            VStack(spacing: 30) {
+                // ゲームオーバーテキスト
+                Text("ゲームオーバー")
+                    .font(.system(size: 36, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+
+                // 最終スコア表示
+                VStack(spacing: 8) {
+                    Text("スコア")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+
+                    Text("\(score)")
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                        .foregroundColor(.yellow)
+                        .shadow(color: .yellow.opacity(0.5), radius: 8, x: 0, y: 0)
+                }
+                .padding(.vertical, 20)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white.opacity(0.1))
+                )
+
+                // リトライボタン
+                Button(action: onRetry) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 24, weight: .semibold))
+                        Text("もう一度プレイ")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 18)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.blue, Color.purple]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(16)
+                    .shadow(color: .blue.opacity(0.5), radius: 10, x: 0, y: 5)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(40)
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(red: 0.2, green: 0.2, blue: 0.3),
+                                Color(red: 0.3, green: 0.2, blue: 0.4)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .shadow(color: .black.opacity(0.5), radius: 20, x: 0, y: 10)
+            )
+            .padding(.horizontal, 30)
+        }
+        .transition(.opacity.combined(with: .scale))
+        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: true)
     }
 }
 
