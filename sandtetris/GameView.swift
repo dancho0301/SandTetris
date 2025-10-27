@@ -210,8 +210,12 @@ struct GameAreaView: View {
                 // 砂とピースの表示
                 Canvas { context, size in
                     // グリッド内の砂を描画（粒子レベル）
-                    for y in 0..<GameModel.gridHeight {
-                        for x in 0..<GameModel.gridWidth {
+                    // 実際のgrid配列のサイズを使用して安全にアクセス
+                    let gridHeight = gameModel.grid.count
+                    let gridWidth = gridHeight > 0 ? gameModel.grid[0].count : 0
+
+                    for y in 0..<gridHeight {
+                        for x in 0..<gridWidth {
                             let cell = gameModel.grid[y][x]
                             if case .sand(let color) = cell {
                                 let rect = CGRect(
@@ -485,8 +489,11 @@ struct GameAreaView: View {
         let currentAspectRatio = settings.gameAreaAspectRatio
         let newAspectRatio = Double(aspectRatio)
 
-        // 誤差が5%以上ある場合のみ更新（頻繁な更新を避ける）
-        if abs(currentAspectRatio - newAspectRatio) / currentAspectRatio > 0.05 {
+        // アスペクト比が正の値であることを確認
+        guard newAspectRatio > 0 else { return }
+
+        // 初回または誤差が5%以上ある場合のみ更新（頻繁な更新を避ける）
+        if currentAspectRatio <= 0 || abs(currentAspectRatio - newAspectRatio) / currentAspectRatio > 0.05 {
             settings.gameAreaAspectRatio = newAspectRatio
         }
     }
