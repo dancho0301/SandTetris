@@ -37,12 +37,20 @@ class GameSettings {
     // UserDefaultsのキー
     private enum Keys {
         static let touchControlMode = "touchControlMode"
+        static let movementSensitivity = "movementSensitivity"
     }
 
     /// タッチ操作モード
     var touchControlMode: TouchControlMode {
         didSet {
             UserDefaults.standard.set(touchControlMode.rawValue, forKey: Keys.touchControlMode)
+        }
+    }
+
+    /// 移動操作の感度（0.5〜2.0）
+    var movementSensitivity: Double {
+        didSet {
+            UserDefaults.standard.set(movementSensitivity, forKey: Keys.movementSensitivity)
         }
     }
 
@@ -57,6 +65,15 @@ class GameSettings {
         } else {
             // デフォルトは移動量ベース
             self.touchControlMode = .delta
+        }
+
+        // 感度設定を読み込み
+        let savedSensitivity = UserDefaults.standard.double(forKey: Keys.movementSensitivity)
+        if savedSensitivity > 0 {
+            self.movementSensitivity = savedSensitivity
+        } else {
+            // デフォルトは1.0（標準）
+            self.movementSensitivity = 1.0
         }
     }
 }

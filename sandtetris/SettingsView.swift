@@ -11,6 +11,10 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var settings = GameSettings.shared
 
+    private var sensitivityLabel: String {
+        String(format: "%.1f×", settings.movementSensitivity)
+    }
+
     var body: some View {
         NavigationView {
             Form {
@@ -47,6 +51,48 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("タッチ操作")
+                }
+
+                Section {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("感度")
+                                .font(.body)
+                            Spacer()
+                            Text(sensitivityLabel)
+                                .font(.body)
+                                .foregroundColor(.blue)
+                                .fontWeight(.semibold)
+                        }
+
+                        Slider(
+                            value: $settings.movementSensitivity,
+                            in: 0.5...2.0,
+                            step: 0.1
+                        )
+                        .tint(.blue)
+
+                        HStack {
+                            Text("遅い")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("標準")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("速い")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Text("横移動の反応速度を調整できます。値が大きいほど、指の動きに対してブロックが速く移動します")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } header: {
+                    Text("移動感度")
                 }
 
                 Section {

@@ -378,8 +378,9 @@ struct GameAreaView: View {
         // 画面幅をピースグリッド幅で割って、1グリッドあたりのスクリーン幅を計算
         let gridCellWidth = screenWidth / CGFloat(GameModel.pieceGridWidth)
 
-        // X方向の移動量をピースグリッド座標の移動量に変換
-        let gridDeltaX = Int((deltaX / gridCellWidth).rounded())
+        // X方向の移動量をピースグリッド座標の移動量に変換（感度を適用）
+        let adjustedDeltaX = deltaX * settings.movementSensitivity
+        let gridDeltaX = Int((adjustedDeltaX / gridCellWidth).rounded())
 
         // 目標位置を計算（開始位置 + 移動量）
         let targetX = startPieceX + gridDeltaX
@@ -402,17 +403,22 @@ struct GameAreaView: View {
 
     // 指の位置にピースを移動させる
     private func movePieceToFingerPosition(fingerX: CGFloat, screenWidth: CGFloat) {
-        guard let piece = gameModel.currentPiece else { return }
+        guard let piece = gameModel.currentPiece,
+              let startPieceX = dragStartPieceX,
+              let startLocation = dragStartLocation else { return }
 
         // ピースの幅を取得
         let pieceWidth = piece.shape[0].count
 
-        // 指のX座標からピースグリッドのX座標を計算
         // 画面幅をピースグリッド幅で割って、1グリッドあたりのスクリーン幅を計算
         let gridCellWidth = screenWidth / CGFloat(GameModel.pieceGridWidth)
 
-        // 指の位置をピースグリッド座標に変換（ピースの中心が指の位置になるように）
-        let targetX = Int((fingerX / gridCellWidth).rounded()) - pieceWidth / 2
+        // 開始位置からの移動量を計算し、感度を適用
+        let deltaX = (fingerX - startLocation.x) * settings.movementSensitivity
+        let gridDeltaX = Int((deltaX / gridCellWidth).rounded())
+
+        // 目標位置を計算（開始位置 + 移動量）
+        let targetX = startPieceX + gridDeltaX
 
         // 範囲チェック
         let clampedX = max(0, min(targetX, GameModel.pieceGridWidth - pieceWidth))
