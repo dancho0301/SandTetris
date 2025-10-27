@@ -32,7 +32,10 @@ struct GameView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(
                         LinearGradient(
-                            gradient: Gradient(colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.1)]),
+                            gradient: Gradient(colors: [
+                                Color(red: 0.15, green: 0.15, blue: 0.2),
+                                Color(red: 0.1, green: 0.1, blue: 0.15)
+                            ]),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -325,7 +328,7 @@ struct GridBackgroundView: View {
                             path.addLine(to: CGPoint(x: size.width, y: y))
                         }
                     },
-                    with: .color(.gray.opacity(0.2)),
+                    with: .color(.white.opacity(0.15)),
                     lineWidth: 1
                 )
             }
