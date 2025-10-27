@@ -11,6 +11,7 @@ struct GameView: View {
     @State private var gameModel = GameModel()
     @State private var showSettings = false
     @State private var needsReset = false
+    @State private var settings = GameSettings.shared
 
     var body: some View {
         GeometryReader { geometry in
@@ -81,15 +82,15 @@ struct GameView: View {
         .onAppear {
             gameModel.startGame()
         }
-        .sheet(isPresented: $showSettings) {
-            SettingsView(needsReset: $needsReset)
-        } onDismiss: {
+        .sheet(isPresented: $showSettings, onDismiss: {
             // ユーザーが「リセットする」を選択した場合のみゲームをリセット
             if needsReset {
                 gameModel.setupNewGame()
                 gameModel.startGame()
                 needsReset = false
             }
+        }) {
+            SettingsView(needsReset: $needsReset)
         }
     }
 }
