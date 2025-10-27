@@ -170,10 +170,10 @@ struct GameAreaView: View {
                             let cell = gameModel.grid[y][x]
                             if case .sand(let color) = cell {
                                 let rect = CGRect(
-                                    x: CGFloat(x) * cellWidth + 0.5,
-                                    y: CGFloat(y) * cellHeight + 0.5,
-                                    width: cellWidth - 1,
-                                    height: cellHeight - 1
+                                    x: CGFloat(x) * cellWidth,
+                                    y: CGFloat(y) * cellHeight,
+                                    width: cellWidth,
+                                    height: cellHeight
                                 )
                                 context.fill(
                                     Path(roundedRect: rect, cornerRadius: 1),
