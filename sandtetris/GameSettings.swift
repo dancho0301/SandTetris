@@ -38,6 +38,7 @@ class GameSettings {
     private enum Keys {
         static let touchControlMode = "touchControlMode"
         static let movementSensitivity = "movementSensitivity"
+        static let gameAreaWidth = "gameAreaWidth"
     }
 
     /// タッチ操作モード
@@ -51,6 +52,13 @@ class GameSettings {
     var movementSensitivity: Double {
         didSet {
             UserDefaults.standard.set(movementSensitivity, forKey: Keys.movementSensitivity)
+        }
+    }
+
+    /// ゲームエリアの横幅（マス数：10〜30）
+    var gameAreaWidth: Int {
+        didSet {
+            UserDefaults.standard.set(gameAreaWidth, forKey: Keys.gameAreaWidth)
         }
     }
 
@@ -74,6 +82,15 @@ class GameSettings {
         } else {
             // デフォルトは1.0（標準）
             self.movementSensitivity = 1.0
+        }
+
+        // ゲームエリア横幅を読み込み
+        let savedWidth = UserDefaults.standard.integer(forKey: Keys.gameAreaWidth)
+        if savedWidth >= 10 && savedWidth <= 30 {
+            self.gameAreaWidth = savedWidth
+        } else {
+            // デフォルトは20
+            self.gameAreaWidth = 20
         }
     }
 }

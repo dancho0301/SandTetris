@@ -10,6 +10,7 @@ import SwiftUI
 struct GameView: View {
     @State private var gameModel = GameModel()
     @State private var showSettings = false
+    @State private var needsReset = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -81,7 +82,14 @@ struct GameView: View {
             gameModel.startGame()
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView()
+            SettingsView(needsReset: $needsReset)
+        } onDismiss: {
+            // ユーザーが「リセットする」を選択した場合のみゲームをリセット
+            if needsReset {
+                gameModel.setupNewGame()
+                gameModel.startGame()
+                needsReset = false
+            }
         }
     }
 }
