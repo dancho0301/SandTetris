@@ -230,8 +230,8 @@ struct GameAreaView: View {
                             dragStartLocation = value.startLocation
                             lastDragX = value.location.x
                             lastDragY = value.location.y
-                            moveThreshold = cellWidth * 1.2  // 感度を下げる
-                            dropMoveThreshold = cellHeight * 1.2  // 感度を下げる
+                            moveThreshold = cellWidth * 3.6  // 感度をさらに下げる（1/3に）
+                            dropMoveThreshold = cellHeight * 3.6  // 感度をさらに下げる（1/3に）
                             hasDropped = false
                             dragDirection = nil
                             lastMoveTime = Date()
