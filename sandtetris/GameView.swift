@@ -9,10 +9,31 @@ import SwiftUI
 
 struct GameView: View {
     @State private var gameModel = GameModel()
+    @State private var showSettings = false
 
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
+                // 設定ボタン
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        showSettings = true
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(.gray)
+                            .padding(12)
+                            .background(
+                                Circle()
+                                    .fill(Color.white.opacity(0.7))
+                                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                            )
+                    }
+                    .padding(.trailing)
+                    .padding(.top, 8)
+                }
+
                 // ヘッダー部分（スコア、難易度、次のピース）
                 HeaderView(
                     score: gameModel.score,
@@ -44,7 +65,7 @@ struct GameView: View {
                     .padding()
 
                 // 操作ガイド
-                ControlGuideView()
+                ControlGuideView(touchControlMode: settings.touchControlMode)
                     .padding(.bottom, 20)
             }
         }
@@ -58,6 +79,9 @@ struct GameView: View {
         )
         .onAppear {
             gameModel.startGame()
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
     }
 }
@@ -146,6 +170,7 @@ struct NextPiecePreview: View {
 // ゲームエリアビュー
 struct GameAreaView: View {
     let gameModel: GameModel
+    @State private var settings = GameSettings.shared
     @State private var dragStartLocation: CGPoint?
     @State private var lastDragY: CGFloat = 0
     @State private var hasDropped: Bool = false
@@ -315,8 +340,15 @@ struct GameAreaView: View {
         // 方向が決まったら、その方向のみで処理
         switch dragDirection {
         case .horizontal:
-            // 横移動：最初のタッチ位置からの移動量に基づいて移動
-            movePieceByDelta(deltaX: dx, screenWidth: screenWidth)
+            // 横移動：設定に応じて方式を切り替え
+            switch settings.touchControlMode {
+            case .delta:
+                // 移動量ベース
+                movePieceByDelta(deltaX: dx, screenWidth: screenWidth)
+            case .position:
+                // 指の位置に追従
+                movePieceToFingerPosition(fingerX: current.x, screenWidth: screenWidth)
+            }
 
         case .vertical:
             // 下方向への移動が大きな閾値を超えたら急速落下（一度だけ）
@@ -354,6 +386,33 @@ struct GameAreaView: View {
 
         // ピースの幅を取得
         let pieceWidth = piece.shape[0].count
+
+        // 範囲チェック
+        let clampedX = max(0, min(targetX, GameModel.pieceGridWidth - pieceWidth))
+
+        // 目標位置に移動できるかチェック
+        let newPosition = (x: clampedX, y: gameModel.currentPosition.y)
+        if gameModel.canPlacePieceAt(piece, position: newPosition) {
+            gameModel.setPosition(newPosition)
+        } else {
+            // 配置できない場合、最も近い有効な位置を探す
+            findNearestValidPosition(targetX: clampedX, currentY: gameModel.currentPosition.y, piece: piece)
+        }
+    }
+
+    // 指の位置にピースを移動させる
+    private func movePieceToFingerPosition(fingerX: CGFloat, screenWidth: CGFloat) {
+        guard let piece = gameModel.currentPiece else { return }
+
+        // ピースの幅を取得
+        let pieceWidth = piece.shape[0].count
+
+        // 指のX座標からピースグリッドのX座標を計算
+        // 画面幅をピースグリッド幅で割って、1グリッドあたりのスクリーン幅を計算
+        let gridCellWidth = screenWidth / CGFloat(GameModel.pieceGridWidth)
+
+        // 指の位置をピースグリッド座標に変換（ピースの中心が指の位置になるように）
+        let targetX = Int((fingerX / gridCellWidth).rounded()) - pieceWidth / 2
 
         // 範囲チェック
         let clampedX = max(0, min(targetX, GameModel.pieceGridWidth - pieceWidth))
@@ -440,10 +499,15 @@ struct GridBackgroundView: View {
 
 // 操作ガイド
 struct ControlGuideView: View {
+    let touchControlMode: GameSettings.TouchControlMode
+
     var body: some View {
         HStack(spacing: 20) {
             GuideItem(icon: "hand.tap", text: "タップで回転")
-            GuideItem(icon: "hand.point.up.left", text: "横ドラッグで移動")
+            GuideItem(
+                icon: "hand.point.up.left",
+                text: touchControlMode == .delta ? "横ドラッグで移動" : "横ドラッグで指に追従"
+            )
             GuideItem(icon: "arrow.down", text: "下スワイプで急速落下")
         }
         .padding(.horizontal)
