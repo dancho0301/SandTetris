@@ -152,6 +152,12 @@ struct GameAreaView: View {
     @State private var moveThreshold: CGFloat = 0
     @State private var hasDropped: Bool = false
     @State private var dropMoveThreshold: CGFloat = 0
+    @State private var dragDirection: DragDirection? = nil
+
+    enum DragDirection {
+        case horizontal
+        case vertical
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -222,9 +228,10 @@ struct GameAreaView: View {
                             dragStartLocation = value.startLocation
                             lastDragX = value.location.x
                             lastDragY = value.location.y
-                            moveThreshold = cellWidth * 0.8
-                            dropMoveThreshold = cellHeight * 0.8
+                            moveThreshold = cellWidth * 1.2  // 感度を下げる
+                            dropMoveThreshold = cellHeight * 1.2  // 感度を下げる
                             hasDropped = false
+                            dragDirection = nil
                         } else {
                             handleDragChange(start: value.startLocation, current: value.location, cellWidth: cellWidth, cellHeight: cellHeight)
                         }
@@ -237,6 +244,7 @@ struct GameAreaView: View {
                         moveThreshold = 0
                         dropMoveThreshold = 0
                         hasDropped = false
+                        dragDirection = nil
                     }
             )
             .allowsHitTesting(gameModel.gameState != .gameOver)
@@ -259,34 +267,57 @@ struct GameAreaView: View {
         let dy = current.y - start.y
         let tapThreshold: CGFloat = 20
         let hardDropThreshold: CGFloat = 100
+        let directionThreshold: CGFloat = 30  // 方向を判定するための閾値
 
         // タップ判定範囲内なら何もしない
         if abs(dx) < tapThreshold && abs(dy) < tapThreshold {
             return
         }
 
-        // 下方向への移動が大きな閾値を超えたら急速落下（一度だけ）
-        if !hasDropped && dy > hardDropThreshold {
-            gameModel.hardDrop()
-            hasDropped = true
-            return
+        // まだ方向が決まっていない場合、方向を判定する
+        if dragDirection == nil {
+            if abs(dx) > directionThreshold || abs(dy) > directionThreshold {
+                // 横と縦のどちらの移動量が大きいかで方向を決定
+                if abs(dx) > abs(dy) {
+                    dragDirection = .horizontal
+                } else {
+                    dragDirection = .vertical
+                }
+            } else {
+                return  // まだ方向が決められない
+            }
         }
 
-        // 左右方向のドラッグ
-        let deltaX = current.x - lastDragX
-        if deltaX > moveThreshold {
-            gameModel.moveRight()
-            lastDragX = current.x
-        } else if deltaX < -moveThreshold {
-            gameModel.moveLeft()
-            lastDragX = current.x
-        }
+        // 方向が決まったら、その方向のみで処理
+        switch dragDirection {
+        case .horizontal:
+            // 横移動のみ
+            let deltaX = current.x - lastDragX
+            if deltaX > moveThreshold {
+                gameModel.moveRight()
+                lastDragX = current.x
+            } else if deltaX < -moveThreshold {
+                gameModel.moveLeft()
+                lastDragX = current.x
+            }
 
-        // 下方向のドラッグ（通常落下）
-        let deltaY = current.y - lastDragY
-        if deltaY > dropMoveThreshold {
-            gameModel.moveDown()
-            lastDragY = current.y
+        case .vertical:
+            // 下方向への移動が大きな閾値を超えたら急速落下（一度だけ）
+            if !hasDropped && dy > hardDropThreshold {
+                gameModel.hardDrop()
+                hasDropped = true
+                return
+            }
+
+            // 下方向のドラッグ（通常落下）
+            let deltaY = current.y - lastDragY
+            if deltaY > dropMoveThreshold {
+                gameModel.moveDown()
+                lastDragY = current.y
+            }
+
+        case .none:
+            break
         }
     }
 
