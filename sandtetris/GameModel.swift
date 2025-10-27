@@ -62,6 +62,10 @@ class GameModel {
     private var pieceSpawnTimer: TimeInterval = 0
     private var waitingForNextPiece: Bool = false
 
+    // 砂の静止判定用
+    private var sandStableFrames: Int = 0
+    private let stableFramesThreshold: Int = 30 // 約0.5秒間変化がなければ静止とみなす
+
     init() {
         setupNewGame()
     }
@@ -136,19 +140,36 @@ class GameModel {
         }
 
         // 砂の物理シミュレーション（3倍の速度で実行）
+        var sandHasChanged = false
         for _ in 0..<3 {
-            updateSandPhysics()
+            if updateSandPhysics() {
+                sandHasChanged = true
+            }
         }
 
-        // 砂が落下して繋がった場合のライン消去チェック
-        checkAndClearLines()
+        // 砂の静止判定
+        if sandHasChanged {
+            // 砂が動いている場合はカウンターをリセット
+            sandStableFrames = 0
+        } else {
+            // 砂が動いていない場合はカウンターを増やす
+            sandStableFrames += 1
+
+            // 一定フレーム数砂が動かなかったら、完全に静止したとみなして消去チェック
+            if sandStableFrames == stableFramesThreshold {
+                checkAndClearLines()
+                // チェック後もカウンターを維持（連続チェックを防ぐ）
+            }
+        }
 
         // 砂が画面上部まで詰まったかチェック
         checkGameOverBySandOverflow()
     }
 
-    // 砂の物理シミュレーション
-    private func updateSandPhysics() {
+    // 砂の物理シミュレーション（変化があったかどうかを返す）
+    private func updateSandPhysics() -> Bool {
+        var hasChanged = false
+
         // 下の行から順に処理（砂が下に落ちる）
         for y in stride(from: GameModel.gridHeight - 2, through: 0, by: -1) {
             for x in 0..<GameModel.gridWidth {
@@ -157,6 +178,7 @@ class GameModel {
                     if grid[y + 1][x] == .empty {
                         grid[y + 1][x] = .sand(color)
                         grid[y][x] = .empty
+                        hasChanged = true
                     }
                     // 真下が埋まっている場合、斜め下をチェック
                     else {
@@ -173,17 +195,22 @@ class GameModel {
                                 grid[y + 1][x + 1] = .sand(color)
                                 grid[y][x] = .empty
                             }
+                            hasChanged = true
                         } else if canMoveLeft {
                             grid[y + 1][x - 1] = .sand(color)
                             grid[y][x] = .empty
+                            hasChanged = true
                         } else if canMoveRight {
                             grid[y + 1][x + 1] = .sand(color)
                             grid[y][x] = .empty
+                            hasChanged = true
                         }
                     }
                 }
             }
         }
+
+        return hasChanged
     }
 
     // ピースを左に移動
@@ -307,8 +334,9 @@ class GameModel {
             }
         }
 
-        // ライン消去チェック
-        checkAndClearLines()
+        // 砂が静止するまで待ってから消去チェックを行う（update()で自動的に行われる）
+        // 静止判定カウンターをリセット
+        sandStableFrames = 0
 
         // 次のピースを生成するまで待機
         currentPiece = nil
@@ -372,7 +400,7 @@ class GameModel {
         }
     }
 
-    // 水平方向（左から右）に繋がっている同じ色のセルを探索（縦横に広がりながら）
+    // 水平方向（左から右）に繋がっている同じ色のセルを探索（縦横斜めに広がりながら）
     private func floodFillHorizontal(from position: (x: Int, y: Int), color: Color, visited: inout Set<String>, reachedRight: inout Bool) {
         let cellKey = "\(position.x),\(position.y)"
 
@@ -397,11 +425,16 @@ class GameModel {
             reachedRight = true
         }
 
-        // 4方向に探索（上下左右）
+        // 8方向に探索（上下左右＋斜め4方向）
         floodFillHorizontal(from: (x: position.x + 1, y: position.y), color: color, visited: &visited, reachedRight: &reachedRight)
         floodFillHorizontal(from: (x: position.x - 1, y: position.y), color: color, visited: &visited, reachedRight: &reachedRight)
         floodFillHorizontal(from: (x: position.x, y: position.y + 1), color: color, visited: &visited, reachedRight: &reachedRight)
         floodFillHorizontal(from: (x: position.x, y: position.y - 1), color: color, visited: &visited, reachedRight: &reachedRight)
+        // 斜め4方向を追加
+        floodFillHorizontal(from: (x: position.x + 1, y: position.y + 1), color: color, visited: &visited, reachedRight: &reachedRight)
+        floodFillHorizontal(from: (x: position.x + 1, y: position.y - 1), color: color, visited: &visited, reachedRight: &reachedRight)
+        floodFillHorizontal(from: (x: position.x - 1, y: position.y + 1), color: color, visited: &visited, reachedRight: &reachedRight)
+        floodFillHorizontal(from: (x: position.x - 1, y: position.y - 1), color: color, visited: &visited, reachedRight: &reachedRight)
     }
 
     // 2つの色が等しいかチェック
