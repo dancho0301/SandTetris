@@ -39,6 +39,7 @@ class GameSettings {
         static let touchControlMode = "touchControlMode"
         static let movementSensitivity = "movementSensitivity"
         static let gameAreaWidth = "gameAreaWidth"
+        static let gameAreaAspectRatio = "gameAreaAspectRatio"
     }
 
     /// タッチ操作モード
@@ -59,6 +60,13 @@ class GameSettings {
     var gameAreaWidth: Int {
         didSet {
             UserDefaults.standard.set(gameAreaWidth, forKey: Keys.gameAreaWidth)
+        }
+    }
+
+    /// ゲームエリアのアスペクト比（高さ / 幅）
+    var gameAreaAspectRatio: Double {
+        didSet {
+            UserDefaults.standard.set(gameAreaAspectRatio, forKey: Keys.gameAreaAspectRatio)
         }
     }
 
@@ -91,6 +99,15 @@ class GameSettings {
         } else {
             // デフォルトは20
             self.gameAreaWidth = 20
+        }
+
+        // ゲームエリアアスペクト比を読み込み
+        let savedAspectRatio = UserDefaults.standard.double(forKey: Keys.gameAreaAspectRatio)
+        if savedAspectRatio > 0 {
+            self.gameAreaAspectRatio = savedAspectRatio
+        } else {
+            // デフォルトは1.5（3:2の比率）
+            self.gameAreaAspectRatio = 1.5
         }
     }
 }

@@ -27,9 +27,13 @@ enum GameState {
 class GameModel {
     // テトリスピースのグリッドサイズ（論理的なサイズ）
     static var pieceGridWidth: Int {
-        return GameSettings.shared.gameAreaWidth
+        return max(10, GameSettings.shared.gameAreaWidth)
     }
-    static let pieceGridHeight = 30
+    static var pieceGridHeight: Int {
+        let aspectRatio = max(1.0, GameSettings.shared.gameAreaAspectRatio)
+        let height = Int(ceil(Double(pieceGridWidth) * aspectRatio))
+        return max(15, height)  // 最小高さ15を保証
+    }
 
     // 粒子の細分化レベル（1ピースセルをN×Nの粒子に分割）
     static let particleSubdivision = 12
@@ -38,12 +42,18 @@ class GameModel {
     static var gridWidth: Int {
         return pieceGridWidth * particleSubdivision
     }
-    static let gridHeight = pieceGridHeight * particleSubdivision
+    static var gridHeight: Int {
+        return pieceGridHeight * particleSubdivision
+    }
 
     // ゲーム状態
     var gameState: GameState = .ready
     var score: Int = 0
     var grid: [[CellType]] = Array(repeating: Array(repeating: .empty, count: gridWidth), count: gridHeight)
+
+    // グリッドの実際のサイズを保存（配列範囲チェック用）
+    private var currentGridWidth: Int = 0
+    private var currentGridHeight: Int = 0
 
     // 難易度設定（使用する色の数）
     var colorCount: Int = 3
@@ -76,7 +86,11 @@ class GameModel {
 
     // 新しいゲームのセットアップ
     func setupNewGame() {
-        grid = Array(repeating: Array(repeating: .empty, count: GameModel.gridWidth), count: GameModel.gridHeight)
+        // 現在のグリッドサイズを更新
+        currentGridWidth = GameModel.gridWidth
+        currentGridHeight = GameModel.gridHeight
+
+        grid = Array(repeating: Array(repeating: .empty, count: currentGridWidth), count: currentGridHeight)
         score = 0
         currentPiece = TetrisPiece.random(colorCount: colorCount)
         nextPiece = TetrisPiece.random(colorCount: colorCount)
@@ -174,9 +188,16 @@ class GameModel {
     private func updateSandPhysics() -> Bool {
         var hasChanged = false
 
+        // グリッドサイズが変更されている場合は処理をスキップ
+        guard currentGridWidth > 0 && currentGridHeight > 0 &&
+              grid.count == currentGridHeight &&
+              grid[0].count == currentGridWidth else {
+            return false
+        }
+
         // 下の行から順に処理（砂が下に落ちる）
-        for y in stride(from: GameModel.gridHeight - 2, through: 0, by: -1) {
-            for x in 0..<GameModel.gridWidth {
+        for y in stride(from: currentGridHeight - 2, through: 0, by: -1) {
+            for x in 0..<currentGridWidth {
                 if case .sand(let color) = grid[y][x] {
                     // 真下が空なら落下
                     if grid[y + 1][x] == .empty {
@@ -187,7 +208,7 @@ class GameModel {
                     // 真下が埋まっている場合、斜め下をチェック
                     else {
                         let canMoveLeft = x > 0 && grid[y + 1][x - 1] == .empty
-                        let canMoveRight = x < GameModel.gridWidth - 1 && grid[y + 1][x + 1] == .empty
+                        let canMoveRight = x < currentGridWidth - 1 && grid[y + 1][x + 1] == .empty
 
                         if canMoveLeft && canMoveRight {
                             // 両方空いている場合はランダムに選択
@@ -309,6 +330,13 @@ class GameModel {
 
     // ピースの1セルが配置可能かチェック（粒子レベルで）
     private func canPlacePieceCell(at position: (x: Int, y: Int)) -> Bool {
+        // グリッドサイズが変更されている場合は配置不可
+        guard currentGridWidth > 0 && currentGridHeight > 0 &&
+              grid.count == currentGridHeight &&
+              grid[0].count == currentGridWidth else {
+            return false
+        }
+
         let baseX = position.x * GameModel.particleSubdivision
         let baseY = position.y * GameModel.particleSubdivision
 
@@ -318,8 +346,8 @@ class GameModel {
                 let particleX = baseX + dx
                 let particleY = baseY + dy
 
-                if particleY >= 0 && particleY < GameModel.gridHeight &&
-                   particleX >= 0 && particleX < GameModel.gridWidth {
+                if particleY >= 0 && particleY < currentGridHeight &&
+                   particleX >= 0 && particleX < currentGridWidth {
                     if grid[particleY][particleX] != .empty {
                         return false
                     }
@@ -360,6 +388,13 @@ class GameModel {
 
     // セルを細かい粒子に分割
     private func subdivideIntoParticles(at position: (x: Int, y: Int), color: Color) {
+        // グリッドサイズが変更されている場合は処理をスキップ
+        guard currentGridWidth > 0 && currentGridHeight > 0 &&
+              grid.count == currentGridHeight &&
+              grid[0].count == currentGridWidth else {
+            return
+        }
+
         let baseX = position.x * GameModel.particleSubdivision
         let baseY = position.y * GameModel.particleSubdivision
 
@@ -368,8 +403,8 @@ class GameModel {
                 let particleX = baseX + dx
                 let particleY = baseY + dy
 
-                if particleY >= 0 && particleY < GameModel.gridHeight &&
-                   particleX >= 0 && particleX < GameModel.gridWidth {
+                if particleY >= 0 && particleY < currentGridHeight &&
+                   particleX >= 0 && particleX < currentGridWidth {
                     // ランダムに一部の粒子を空にして、よりリアルな砂の見た目に
                     if Bool.random() || (dx == 1 && dy == 1) { // 中心は必ず埋める
                         grid[particleY][particleX] = .sand(color)
@@ -381,10 +416,17 @@ class GameModel {
 
     // ラインのチェックと消去（砂テトリスルール：左から右に同じ色が繋がったら消える）
     private func checkAndClearLines() {
+        // グリッドサイズが変更されている場合は処理をスキップ
+        guard currentGridWidth > 0 && currentGridHeight > 0 &&
+              grid.count == currentGridHeight &&
+              grid[0].count == currentGridWidth else {
+            return
+        }
+
         var cellsToRemove: Set<String> = []
 
         // 全ての行について、左から右への繋がりをチェック
-        for y in 0..<GameModel.gridHeight {
+        for y in 0..<currentGridHeight {
             guard case .sand(let color) = grid[y][0] else { continue }
 
             // この行で左端から繋がっている同じ色のセルを探索
@@ -420,8 +462,8 @@ class GameModel {
 
         // 既に訪問済み、または範囲外ならスキップ
         if visited.contains(cellKey) ||
-           position.y < 0 || position.y >= GameModel.gridHeight ||
-           position.x < 0 || position.x >= GameModel.gridWidth {
+           position.y < 0 || position.y >= currentGridHeight ||
+           position.x < 0 || position.x >= currentGridWidth {
             return
         }
 
@@ -435,7 +477,7 @@ class GameModel {
         visited.insert(cellKey)
 
         // 右端に到達したかチェック
-        if position.x == GameModel.gridWidth - 1 {
+        if position.x == currentGridWidth - 1 {
             reachedRight = true
         }
 
@@ -465,16 +507,23 @@ class GameModel {
 
     // 砂が画面上部まで詰まったかチェック
     private func checkGameOverBySandOverflow() {
+        // グリッドサイズが変更されている場合は処理をスキップ
+        guard currentGridWidth > 0 && currentGridHeight > 0 &&
+              grid.count == currentGridHeight &&
+              grid[0].count == currentGridWidth else {
+            return
+        }
+
         // ピースが生成される上部エリア（ピースグリッド座標で上から3行分）をチェック
         let checkRows = 3 // ピースグリッド座標での行数
         let checkHeight = checkRows * GameModel.particleSubdivision // 粒子グリッド座標での行数
 
         // 上部エリアの砂粒子をカウント
         var sandCount = 0
-        let totalCells = GameModel.gridWidth * checkHeight
+        let totalCells = currentGridWidth * checkHeight
 
-        for y in 0..<checkHeight {
-            for x in 0..<GameModel.gridWidth {
+        for y in 0..<min(checkHeight, currentGridHeight) {
+            for x in 0..<currentGridWidth {
                 if case .sand(_) = grid[y][x] {
                     sandCount += 1
                 }
