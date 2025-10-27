@@ -213,16 +213,6 @@ struct GameAreaView: View {
                     }
                 }
 
-                // ゲームオーバー画面
-                if gameModel.gameState == .gameOver {
-                    GameOverView(
-                        score: gameModel.score,
-                        onRetry: {
-                            gameModel.setupNewGame()
-                            gameModel.startGame()
-                        }
-                    )
-                }
             }
             .contentShape(Rectangle())
             .gesture(
@@ -250,6 +240,17 @@ struct GameAreaView: View {
                     }
             )
             .allowsHitTesting(gameModel.gameState != .gameOver)
+
+            // ゲームオーバー画面（ZStackの外に配置）
+            if gameModel.gameState == .gameOver {
+                GameOverView(
+                    score: gameModel.score,
+                    onRetry: {
+                        gameModel.setupNewGame()
+                        gameModel.startGame()
+                    }
+                )
+            }
         }
     }
 

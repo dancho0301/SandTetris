@@ -30,7 +30,7 @@ class GameModel {
     static let pieceGridHeight = 30
 
     // 粒子の細分化レベル（1ピースセルをN×Nの粒子に分割）
-    static let particleSubdivision = 3
+    static let particleSubdivision = 12
 
     // 実際の粒子グリッドサイズ（物理的なサイズ）
     static let gridWidth = pieceGridWidth * particleSubdivision
@@ -56,6 +56,11 @@ class GameModel {
     private let tickInterval: TimeInterval = 0.016 // 約60fps
     private var accumulatedTime: TimeInterval = 0
     private let fallSpeed: TimeInterval = 1.0 // 1秒ごとにピースが落下
+
+    // 新しいピース出現の待機時間
+    private var pieceSpawnDelay: TimeInterval = 1.0 // 2秒
+    private var pieceSpawnTimer: TimeInterval = 0
+    private var waitingForNextPiece: Bool = false
 
     init() {
         setupNewGame()
@@ -112,16 +117,28 @@ class GameModel {
     private func update() {
         guard gameState == .playing else { return }
 
-        accumulatedTime += tickInterval
+        // 新しいピースの出現待機中
+        if waitingForNextPiece {
+            pieceSpawnTimer += tickInterval
+            if pieceSpawnTimer >= pieceSpawnDelay {
+                pieceSpawnTimer = 0
+                waitingForNextPiece = false
+                spawnNextPiece()
+            }
+        } else {
+            accumulatedTime += tickInterval
 
-        // ピースの自動落下
-        if accumulatedTime >= fallSpeed {
-            accumulatedTime = 0
-            moveDown()
+            // ピースの自動落下
+            if accumulatedTime >= fallSpeed {
+                accumulatedTime = 0
+                moveDown()
+            }
         }
 
-        // 砂の物理シミュレーション
-        updateSandPhysics()
+        // 砂の物理シミュレーション（3倍の速度で実行）
+        for _ in 0..<3 {
+            updateSandPhysics()
+        }
 
         // 砂が落下して繋がった場合のライン消去チェック
         checkAndClearLines()
@@ -293,8 +310,10 @@ class GameModel {
         // ライン消去チェック
         checkAndClearLines()
 
-        // 次のピースを生成
-        spawnNextPiece()
+        // 次のピースを生成するまで待機
+        currentPiece = nil
+        waitingForNextPiece = true
+        pieceSpawnTimer = 0
     }
 
     // セルを細かい粒子に分割
