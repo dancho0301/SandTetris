@@ -293,6 +293,16 @@ class GameModel {
         return true
     }
 
+    // 外部からピースを配置できるかチェック（公開メソッド）
+    func canPlacePieceAt(_ piece: TetrisPiece, position: (x: Int, y: Int)) -> Bool {
+        return canPlacePiece(piece, at: position)
+    }
+
+    // ピースの位置を直接設定（公開メソッド）
+    func setPosition(_ position: (x: Int, y: Int)) {
+        currentPosition = position
+    }
+
     // ピースの1セルが配置可能かチェック（粒子レベルで）
     private func canPlacePieceCell(at position: (x: Int, y: Int)) -> Bool {
         let baseX = position.x * GameModel.particleSubdivision

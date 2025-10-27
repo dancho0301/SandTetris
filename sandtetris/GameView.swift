@@ -147,9 +147,7 @@ struct NextPiecePreview: View {
 struct GameAreaView: View {
     let gameModel: GameModel
     @State private var dragStartLocation: CGPoint?
-    @State private var lastDragX: CGFloat = 0
     @State private var lastDragY: CGFloat = 0
-    @State private var moveThreshold: CGFloat = 0
     @State private var hasDropped: Bool = false
     @State private var dropMoveThreshold: CGFloat = 0
     @State private var dragDirection: DragDirection? = nil
@@ -228,24 +226,20 @@ struct GameAreaView: View {
                     .onChanged { value in
                         if dragStartLocation == nil {
                             dragStartLocation = value.startLocation
-                            lastDragX = value.location.x
                             lastDragY = value.location.y
-                            moveThreshold = cellWidth * 3.6  // 感度をさらに下げる（1/3に）
                             dropMoveThreshold = cellHeight * 3.6  // 感度をさらに下げる（1/3に）
                             hasDropped = false
                             dragDirection = nil
                             lastMoveTime = Date()
                             lastLocation = value.location
                         } else {
-                            handleDragChange(start: value.startLocation, current: value.location, cellWidth: cellWidth, cellHeight: cellHeight)
+                            handleDragChange(start: value.startLocation, current: value.location, screenWidth: geometry.size.width, cellHeight: cellHeight)
                         }
                     }
                     .onEnded { value in
                         handleGestureEnd(start: value.startLocation, end: value.location)
                         dragStartLocation = nil
-                        lastDragX = 0
                         lastDragY = 0
-                        moveThreshold = 0
                         dropMoveThreshold = 0
                         hasDropped = false
                         dragDirection = nil
@@ -268,7 +262,7 @@ struct GameAreaView: View {
         }
     }
 
-    private func handleDragChange(start: CGPoint, current: CGPoint, cellWidth: CGFloat, cellHeight: CGFloat) {
+    private func handleDragChange(start: CGPoint, current: CGPoint, screenWidth: CGFloat, cellHeight: CGFloat) {
         let dx = current.x - start.x
         let dy = current.y - start.y
         let tapThreshold: CGFloat = 20
@@ -290,7 +284,6 @@ struct GameAreaView: View {
             // 指が停止していると判断し、方向をリセット
             dragDirection = nil
             dragStartLocation = current  // 新しいスタート位置を設定
-            lastDragX = current.x
             lastDragY = current.y
             hasDropped = false
         }
@@ -318,15 +311,8 @@ struct GameAreaView: View {
         // 方向が決まったら、その方向のみで処理
         switch dragDirection {
         case .horizontal:
-            // 横移動のみ
-            let deltaX = current.x - lastDragX
-            if deltaX > moveThreshold {
-                gameModel.moveRight()
-                lastDragX = current.x
-            } else if deltaX < -moveThreshold {
-                gameModel.moveLeft()
-                lastDragX = current.x
-            }
+            // 横移動：指の位置に追従
+            movePieceToFingerPosition(fingerX: current.x, screenWidth: screenWidth)
 
         case .vertical:
             // 下方向への移動が大きな閾値を超えたら急速落下（一度だけ）
@@ -345,6 +331,56 @@ struct GameAreaView: View {
 
         case .none:
             break
+        }
+    }
+
+    // 指の位置にピースを移動させる
+    private func movePieceToFingerPosition(fingerX: CGFloat, screenWidth: CGFloat) {
+        guard let piece = gameModel.currentPiece else { return }
+
+        // ピースの幅を取得
+        let pieceWidth = piece.shape[0].count
+
+        // 指のX座標からピースグリッドのX座標を計算
+        // 画面幅をピースグリッド幅で割って、1グリッドあたりのスクリーン幅を計算
+        let gridCellWidth = screenWidth / CGFloat(GameModel.pieceGridWidth)
+
+        // 指の位置をピースグリッド座標に変換（ピースの中心が指の位置になるように）
+        let targetX = Int((fingerX / gridCellWidth).rounded()) - pieceWidth / 2
+
+        // 範囲チェック
+        let clampedX = max(0, min(targetX, GameModel.pieceGridWidth - pieceWidth))
+
+        // 目標位置に移動できるかチェック
+        let newPosition = (x: clampedX, y: gameModel.currentPosition.y)
+        if gameModel.canPlacePieceAt(piece, position: newPosition) {
+            gameModel.setPosition(newPosition)
+        } else {
+            // 配置できない場合、最も近い有効な位置を探す
+            findNearestValidPosition(targetX: clampedX, currentY: gameModel.currentPosition.y, piece: piece)
+        }
+    }
+
+    // 最も近い有効な位置を探す
+    private func findNearestValidPosition(targetX: Int, currentY: Int, piece: TetrisPiece) {
+        let pieceWidth = piece.shape[0].count
+        let maxX = GameModel.pieceGridWidth - pieceWidth
+
+        // 目標位置から左右に探索
+        for offset in 0...maxX {
+            // 右方向を試す
+            let rightX = min(targetX + offset, maxX)
+            if gameModel.canPlacePieceAt(piece, position: (x: rightX, y: currentY)) {
+                gameModel.setPosition((x: rightX, y: currentY))
+                return
+            }
+
+            // 左方向を試す
+            let leftX = max(targetX - offset, 0)
+            if leftX != rightX && gameModel.canPlacePieceAt(piece, position: (x: leftX, y: currentY)) {
+                gameModel.setPosition((x: leftX, y: currentY))
+                return
+            }
         }
     }
 
@@ -400,7 +436,7 @@ struct ControlGuideView: View {
     var body: some View {
         HStack(spacing: 20) {
             GuideItem(icon: "hand.tap", text: "タップで回転")
-            GuideItem(icon: "arrow.left.and.right", text: "左右スワイプで移動")
+            GuideItem(icon: "hand.point.up.left", text: "横ドラッグで指に追従")
             GuideItem(icon: "arrow.down", text: "下スワイプで急速落下")
         }
         .padding(.horizontal)
