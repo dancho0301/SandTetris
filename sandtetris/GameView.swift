@@ -153,6 +153,8 @@ struct GameAreaView: View {
     @State private var hasDropped: Bool = false
     @State private var dropMoveThreshold: CGFloat = 0
     @State private var dragDirection: DragDirection? = nil
+    @State private var lastMoveTime: Date = Date()
+    @State private var lastLocation: CGPoint = .zero
 
     enum DragDirection {
         case horizontal
@@ -232,6 +234,8 @@ struct GameAreaView: View {
                             dropMoveThreshold = cellHeight * 1.2  // 感度を下げる
                             hasDropped = false
                             dragDirection = nil
+                            lastMoveTime = Date()
+                            lastLocation = value.location
                         } else {
                             handleDragChange(start: value.startLocation, current: value.location, cellWidth: cellWidth, cellHeight: cellHeight)
                         }
@@ -245,6 +249,8 @@ struct GameAreaView: View {
                         dropMoveThreshold = 0
                         hasDropped = false
                         dragDirection = nil
+                        lastMoveTime = Date()
+                        lastLocation = .zero
                     }
             )
             .allowsHitTesting(gameModel.gameState != .gameOver)
@@ -268,10 +274,31 @@ struct GameAreaView: View {
         let tapThreshold: CGFloat = 20
         let hardDropThreshold: CGFloat = 100
         let directionThreshold: CGFloat = 30  // 方向を判定するための閾値
+        let stopThreshold: CGFloat = 5  // 停止判定の閾値
+        let stopTimeInterval: TimeInterval = 0.2  // 停止とみなす時間（秒）
 
         // タップ判定範囲内なら何もしない
         if abs(dx) < tapThreshold && abs(dy) < tapThreshold {
             return
+        }
+
+        // 指の停止を検出して方向をリセット
+        let distanceFromLastLocation = sqrt(pow(current.x - lastLocation.x, 2) + pow(current.y - lastLocation.y, 2))
+        let timeSinceLastMove = Date().timeIntervalSince(lastMoveTime)
+
+        if distanceFromLastLocation < stopThreshold && timeSinceLastMove > stopTimeInterval {
+            // 指が停止していると判断し、方向をリセット
+            dragDirection = nil
+            dragStartLocation = current  // 新しいスタート位置を設定
+            lastDragX = current.x
+            lastDragY = current.y
+            hasDropped = false
+        }
+
+        // 位置が変わったら更新
+        if distanceFromLastLocation > stopThreshold {
+            lastLocation = current
+            lastMoveTime = Date()
         }
 
         // まだ方向が決まっていない場合、方向を判定する
