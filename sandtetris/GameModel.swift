@@ -26,14 +26,18 @@ enum GameState {
 @Observable
 class GameModel {
     // テトリスピースのグリッドサイズ（論理的なサイズ）
-    static let pieceGridWidth = 20
+    static var pieceGridWidth: Int {
+        return GameSettings.shared.gameAreaWidth
+    }
     static let pieceGridHeight = 30
 
     // 粒子の細分化レベル（1ピースセルをN×Nの粒子に分割）
     static let particleSubdivision = 12
 
     // 実際の粒子グリッドサイズ（物理的なサイズ）
-    static let gridWidth = pieceGridWidth * particleSubdivision
+    static var gridWidth: Int {
+        return pieceGridWidth * particleSubdivision
+    }
     static let gridHeight = pieceGridHeight * particleSubdivision
 
     // ゲーム状態

@@ -82,6 +82,10 @@ struct GameView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+        } onDismiss: {
+            // 設定画面を閉じたときにゲームをリセット
+            gameModel.setupNewGame()
+            gameModel.startGame()
         }
     }
 }

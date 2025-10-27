@@ -96,6 +96,51 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("横幅")
+                                .font(.body)
+                            Spacer()
+                            Text("\(settings.gameAreaWidth)マス")
+                                .font(.body)
+                                .foregroundColor(.blue)
+                                .fontWeight(.semibold)
+                        }
+
+                        Slider(
+                            value: Binding(
+                                get: { Double(settings.gameAreaWidth) },
+                                set: { settings.gameAreaWidth = Int($0.rounded()) }
+                            ),
+                            in: 10...30,
+                            step: 1
+                        )
+                        .tint(.blue)
+
+                        HStack {
+                            Text("狭い")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("標準")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("広い")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Text("ゲームエリアの横幅を調整できます。値を変更するとゲームがリセットされます")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } header: {
+                    Text("ゲームエリア")
+                }
+
+                Section {
                     HStack {
                         Text("バージョン")
                         Spacer()
