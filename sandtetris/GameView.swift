@@ -199,6 +199,10 @@ struct GameAreaView: View {
             let cellWidth = geometry.size.width / CGFloat(GameModel.gridWidth)
             let cellHeight = geometry.size.height / CGFloat(GameModel.gridHeight)
 
+            // 画面のアスペクト比を計算してGameSettingsに反映（マスを正方形にするため）
+            let aspectRatio = geometry.size.height / geometry.size.width
+            let _ = updateAspectRatioIfNeeded(aspectRatio: aspectRatio)
+
             ZStack {
                 // グリッド背景
                 GridBackgroundView()
@@ -473,6 +477,17 @@ struct GameAreaView: View {
         // タップ判定（移動も落下もしていない場合）
         if abs(dx) < tapThreshold && abs(dy) < tapThreshold {
             gameModel.rotate()
+        }
+    }
+
+    // アスペクト比を更新（変更があった場合のみ）
+    private func updateAspectRatioIfNeeded(aspectRatio: CGFloat) {
+        let currentAspectRatio = settings.gameAreaAspectRatio
+        let newAspectRatio = Double(aspectRatio)
+
+        // 誤差が5%以上ある場合のみ更新（頻繁な更新を避ける）
+        if abs(currentAspectRatio - newAspectRatio) / currentAspectRatio > 0.05 {
+            settings.gameAreaAspectRatio = newAspectRatio
         }
     }
 }

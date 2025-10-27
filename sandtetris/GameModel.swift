@@ -29,7 +29,9 @@ class GameModel {
     static var pieceGridWidth: Int {
         return GameSettings.shared.gameAreaWidth
     }
-    static let pieceGridHeight = 30
+    static var pieceGridHeight: Int {
+        return Int(ceil(Double(pieceGridWidth) * GameSettings.shared.gameAreaAspectRatio))
+    }
 
     // 粒子の細分化レベル（1ピースセルをN×Nの粒子に分割）
     static let particleSubdivision = 12
@@ -38,7 +40,9 @@ class GameModel {
     static var gridWidth: Int {
         return pieceGridWidth * particleSubdivision
     }
-    static let gridHeight = pieceGridHeight * particleSubdivision
+    static var gridHeight: Int {
+        return pieceGridHeight * particleSubdivision
+    }
 
     // ゲーム状態
     var gameState: GameState = .ready
