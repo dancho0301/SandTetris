@@ -69,7 +69,7 @@ class GameModel {
     private var gameTimer: Timer?
     private let tickInterval: TimeInterval = 0.016 // 約60fps
     private var accumulatedTime: TimeInterval = 0
-    private let fallSpeed: TimeInterval = 1.0 // 1秒ごとにピースが落下
+    private var fallSpeed: TimeInterval = 1.0 // 1秒ごとにピースが落下（スコアに応じて変化）
 
     // 新しいピース出現の待機時間
     private var pieceSpawnDelay: TimeInterval = 1.0 // 2秒
@@ -92,6 +92,7 @@ class GameModel {
 
         grid = Array(repeating: Array(repeating: .empty, count: currentGridWidth), count: currentGridHeight)
         score = 0
+        updateFallSpeed() // 初期の落下速度を設定
         currentPiece = TetrisPiece.random(colorCount: colorCount)
         nextPiece = TetrisPiece.random(colorCount: colorCount)
         currentPosition = (x: GameModel.pieceGridWidth / 2 - 1, y: 0)
@@ -453,6 +454,7 @@ class GameModel {
 
         if particlesCleared > 0 {
             score += particlesCleared
+            updateFallSpeed() // スコアに応じて落下速度を更新
         }
     }
 
@@ -503,6 +505,20 @@ class GameModel {
         #else
         return true // macOSの場合は簡略化
         #endif
+    }
+
+    // スコアに応じた落下速度を計算
+    private func updateFallSpeed() {
+        // スコアが上がるほど落下速度が速くなる（より緩やかに）
+        // score 0 → 1.0秒
+        // score 1000 → 0.75秒
+        // score 2000 → 0.55秒
+        // score 3000 → 0.4秒
+        // score 5000以上 → 0.3秒（最速）
+        let baseSpeed = 1.0
+        let minSpeed = 0.3
+        let speedReduction = Double(score) / 5000.0 * (baseSpeed - minSpeed)
+        fallSpeed = max(minSpeed, baseSpeed - speedReduction)
     }
 
     // 砂が画面上部まで詰まったかチェック
