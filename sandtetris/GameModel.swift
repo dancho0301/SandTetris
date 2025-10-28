@@ -509,14 +509,15 @@ class GameModel {
 
     // スコアに応じた落下速度を計算
     private func updateFallSpeed() {
-        // スコアが上がるほど落下速度が速くなる
+        // スコアが上がるほど落下速度が速くなる（より緩やかに）
         // score 0 → 1.0秒
-        // score 500 → 0.6秒
-        // score 1000 → 0.3秒
-        // score 2000以上 → 0.2秒（最速）
+        // score 1000 → 0.75秒
+        // score 2000 → 0.55秒
+        // score 3000 → 0.4秒
+        // score 5000以上 → 0.3秒（最速）
         let baseSpeed = 1.0
-        let minSpeed = 0.2
-        let speedReduction = Double(score) / 2000.0 * (baseSpeed - minSpeed)
+        let minSpeed = 0.3
+        let speedReduction = Double(score) / 5000.0 * (baseSpeed - minSpeed)
         fallSpeed = max(minSpeed, baseSpeed - speedReduction)
     }
 
