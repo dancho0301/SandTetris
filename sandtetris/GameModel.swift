@@ -363,8 +363,8 @@ class GameModel {
                     let gridX = currentPosition.x + dx
                     let gridY = currentPosition.y + dy
 
-                    if gridY >= 0 && gridY < GameModel.gridHeight && gridX >= 0 && gridX < GameModel.gridWidth {
-                        // 1つのピースセルを3x3の細かい粒子に分割
+                    if gridY >= 0 && gridY < GameModel.pieceGridHeight && gridX >= 0 && gridX < GameModel.pieceGridWidth {
+                        // 1つのピースセルを12x12の細かい粒子に分割
                         subdivideIntoParticles(at: (x: gridX, y: gridY), color: piece.color)
                     }
                 }
