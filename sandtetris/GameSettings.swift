@@ -123,8 +123,8 @@ class GameSettings {
         if savedColorCount >= 2 && savedColorCount <= 7 {
             self.colorCount = savedColorCount
         } else {
-            // デフォルトは3色
-            self.colorCount = 3
+            // デフォルトは5色
+            self.colorCount = 5
         }
     }
 }
