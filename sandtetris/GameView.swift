@@ -16,40 +16,18 @@ struct GameView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                // 設定ボタン
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        showSettings = true
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 20))
-                            .foregroundColor(.gray)
-                            .padding(12)
-                            .background(
-                                Circle()
-                                    .fill(Color.white.opacity(0.7))
-                                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                            )
-                    }
-                    .padding(.trailing)
-                    .padding(.top, 8)
-                }
-
-                // ヘッダー部分（スコア、レベル、難易度、次のピース）
+                // ヘッダー部分（スコア、レベル、次のピース、設定ボタン）
                 HeaderView(
                     score: gameModel.score,
                     level: gameModel.currentLevel,
                     nextPiece: gameModel.nextPiece,
-                    colorCount: gameModel.colorCount,
-                    onColorCountChange: { newCount in
-                        gameModel.setColorCount(newCount)
-                        gameModel.setupNewGame()
-                        gameModel.startGame()
+                    onSettingsTapped: {
+                        showSettings = true
                     }
                 )
-                .frame(height: geometry.size.height * 0.15)
+                .frame(height: geometry.size.height * 0.12)
                 .padding(.horizontal)
+                .padding(.top, 8)
 
                 // ゲームエリア（砂とテトリスピースが表示される）
                 GameAreaView(gameModel: gameModel)
@@ -96,80 +74,65 @@ struct GameView: View {
     }
 }
 
-// ヘッダービュー（スコア、レベル、難易度、次のピース表示）
+// ヘッダービュー（スコア、レベル、次のピース表示、設定ボタン）
 struct HeaderView: View {
     let score: Int
     let level: Int
     let nextPiece: TetrisPiece?
-    let colorCount: Int
-    let onColorCountChange: (Int) -> Void
+    let onSettingsTapped: () -> Void
 
     var body: some View {
-        VStack(spacing: 10) {
-            // 上段：レベルとスコア
-            HStack(spacing: 20) {
-                // レベル表示
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("LEVEL")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundColor(.orange)
-                    Text("\(level)")
-                        .font(.system(size: 32, weight: .heavy, design: .rounded))
-                        .foregroundColor(.orange)
-                        .shadow(color: .orange.opacity(0.3), radius: 4, x: 0, y: 2)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.orange.opacity(0.15))
-                        .shadow(color: .orange.opacity(0.2), radius: 4, x: 0, y: 2)
-                )
-
-                // スコア表示
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("スコア")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("\(score)")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundColor(.primary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                // 次のピース表示
-                VStack(spacing: 4) {
-                    Text("次のピース")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    NextPiecePreview(piece: nextPiece)
-                }
+        HStack(spacing: 20) {
+            // レベル表示
+            VStack(alignment: .leading, spacing: 2) {
+                Text("LEVEL")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundColor(.orange)
+                Text("\(level)")
+                    .font(.system(size: 32, weight: .heavy, design: .rounded))
+                    .foregroundColor(.orange)
+                    .shadow(color: .orange.opacity(0.3), radius: 4, x: 0, y: 2)
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.orange.opacity(0.15))
+                    .shadow(color: .orange.opacity(0.2), radius: 4, x: 0, y: 2)
+            )
 
-            // 下段：難易度設定
-            HStack {
-                Text("難易度")
+            // スコア表示
+            VStack(alignment: .leading, spacing: 4) {
+                Text("スコア")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                HStack(spacing: 4) {
-                    Button(action: { onColorCountChange(max(2, colorCount - 1)) }) {
-                        Image(systemName: "minus.circle.fill")
-                            .font(.system(size: 18))
-                            .foregroundColor(colorCount > 2 ? .blue : .gray)
-                    }
-                    .disabled(colorCount <= 2)
+                Text("\(score)")
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Text("\(colorCount)色")
-                        .font(.system(size: 14, weight: .semibold, design: .rounded))
-                        .frame(minWidth: 40)
+            // 次のピース表示
+            VStack(spacing: 4) {
+                Text("次のピース")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                NextPiecePreview(piece: nextPiece)
+            }
 
-                    Button(action: { onColorCountChange(min(7, colorCount + 1)) }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 18))
-                            .foregroundColor(colorCount < 7 ? .blue : .gray)
-                    }
-                    .disabled(colorCount >= 7)
-                }
+            // 設定ボタン
+            Button(action: {
+                onSettingsTapped()
+            }) {
+                Image(systemName: "gearshape.fill")
+                    .font(.system(size: 20))
+                    .foregroundColor(.gray)
+                    .padding(12)
+                    .background(
+                        Circle()
+                            .fill(Color.white.opacity(0.7))
+                            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+                    )
             }
         }
     }
