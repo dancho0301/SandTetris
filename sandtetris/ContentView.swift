@@ -14,13 +14,12 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if settings.hasSelectedDifficulty || showGame {
+            if showGame {
                 GameView()
             } else {
                 DifficultySelectionView { difficulty in
                     // 選択された難易度に応じて色数を設定
                     settings.colorCount = difficulty.colorCount
-                    settings.hasSelectedDifficulty = true
                     showGame = true
                 }
             }
