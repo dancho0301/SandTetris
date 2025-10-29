@@ -41,6 +41,7 @@ class GameSettings {
         static let gameAreaWidth = "gameAreaWidth"
         static let gameAreaAspectRatio = "gameAreaAspectRatio"
         static let colorCount = "colorCount"
+        static let hasSelectedDifficulty = "hasSelectedDifficulty"
     }
 
     /// タッチ操作モード
@@ -75,6 +76,13 @@ class GameSettings {
     var colorCount: Int {
         didSet {
             UserDefaults.standard.set(colorCount, forKey: Keys.colorCount)
+        }
+    }
+
+    /// 初回起動時に難易度を選択したかどうか
+    var hasSelectedDifficulty: Bool {
+        didSet {
+            UserDefaults.standard.set(hasSelectedDifficulty, forKey: Keys.hasSelectedDifficulty)
         }
     }
 
@@ -126,5 +134,8 @@ class GameSettings {
             // デフォルトは5色
             self.colorCount = 5
         }
+
+        // 難易度選択済みかどうかを読み込み
+        self.hasSelectedDifficulty = UserDefaults.standard.bool(forKey: Keys.hasSelectedDifficulty)
     }
 }
