@@ -49,6 +49,7 @@ class GameModel {
     // ゲーム状態
     var gameState: GameState = .ready
     var score: Int = 0
+    var currentLevel: Int = 1 // 現在のレベル
     var grid: [[CellType]] = Array(repeating: Array(repeating: .empty, count: gridWidth), count: gridHeight)
 
     // グリッドの実際のサイズを保存（配列範囲チェック用）
@@ -92,6 +93,7 @@ class GameModel {
 
         grid = Array(repeating: Array(repeating: .empty, count: currentGridWidth), count: currentGridHeight)
         score = 0
+        currentLevel = 1
         updateFallSpeed() // 初期の落下速度を設定
         currentPiece = TetrisPiece.random(colorCount: colorCount)
         nextPiece = TetrisPiece.random(colorCount: colorCount)
@@ -507,18 +509,34 @@ class GameModel {
         #endif
     }
 
-    // スコアに応じた落下速度を計算
+    // スコアに応じた落下速度とレベルを計算
     private func updateFallSpeed() {
-        // スコアが上がるほど落下速度が速くなる（より緩やかに）
-        // score 0 → 1.0秒
-        // score 1000 → 0.75秒
-        // score 2000 → 0.55秒
-        // score 3000 → 0.4秒
-        // score 5000以上 → 0.3秒（最速）
+        // スコアに応じてレベルを計算（500点ごとにレベルアップ）
+        currentLevel = max(1, (score / 500) + 1)
+
+        // レベルに応じて落下速度を設定
+        // Level 1: 1.0秒
+        // Level 2: 0.85秒
+        // Level 3: 0.72秒
+        // Level 4: 0.61秒
+        // Level 5: 0.52秒
+        // Level 6: 0.44秒
+        // Level 7: 0.37秒
+        // Level 8: 0.31秒
+        // Level 9: 0.26秒
+        // Level 10以上: 0.15秒（最速）
         let baseSpeed = 1.0
-        let minSpeed = 0.3
-        let speedReduction = Double(score) / 5000.0 * (baseSpeed - minSpeed)
-        fallSpeed = max(minSpeed, baseSpeed - speedReduction)
+        let minSpeed = 0.15
+        let maxLevel = 10
+
+        if currentLevel >= maxLevel {
+            fallSpeed = minSpeed
+        } else {
+            // 指数関数的に速度を上げる
+            let progress = Double(currentLevel - 1) / Double(maxLevel - 1)
+            let speedReduction = pow(progress, 1.5) * (baseSpeed - minSpeed)
+            fallSpeed = max(minSpeed, baseSpeed - speedReduction)
+        }
     }
 
     // 砂が画面上部まで詰まったかチェック
