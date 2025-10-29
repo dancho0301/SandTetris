@@ -56,9 +56,6 @@ class GameModel {
     private var currentGridWidth: Int = 0
     private var currentGridHeight: Int = 0
 
-    // 難易度設定（使用する色の数）
-    var colorCount: Int = 3
-
     // 現在のピース
     var currentPiece: TetrisPiece?
     var currentPosition: (x: Int, y: Int) = (0, 0)
@@ -95,15 +92,10 @@ class GameModel {
         score = 0
         currentLevel = 1
         updateFallSpeed() // 初期の落下速度を設定
-        currentPiece = TetrisPiece.random(colorCount: colorCount)
-        nextPiece = TetrisPiece.random(colorCount: colorCount)
+        currentPiece = TetrisPiece.random(colorCount: GameSettings.shared.colorCount)
+        nextPiece = TetrisPiece.random(colorCount: GameSettings.shared.colorCount)
         currentPosition = (x: GameModel.pieceGridWidth / 2 - 1, y: 0)
         gameState = .ready
-    }
-
-    // 色数（難易度）を変更
-    func setColorCount(_ count: Int) {
-        colorCount = min(max(count, 2), 7) // 2〜7色の範囲
     }
 
     // ゲーム開始
@@ -575,7 +567,7 @@ class GameModel {
     // 次のピースを生成
     private func spawnNextPiece() {
         currentPiece = nextPiece
-        nextPiece = TetrisPiece.random(colorCount: colorCount)
+        nextPiece = TetrisPiece.random(colorCount: GameSettings.shared.colorCount)
         currentPosition = (x: GameModel.pieceGridWidth / 2 - 1, y: 0)
 
         // ゲームオーバーチェック

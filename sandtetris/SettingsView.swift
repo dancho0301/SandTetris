@@ -14,15 +14,16 @@ struct SettingsView: View {
 
     // 元の設定値を保存
     @State private var originalGameAreaWidth: Int = 0
+    @State private var originalColorCount: Int = 0
     @State private var showResetConfirmation = false
 
     private var sensitivityLabel: String {
         String(format: "%.1f×", settings.movementSensitivity)
     }
 
-    // 横幅設定に変更があるかチェック
-    private var hasWidthChanged: Bool {
-        settings.gameAreaWidth != originalGameAreaWidth
+    // ゲームをリセットする必要がある設定に変更があるかチェック
+    private var hasGameSettingChanged: Bool {
+        settings.gameAreaWidth != originalGameAreaWidth || settings.colorCount != originalColorCount
     }
 
     var body: some View {
@@ -151,6 +152,51 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("色の数")
+                                .font(.body)
+                            Spacer()
+                            Text("\(settings.colorCount)色")
+                                .font(.body)
+                                .foregroundColor(.blue)
+                                .fontWeight(.semibold)
+                        }
+
+                        Slider(
+                            value: Binding(
+                                get: { Double(settings.colorCount) },
+                                set: { settings.colorCount = Int($0.rounded()) }
+                            ),
+                            in: 2...7,
+                            step: 1
+                        )
+                        .tint(.blue)
+
+                        HStack {
+                            Text("簡単")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("標準")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text("難しい")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.vertical, 4)
+
+                    Text("ブロックとして出現する色の数を調整できます。色が多いほど難易度が上がります。値を変更するとゲームがリセットされます")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } header: {
+                    Text("難易度")
+                }
+
+                Section {
                     HStack {
                         Text("バージョン")
                         Spacer()
@@ -173,8 +219,9 @@ struct SettingsView: View {
             .onAppear {
                 // 元の設定値を保存
                 originalGameAreaWidth = settings.gameAreaWidth
+                originalColorCount = settings.colorCount
             }
-            .alert("ゲームエリアの変更", isPresented: $showResetConfirmation) {
+            .alert("ゲーム設定の変更", isPresented: $showResetConfirmation) {
                 Button("リセットする", role: .destructive) {
                     // 新しい設定でゲームをリセット
                     needsReset = true
@@ -183,17 +230,18 @@ struct SettingsView: View {
                 Button("元に戻す", role: .cancel) {
                     // 設定を元に戻す
                     settings.gameAreaWidth = originalGameAreaWidth
+                    settings.colorCount = originalColorCount
                     dismiss()
                 }
             } message: {
-                Text("ゲームエリアの横幅が変更されました。ゲームをリセットしますか？\n\n「元に戻す」を選ぶと、設定を変更前の状態に戻します。")
+                Text("ゲーム設定が変更されました。ゲームをリセットしますか？\n\n「元に戻す」を選ぶと、設定を変更前の状態に戻します。")
             }
         }
     }
 
     private func handleDismiss() {
-        // 横幅に変更があれば確認アラートを表示
-        if hasWidthChanged {
+        // ゲーム設定に変更があれば確認アラートを表示
+        if hasGameSettingChanged {
             showResetConfirmation = true
         } else {
             dismiss()
