@@ -36,9 +36,10 @@ struct GameView: View {
                     .padding(.top, 8)
                 }
 
-                // ヘッダー部分（スコア、難易度、次のピース）
+                // ヘッダー部分（スコア、レベル、難易度、次のピース）
                 HeaderView(
                     score: gameModel.score,
+                    level: gameModel.currentLevel,
                     nextPiece: gameModel.nextPiece,
                     colorCount: gameModel.colorCount,
                     onColorCountChange: { newCount in
@@ -95,60 +96,81 @@ struct GameView: View {
     }
 }
 
-// ヘッダービュー（スコア、難易度、次のピース表示）
+// ヘッダービュー（スコア、レベル、難易度、次のピース表示）
 struct HeaderView: View {
     let score: Int
+    let level: Int
     let nextPiece: TetrisPiece?
     let colorCount: Int
     let onColorCountChange: (Int) -> Void
 
     var body: some View {
-        HStack(spacing: 15) {
-            // スコア表示
-            VStack(alignment: .leading, spacing: 4) {
-                Text("スコア")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Text("\(score)")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundColor(.primary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: 10) {
+            // 上段：レベルとスコア
+            HStack(spacing: 20) {
+                // レベル表示
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("LEVEL")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundColor(.orange)
+                    Text("\(level)")
+                        .font(.system(size: 32, weight: .heavy, design: .rounded))
+                        .foregroundColor(.orange)
+                        .shadow(color: .orange.opacity(0.3), radius: 4, x: 0, y: 2)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.orange.opacity(0.15))
+                        .shadow(color: .orange.opacity(0.2), radius: 4, x: 0, y: 2)
+                )
 
-            // 難易度設定
-            VStack(spacing: 4) {
+                // スコア表示
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("スコア")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("\(score)")
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // 次のピース表示
+                VStack(spacing: 4) {
+                    Text("次のピース")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    NextPiecePreview(piece: nextPiece)
+                }
+            }
+
+            // 下段：難易度設定
+            HStack {
                 Text("難易度")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 HStack(spacing: 4) {
                     Button(action: { onColorCountChange(max(2, colorCount - 1)) }) {
                         Image(systemName: "minus.circle.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 18))
                             .foregroundColor(colorCount > 2 ? .blue : .gray)
                     }
                     .disabled(colorCount <= 2)
 
                     Text("\(colorCount)色")
-                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .frame(minWidth: 40)
 
                     Button(action: { onColorCountChange(min(7, colorCount + 1)) }) {
                         Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 18))
                             .foregroundColor(colorCount < 7 ? .blue : .gray)
                     }
                     .disabled(colorCount >= 7)
                 }
             }
-
-            // 次のピース表示
-            VStack(spacing: 4) {
-                Text("次のピース")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                NextPiecePreview(piece: nextPiece)
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
 }
@@ -298,6 +320,7 @@ struct GameAreaView: View {
             if gameModel.gameState == .gameOver {
                 GameOverView(
                     score: gameModel.score,
+                    level: gameModel.currentLevel,
                     onRetry: {
                         gameModel.setupNewGame()
                         gameModel.startGame()
@@ -604,6 +627,7 @@ struct PieceShapeView: View {
 // ゲームオーバー画面
 struct GameOverView: View {
     let score: Int
+    let level: Int
     let onRetry: () -> Void
 
     var body: some View {
@@ -620,16 +644,33 @@ struct GameOverView: View {
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
 
-                // 最終スコア表示
-                VStack(spacing: 8) {
-                    Text("スコア")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
+                // レベルとスコア表示
+                VStack(spacing: 16) {
+                    // レベル表示
+                    HStack(spacing: 12) {
+                        Text("レベル")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                        Text("\(level)")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundColor(.orange)
+                            .shadow(color: .orange.opacity(0.5), radius: 8, x: 0, y: 0)
+                    }
 
-                    Text("\(score)")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundColor(.yellow)
-                        .shadow(color: .yellow.opacity(0.5), radius: 8, x: 0, y: 0)
+                    Divider()
+                        .background(Color.white.opacity(0.3))
+
+                    // スコア表示
+                    VStack(spacing: 8) {
+                        Text("スコア")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+
+                        Text("\(score)")
+                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .foregroundColor(.yellow)
+                            .shadow(color: .yellow.opacity(0.5), radius: 8, x: 0, y: 0)
+                    }
                 }
                 .padding(.vertical, 20)
                 .frame(maxWidth: .infinity)
