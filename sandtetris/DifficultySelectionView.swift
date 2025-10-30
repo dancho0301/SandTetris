@@ -6,10 +6,33 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct DifficultySelectionView: View {
     let onDifficultySelected: (Difficulty) -> Void
     @State private var selectedDifficulty: Difficulty = .normal
+
+    @Query(sort: \HighScore.score, order: .reverse) private var allHighScores: [HighScore]
+
+    // 当日のハイスコアをフィルタリング
+    private var todayHighScores: [HighScore] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        return allHighScores.filter { highScore in
+            calendar.isDate(highScore.playDate, inSameDayAs: today)
+        }
+    }
+
+    // トータルTOP3
+    private var topScores: [HighScore] {
+        Array(allHighScores.prefix(3))
+    }
+
+    // 当日TOP3
+    private var todayTopScores: [HighScore] {
+        Array(todayHighScores.prefix(3))
+    }
 
     enum Difficulty: String, CaseIterable {
         case easy = "easy"
@@ -110,6 +133,16 @@ struct DifficultySelectionView: View {
 
             Spacer()
 
+            // ハイスコア表示（コンパクト版）
+            ScrollView {
+                VStack(spacing: 12) {
+                    HighScoreSectionCompact(title: "トータルTOP3", scores: topScores)
+                    HighScoreSectionCompact(title: "本日のTOP3", scores: todayTopScores)
+                }
+            }
+            .frame(maxHeight: 200)
+            .padding(.horizontal, 30)
+
             // スタートボタン
             Button(action: {
                 onDifficultySelected(selectedDifficulty)
@@ -207,6 +240,124 @@ struct DifficultyCard: View {
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
         }
         .buttonStyle(.plain)
+    }
+}
+
+// ハイスコアセクション（コンパクト版）
+struct HighScoreSectionCompact: View {
+    let title: String
+    let scores: [HighScore]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 12)
+
+            if scores.isEmpty {
+                Text("記録なし")
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 8)
+            } else {
+                VStack(spacing: 4) {
+                    ForEach(Array(scores.enumerated()), id: \.element.id) { index, score in
+                        HighScoreRowCompact(rank: index + 1, score: score)
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.7))
+                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        )
+    }
+}
+
+// ハイスコア行（コンパクト版）
+struct HighScoreRowCompact: View {
+    let rank: Int
+    let score: HighScore
+
+    var rankColor: Color {
+        switch rank {
+        case 1: return .yellow
+        case 2: return Color(red: 0.75, green: 0.75, blue: 0.75)  // Silver
+        case 3: return Color(red: 0.8, green: 0.5, blue: 0.2)     // Bronze
+        default: return .gray
+        }
+    }
+
+    var rankIcon: String {
+        switch rank {
+        case 1: return "crown.fill"
+        case 2: return "medal.fill"
+        case 3: return "medal.fill"
+        default: return "\(rank)"
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            // ランク
+            if rank <= 3 {
+                Image(systemName: rankIcon)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(rankColor)
+                    .frame(width: 20)
+            } else {
+                Text("\(rank)")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.secondary)
+                    .frame(width: 20)
+            }
+
+            // スコア
+            Text("\(score.score)")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundColor(.primary)
+                .frame(minWidth: 50, alignment: .leading)
+
+            // レベル
+            HStack(spacing: 2) {
+                Text("Lv.")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.secondary)
+                Text("\(score.level)")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundColor(.orange)
+            }
+
+            Spacer()
+
+            // 日付
+            Text(formatDate(score.playDate))
+                .font(.system(size: 10))
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.white.opacity(0.5))
+        )
+    }
+
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        let calendar = Calendar.current
+
+        if calendar.isDateInToday(date) {
+            formatter.dateFormat = "HH:mm"
+            return "今日 " + formatter.string(from: date)
+        } else {
+            formatter.dateFormat = "MM/dd"
+            return formatter.string(from: date)
+        }
     }
 }
 
