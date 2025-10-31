@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct GameView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var gameModel = GameModel()
     @State private var showSettings = false
     @State private var needsReset = false
@@ -59,6 +61,7 @@ struct GameView: View {
             .ignoresSafeArea()
         )
         .onAppear {
+            gameModel.modelContext = modelContext
             gameModel.startGame()
         }
         .sheet(isPresented: $showSettings, onDismiss: {
@@ -593,6 +596,28 @@ struct GameOverView: View {
     let level: Int
     let onRetry: () -> Void
 
+    @Query(sort: \HighScore.score, order: .reverse) private var allHighScores: [HighScore]
+
+    // 当日のハイスコアをフィルタリング
+    private var todayHighScores: [HighScore] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        return allHighScores.filter { highScore in
+            calendar.isDate(highScore.playDate, inSameDayAs: today)
+        }
+    }
+
+    // トータルTOP3
+    private var topScores: [HighScore] {
+        Array(allHighScores.prefix(3))
+    }
+
+    // 当日TOP3
+    private var todayTopScores: [HighScore] {
+        Array(todayHighScores.prefix(3))
+    }
+
     var body: some View {
         ZStack {
             // 半透明の背景
@@ -600,7 +625,7 @@ struct GameOverView: View {
                 .ignoresSafeArea()
 
             // ゲームオーバーカード
-            VStack(spacing: 30) {
+            VStack(spacing: 20) {
                 // ゲームオーバーテキスト
                 Text("ゲームオーバー")
                     .font(.system(size: 36, weight: .bold, design: .rounded))
@@ -612,10 +637,10 @@ struct GameOverView: View {
                     // レベル表示
                     HStack(spacing: 12) {
                         Text("レベル")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
                         Text("\(level)")
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
                             .foregroundColor(.orange)
                             .shadow(color: .orange.opacity(0.5), radius: 8, x: 0, y: 0)
                     }
@@ -624,23 +649,35 @@ struct GameOverView: View {
                         .background(Color.white.opacity(0.3))
 
                     // スコア表示
-                    VStack(spacing: 8) {
+                    VStack(spacing: 6) {
                         Text("スコア")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
 
                         Text("\(score)")
-                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .font(.system(size: 42, weight: .bold, design: .rounded))
                             .foregroundColor(.yellow)
                             .shadow(color: .yellow.opacity(0.5), radius: 8, x: 0, y: 0)
                     }
                 }
-                .padding(.vertical, 20)
+                .padding(.vertical, 16)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
                         .fill(Color.white.opacity(0.1))
                 )
+
+                // ハイスコア表示
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // トータルTOP3
+                        HighScoreSection(title: "トータルTOP3", scores: topScores)
+
+                        // 当日TOP3
+                        HighScoreSection(title: "本日のTOP3", scores: todayTopScores)
+                    }
+                }
+                .frame(maxHeight: 250)
 
                 // リトライボタン
                 Button(action: onRetry) {
@@ -684,6 +721,123 @@ struct GameOverView: View {
         }
         .transition(.opacity.combined(with: .scale))
         .animation(.spring(response: 0.5, dampingFraction: 0.7), value: true)
+    }
+}
+
+// ハイスコアセクション
+struct HighScoreSection: View {
+    let title: String
+    let scores: [HighScore]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+
+            if scores.isEmpty {
+                Text("記録なし")
+                    .font(.system(size: 14))
+                    .foregroundColor(.white.opacity(0.6))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 12)
+            } else {
+                VStack(spacing: 6) {
+                    ForEach(Array(scores.enumerated()), id: \.element.id) { index, score in
+                        HighScoreRow(rank: index + 1, score: score)
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.1))
+        )
+    }
+}
+
+// ハイスコア行
+struct HighScoreRow: View {
+    let rank: Int
+    let score: HighScore
+
+    var rankColor: Color {
+        switch rank {
+        case 1: return .yellow
+        case 2: return Color(red: 0.75, green: 0.75, blue: 0.75)  // Silver
+        case 3: return Color(red: 0.8, green: 0.5, blue: 0.2)     // Bronze
+        default: return .white
+        }
+    }
+
+    var rankIcon: String {
+        switch rank {
+        case 1: return "crown.fill"
+        case 2: return "medal.fill"
+        case 3: return "medal.fill"
+        default: return "\(rank)"
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // ランク
+            if rank <= 3 {
+                Image(systemName: rankIcon)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(rankColor)
+                    .frame(width: 24)
+            } else {
+                Text("\(rank)")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white.opacity(0.6))
+                    .frame(width: 24)
+            }
+
+            // スコア
+            Text("\(score.score)")
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundColor(.white)
+                .frame(minWidth: 60, alignment: .leading)
+
+            // レベル
+            HStack(spacing: 4) {
+                Text("Lv.")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.white.opacity(0.6))
+                Text("\(score.level)")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundColor(.orange.opacity(0.8))
+            }
+
+            Spacer()
+
+            // 日付
+            Text(formatDate(score.playDate))
+                .font(.system(size: 12))
+                .foregroundColor(.white.opacity(0.6))
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        let calendar = Calendar.current
+
+        if calendar.isDateInToday(date) {
+            formatter.dateFormat = "HH:mm"
+            return "今日 " + formatter.string(from: date)
+        } else {
+            formatter.dateFormat = "MM/dd"
+            return formatter.string(from: date)
+        }
     }
 }
 

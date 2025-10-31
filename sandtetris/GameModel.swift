@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 // セルの種類
 enum CellType: Equatable {
@@ -45,6 +46,9 @@ class GameModel {
     static var gridHeight: Int {
         return pieceGridHeight * particleSubdivision
     }
+
+    // SwiftDataのModelContext
+    var modelContext: ModelContext?
 
     // ゲーム状態
     var gameState: GameState = .ready
@@ -561,6 +565,7 @@ class GameModel {
         if fillRatio >= 0.5 {
             gameState = .gameOver
             stopTimer()
+            saveHighScore()
         }
     }
 
@@ -574,6 +579,27 @@ class GameModel {
         if let piece = currentPiece, !canPlacePiece(piece, at: currentPosition) {
             gameState = .gameOver
             stopTimer()
+            saveHighScore()
+        }
+    }
+
+    // ハイスコアを保存
+    func saveHighScore() {
+        guard let modelContext = modelContext else { return }
+
+        let highScore = HighScore(
+            score: score,
+            level: currentLevel,
+            playDate: Date(),
+            colorCount: GameSettings.shared.colorCount
+        )
+
+        modelContext.insert(highScore)
+
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save high score: \(error)")
         }
     }
 
