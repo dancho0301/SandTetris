@@ -7,9 +7,12 @@
 
 import SwiftUI
 import SwiftData
+import GoogleMobileAds
 
 @main
 struct sandtetrisApp: App {
+    @StateObject private var adMobManager = AdMobManager.shared
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -24,9 +27,15 @@ struct sandtetrisApp: App {
         }
     }()
 
+    init() {
+        // AdMob SDKを初期化
+        AdMobManager.shared.initializeAdMob()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(adMobManager)
         }
         .modelContainer(sharedModelContainer)
     }
