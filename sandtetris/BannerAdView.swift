@@ -18,15 +18,15 @@ struct BannerAdView: View {
     }
 }
 
-/// UIKitのGADBannerViewをSwiftUIで使用するためのラッパー
+/// UIKitのBannerViewをSwiftUIで使用するためのラッパー
 struct BannerViewRepresentable: UIViewRepresentable {
     @Binding var bannerHeight: CGFloat
 
     // バナー広告ユニットID（砂テトリス用）
     private let adUnitID = "ca-app-pub-3252418079692583/1427284854"
 
-    func makeUIView(context: Context) -> GADBannerView {
-        let banner = GADBannerView(adSize: GADAdSizeBanner)
+    func makeUIView(context: Context) -> BannerView {
+        let banner = BannerView(adSize: GADAdSizeBanner)
         banner.adUnitID = adUnitID
         banner.delegate = context.coordinator
 
@@ -42,7 +42,7 @@ struct BannerViewRepresentable: UIViewRepresentable {
         return banner
     }
 
-    func updateUIView(_ uiView: GADBannerView, context: Context) {
+    func updateUIView(_ uiView: BannerView, context: Context) {
         // 更新が必要な場合はここで処理
     }
 
@@ -50,14 +50,14 @@ struct BannerViewRepresentable: UIViewRepresentable {
         Coordinator(self)
     }
 
-    class Coordinator: NSObject, GADBannerViewDelegate {
+    class Coordinator: NSObject, BannerViewDelegate {
         var parent: BannerViewRepresentable
 
         init(_ parent: BannerViewRepresentable) {
             self.parent = parent
         }
 
-        func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
+        func bannerViewDidReceiveAd(_ bannerView: BannerView) {
             print("バナー広告の読み込み成功")
             // 広告のサイズに応じて高さを調整
             DispatchQueue.main.async {
@@ -65,7 +65,7 @@ struct BannerViewRepresentable: UIViewRepresentable {
             }
         }
 
-        func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
+        func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
             print("バナー広告の読み込み失敗: \(error.localizedDescription)")
         }
     }
