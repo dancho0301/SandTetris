@@ -20,7 +20,7 @@ class AdMobManager: ObservableObject {
 
     /// AdMob SDKを初期化する
     func initializeAdMob() {
-        MobileAds.sharedInstance.start { [weak self] status in
+        MobileAds.shared.start { [weak self] status in
             DispatchQueue.main.async {
                 self?.isInitialized = true
                 print("AdMob初期化完了: \(status.adapterStatusesByClassName)")
