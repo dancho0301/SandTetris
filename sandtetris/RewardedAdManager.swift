@@ -32,7 +32,7 @@ class RewardedAdManager: ObservableObject {
         isLoading = true
         let request = Request()
 
-        RewardedAd.load(withAdUnitID: adUnitID, request: request) { [weak self] ad, error in
+        RewardedAd.load(with: adUnitID, request: request) { [weak self] ad, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
 

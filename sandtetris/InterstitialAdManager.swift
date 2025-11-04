@@ -33,7 +33,7 @@ class InterstitialAdManager: ObservableObject {
         isLoading = true
         let request = Request()
 
-        InterstitialAd.load(withAdUnitID: adUnitID, request: request) { [weak self] ad, error in
+        InterstitialAd.load(with: adUnitID, request: request) { [weak self] ad, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
 
