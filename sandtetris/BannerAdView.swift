@@ -26,7 +26,7 @@ struct BannerViewRepresentable: UIViewRepresentable {
     private let adUnitID = "ca-app-pub-3252418079692583/1427284854"
 
     func makeUIView(context: Context) -> BannerView {
-        let banner = BannerView(adSize: GADAdSizeBanner)
+        let banner = BannerView(adSize: AdSizeBanner)
         banner.adUnitID = adUnitID
         banner.delegate = context.coordinator
 
@@ -37,7 +37,7 @@ struct BannerViewRepresentable: UIViewRepresentable {
         }
 
         // 広告をロード
-        banner.load(GADRequest())
+        banner.load(Request())
 
         return banner
     }
