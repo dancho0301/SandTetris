@@ -22,9 +22,8 @@ struct BannerAdView: View {
 struct BannerViewRepresentable: UIViewRepresentable {
     @Binding var bannerHeight: CGFloat
 
-    // テスト用のバナー広告ユニットID
-    // 本番環境では実際の広告ユニットIDに変更してください
-    private let adUnitID = "ca-app-pub-3940256099942544/2934735716"
+    // バナー広告ユニットID（砂テトリス用）
+    private let adUnitID = "ca-app-pub-3252418079692583/1427284854"
 
     func makeUIView(context: Context) -> GADBannerView {
         let banner = GADBannerView(adSize: GADAdSizeBanner)
