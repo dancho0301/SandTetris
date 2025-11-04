@@ -12,7 +12,7 @@ import UIKit
 
 /// インタースティシャル広告を管理するクラス
 class InterstitialAdManager: ObservableObject {
-    @Published var interstitialAd: GADInterstitialAd?
+    @Published var interstitialAd: InterstitialAd?
     @Published var isLoading = false
 
     // インタースティシャル広告ユニットID（砂テトリス用）
@@ -31,9 +31,9 @@ class InterstitialAdManager: ObservableObject {
         guard !isLoading else { return }
 
         isLoading = true
-        let request = GADRequest()
+        let request = Request()
 
-        GADInterstitialAd.load(withAdUnitID: adUnitID, request: request) { [weak self] ad, error in
+        InterstitialAd.load(withAdUnitID: adUnitID, request: request) { [weak self] ad, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
 
@@ -85,21 +85,21 @@ class InterstitialAdManager: ObservableObject {
     }
 }
 
-// MARK: - GADFullScreenContentDelegate
+// MARK: - FullScreenContentDelegate
 
-extension InterstitialAdManager: GADFullScreenContentDelegate {
-    func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+extension InterstitialAdManager: FullScreenContentDelegate {
+    func adDidDismissFullScreenContent(_ ad: any FullScreenPresentingAd) {
         print("インタースティシャル広告が閉じられました")
         // 広告が閉じられたら次の広告をプリロード
         loadAd()
     }
 
-    func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+    func ad(_ ad: any FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         print("インタースティシャル広告の表示に失敗: \(error.localizedDescription)")
         loadAd()
     }
 
-    func adWillPresentFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adWillPresentFullScreenContent(_ ad: any FullScreenPresentingAd) {
         print("インタースティシャル広告を表示します")
     }
 }
