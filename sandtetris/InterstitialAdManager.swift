@@ -14,9 +14,8 @@ class InterstitialAdManager: NSObject, ObservableObject {
     @Published var interstitialAd: GADInterstitialAd?
     @Published var isLoading = false
 
-    // テスト用のインタースティシャル広告ユニットID
-    // 本番環境では実際の広告ユニットIDに変更してください
-    private let adUnitID = "ca-app-pub-3940256099942544/4411468910"
+    // インタースティシャル広告ユニットID（砂テトリス用）
+    private let adUnitID = "ca-app-pub-3252418079692583/1044141474"
 
     // 広告表示の頻度制御
     private var lastAdShowTime: Date?
