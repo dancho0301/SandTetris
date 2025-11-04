@@ -9,13 +9,12 @@ import Foundation
 import GoogleMobileAds
 
 /// Google AdMobを管理するシングルトンクラス
-class AdMobManager: NSObject, ObservableObject {
+class AdMobManager: ObservableObject {
     static let shared = AdMobManager()
 
     @Published var isInitialized = false
 
-    private override init() {
-        super.init()
+    private init() {
     }
 
     /// AdMob SDKを初期化する

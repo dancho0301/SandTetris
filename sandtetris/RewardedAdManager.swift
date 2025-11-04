@@ -10,7 +10,7 @@ import GoogleMobileAds
 import UIKit
 
 /// リワード広告を管理するクラス
-class RewardedAdManager: NSObject, ObservableObject {
+class RewardedAdManager: ObservableObject {
     @Published var rewardedAd: GADRewardedAd?
     @Published var isLoading = false
     @Published var rewardEarned = false
@@ -20,8 +20,7 @@ class RewardedAdManager: NSObject, ObservableObject {
 
     var onRewardEarned: (() -> Void)?
 
-    override init() {
-        super.init()
+    init() {
         loadAd()
     }
 

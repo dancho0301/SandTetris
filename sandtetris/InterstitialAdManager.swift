@@ -10,7 +10,7 @@ import GoogleMobileAds
 import UIKit
 
 /// インタースティシャル広告を管理するクラス
-class InterstitialAdManager: NSObject, ObservableObject {
+class InterstitialAdManager: ObservableObject {
     @Published var interstitialAd: GADInterstitialAd?
     @Published var isLoading = false
 
@@ -21,8 +21,7 @@ class InterstitialAdManager: NSObject, ObservableObject {
     private var lastAdShowTime: Date?
     private let minimumTimeBetweenAds: TimeInterval = 60 // 60秒以上の間隔を空ける
 
-    override init() {
-        super.init()
+    init() {
         loadAd()
     }
 
