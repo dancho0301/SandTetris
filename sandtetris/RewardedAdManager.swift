@@ -12,7 +12,7 @@ import UIKit
 
 /// リワード広告を管理するクラス
 class RewardedAdManager: ObservableObject {
-    @Published var rewardedAd: GADRewardedAd?
+    @Published var rewardedAd: RewardedAd?
     @Published var isLoading = false
     @Published var rewardEarned = false
 
@@ -30,9 +30,9 @@ class RewardedAdManager: ObservableObject {
         guard !isLoading else { return }
 
         isLoading = true
-        let request = GADRequest()
+        let request = Request()
 
-        GADRewardedAd.load(withAdUnitID: adUnitID, request: request) { [weak self] ad, error in
+        RewardedAd.load(withAdUnitID: adUnitID, request: request) { [weak self] ad, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
 
@@ -82,22 +82,22 @@ class RewardedAdManager: ObservableObject {
     }
 }
 
-// MARK: - GADFullScreenContentDelegate
+// MARK: - FullScreenContentDelegate
 
-extension RewardedAdManager: GADFullScreenContentDelegate {
-    func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+extension RewardedAdManager: FullScreenContentDelegate {
+    func adDidDismissFullScreenContent(_ ad: any FullScreenPresentingAd) {
         print("リワード広告が閉じられました")
         // 広告が閉じられたら次の広告をプリロード
         rewardEarned = false
         loadAd()
     }
 
-    func ad(_ ad: GADFullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+    func ad(_ ad: any FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         print("リワード広告の表示に失敗: \(error.localizedDescription)")
         loadAd()
     }
 
-    func adWillPresentFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+    func adWillPresentFullScreenContent(_ ad: any FullScreenPresentingAd) {
         print("リワード広告を表示します")
     }
 }
