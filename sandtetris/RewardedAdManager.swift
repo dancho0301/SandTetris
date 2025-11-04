@@ -65,7 +65,7 @@ class RewardedAdManager: NSObject, ObservableObject {
 
         self.onRewardEarned = onReward
 
-        rewardedAd.present(fromRootViewController: rootViewController) { [weak self] in
+        rewardedAd.present(from: rootViewController) { [weak self] in
             let reward = rewardedAd.adReward
             print("リワード獲得: \(reward.amount) \(reward.type)")
             self?.rewardEarned = true
