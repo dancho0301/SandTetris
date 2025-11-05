@@ -81,47 +81,119 @@ echo "========================================="
 echo "🔧 Xcode Cloud用のスクリプト修正..."
 echo "========================================="
 
-# CocoaPodsのリソーススクリプトでrealpath -mを修正
+# CocoaPodsのリソーススクリプトを完全に書き換える
 # Xcode Cloudのrealpathは-mオプションをサポートしていない
 RESOURCES_SCRIPT="Pods/Target Support Files/Pods-sandtetris/Pods-sandtetris-resources.sh"
-RESOURCES_TXT="Pods/resources-to-copy-sandtetris.txt"
 
 # Podsディレクトリ全体のパーミッションを修正
 echo "Setting permissions for Pods directory..."
 chmod -R u+w Pods/ 2>/dev/null || true
-chmod 644 "$RESOURCES_TXT" 2>/dev/null || true
 
-# resources-to-copy-sandtetris.txt の存在を確認して作成
-if [ ! -f "$RESOURCES_TXT" ]; then
-    echo "Creating $RESOURCES_TXT"
-    touch "$RESOURCES_TXT"
-    chmod 644 "$RESOURCES_TXT"
-fi
-
-# リソーススクリプトの修正
+# リソーススクリプトの完全書き換え
 if [ -f "$RESOURCES_SCRIPT" ]; then
-    echo "Fixing realpath in $RESOURCES_SCRIPT"
+    echo "Completely rewriting $RESOURCES_SCRIPT for Xcode Cloud compatibility"
 
     # バックアップを作成
     cp "$RESOURCES_SCRIPT" "${RESOURCES_SCRIPT}.backup"
 
-    # realpath関連の行を修正（より確実な方法）
-    # macOSのsedはGNU sedと異なるので、一時ファイルを使用
-    sed 's/realpath -m/realpath/g' "$RESOURCES_SCRIPT" > "${RESOURCES_SCRIPT}.tmp"
-    mv "${RESOURCES_SCRIPT}.tmp" "$RESOURCES_SCRIPT"
+    # 完全に新しいスクリプトを書き込む
+    cat > "$RESOURCES_SCRIPT" << 'SCRIPT_EOF'
+#!/bin/sh
+set -e
+set -u
+set -o pipefail
+
+# Xcode Cloud対応版のリソースコピースクリプト
+# realpath -m を使用せず、標準的なbashコマンドのみを使用
+
+if [ -z ${UNLOCALIZED_RESOURCES_FOLDER_PATH+x} ]; then
+  echo "UNLOCALIZED_RESOURCES_FOLDER_PATH is not set, exiting"
+  exit 0
+fi
+
+RSYNC_PROTECT_TMP_FILES=(--filter "P .*.??????")
+
+# リソースファイルのリストを処理
+if [ -n "${SCRIPT_INPUT_FILE_COUNT:-}" ]; then
+  for i in $(seq 0 $(($SCRIPT_INPUT_FILE_COUNT - 1))); do
+    VAR_NAME="SCRIPT_INPUT_FILE_$i"
+    eval RESOURCE_PATH=\$$VAR_NAME
+
+    if [ -z "$RESOURCE_PATH" ]; then
+      continue
+    fi
+
+    echo "Processing resource: $RESOURCE_PATH"
+
+    case "$RESOURCE_PATH" in
+      *.storyboard)
+        echo "Compiling storyboard: $RESOURCE_PATH"
+        BASENAME=$(basename "$RESOURCE_PATH" .storyboard)
+        ibtool --reference-external-strings-file --errors --warnings --notices \
+          --minimum-deployment-target ${IPHONEOS_DEPLOYMENT_TARGET:-17.0} \
+          --output-format human-readable-text \
+          --compile "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${BASENAME}.storyboardc" \
+          "$RESOURCE_PATH" \
+          --sdk "${SDKROOT}" ${TARGET_DEVICE_ARGS:-}
+        ;;
+      *.xib)
+        echo "Compiling XIB: $RESOURCE_PATH"
+        BASENAME=$(basename "$RESOURCE_PATH" .xib)
+        ibtool --reference-external-strings-file --errors --warnings --notices \
+          --minimum-deployment-target ${IPHONEOS_DEPLOYMENT_TARGET:-17.0} \
+          --output-format human-readable-text \
+          --compile "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${BASENAME}.nib" \
+          "$RESOURCE_PATH" \
+          --sdk "${SDKROOT}" ${TARGET_DEVICE_ARGS:-}
+        ;;
+      *.framework)
+        echo "Copying framework: $RESOURCE_PATH"
+        if [ -n "${FRAMEWORKS_FOLDER_PATH:-}" ]; then
+          rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+        fi
+        ;;
+      *.xcdatamodel)
+        echo "Compiling Core Data model: $RESOURCE_PATH"
+        BASENAME=$(basename "$RESOURCE_PATH" .xcdatamodel)
+        xcrun momc "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${BASENAME}.mom"
+        ;;
+      *.xcdatamodeld)
+        echo "Compiling Core Data model: $RESOURCE_PATH"
+        BASENAME=$(basename "$RESOURCE_PATH" .xcdatamodeld)
+        xcrun momc "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${BASENAME}.momd"
+        ;;
+      *.xcmappingmodel)
+        echo "Compiling mapping model: $RESOURCE_PATH"
+        BASENAME=$(basename "$RESOURCE_PATH" .xcmappingmodel)
+        xcrun mapc "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${BASENAME}.cdm"
+        ;;
+      *.xcassets)
+        echo "Asset catalog will be compiled by Xcode: $RESOURCE_PATH"
+        # xcassetsはXcodeが自動的にコンパイルするため、ここでは何もしない
+        ;;
+      *.bundle)
+        echo "Copying bundle: $RESOURCE_PATH"
+        rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+        ;;
+      *)
+        echo "Copying resource: $RESOURCE_PATH"
+        rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+        ;;
+    esac
+  done
+fi
+
+echo "✅ Resource copying completed successfully"
+SCRIPT_EOF
 
     # 実行権限を付与
     chmod +x "$RESOURCES_SCRIPT"
 
-    echo "✅ Resources script fixed"
+    echo "✅ Resources script completely rewritten"
 
-    # 修正結果を確認
-    echo "Modified lines:"
-    grep -n "realpath" "$RESOURCES_SCRIPT" | head -5 || echo "No realpath found"
-
-    # スクリプトの最初の30行を表示（デバッグ用）
-    echo "Script content (first 30 lines):"
-    head -30 "$RESOURCES_SCRIPT"
+    # 新しいスクリプトの内容を確認
+    echo "New script content (first 40 lines):"
+    head -40 "$RESOURCES_SCRIPT"
 else
     echo "⚠️ Resources script not found at $RESOURCES_SCRIPT"
     # Podsディレクトリの構造を確認
