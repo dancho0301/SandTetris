@@ -78,6 +78,42 @@ if [ ! -d "sandtetris.xcworkspace" ]; then
 fi
 
 echo "========================================="
+echo "🔧 Xcode Cloud用のスクリプト修正..."
+echo "========================================="
+
+# CocoaPodsのリソーススクリプトでrealpath -mを修正
+# Xcode Cloudのrealpathは-mオプションをサポートしていない
+RESOURCES_SCRIPT="Pods/Target Support Files/Pods-sandtetris/Pods-sandtetris-resources.sh"
+RESOURCES_TXT="Pods/resources-to-copy-sandtetris.txt"
+
+# resources-to-copy-sandtetris.txt のパーミッション修正
+if [ -f "$RESOURCES_TXT" ]; then
+    echo "Setting permissions for $RESOURCES_TXT"
+    chmod 644 "$RESOURCES_TXT"
+    ls -l "$RESOURCES_TXT"
+fi
+
+# リソーススクリプトの修正
+if [ -f "$RESOURCES_SCRIPT" ]; then
+    echo "Fixing realpath in $RESOURCES_SCRIPT"
+    # ファイルのパーミッションを確認
+    ls -l "$RESOURCES_SCRIPT"
+    # realpath -m を realpath に置換
+    sed -i '' 's/realpath -m/realpath/g' "$RESOURCES_SCRIPT"
+    # 実行権限を付与
+    chmod +x "$RESOURCES_SCRIPT"
+    echo "✅ Resources script fixed"
+    # 修正結果を確認
+    echo "Modified lines:"
+    grep "realpath" "$RESOURCES_SCRIPT" | head -5
+else
+    echo "⚠️ Resources script not found at $RESOURCES_SCRIPT"
+    # Podsディレクトリの構造を確認
+    echo "Pods directory structure:"
+    ls -la "Pods/Target Support Files/" 2>/dev/null || echo "Directory not found"
+fi
+
+echo "========================================="
 echo "✅ CocoaPodsのセットアップが完了しました"
 echo "========================================="
 
