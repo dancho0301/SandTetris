@@ -35,8 +35,12 @@ struct GameView: View {
                 .padding(.top, 8)
 
                 // ゲームエリア（砂とテトリスピースが表示される）
-                GameAreaView(gameModel: gameModel)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                GameAreaView(
+                    gameModel: gameModel,
+                    interstitialAdManager: interstitialAdManager,
+                    rewardedAdManager: rewardedAdManager
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(
                         LinearGradient(
                             gradient: Gradient(colors: [
@@ -174,6 +178,8 @@ struct NextPiecePreview: View {
 // ゲームエリアビュー
 struct GameAreaView: View {
     let gameModel: GameModel
+    @ObservedObject var interstitialAdManager: InterstitialAdManager
+    @ObservedObject var rewardedAdManager: RewardedAdManager
     @State private var settings = GameSettings.shared
     @State private var dragStartLocation: CGPoint?
     @State private var lastDragY: CGFloat = 0
