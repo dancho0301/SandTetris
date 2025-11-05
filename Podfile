@@ -25,6 +25,18 @@ post_install do |installer|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '17.0'
       config.build_settings['CODE_SIGN_IDENTITY'] = ''
+
+      # Xcode Cloudのrealpath問題を回避
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+    end
+  end
+
+  # CocoaPodsリソーススクリプトの問題を修正
+  installer.pods_project.targets.each do |target|
+    target.build_phases.each do |build_phase|
+      if build_phase.display_name == '[CP] Copy Pods Resources'
+        build_phase.shell_script.gsub!(/realpath -m/, 'realpath')
+      end
     end
   end
 end
