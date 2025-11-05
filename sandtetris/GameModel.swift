@@ -603,6 +603,24 @@ class GameModel {
         }
     }
 
+    // コンティニュー機能（リワード広告視聴後）
+    func continueGame() {
+        // 画面上部の砂を削除してゲームを継続可能にする
+        let clearRows = GameModel.gridHeight / 4 // 上部25%の行をクリア
+
+        for y in 0..<clearRows {
+            for x in 0..<GameModel.gridWidth {
+                if y < grid.count && x < grid[y].count {
+                    grid[y][x] = .empty
+                }
+            }
+        }
+
+        // ゲーム状態を再開
+        gameState = .playing
+        startGame()
+    }
+
     deinit {
         stopTimer()
     }

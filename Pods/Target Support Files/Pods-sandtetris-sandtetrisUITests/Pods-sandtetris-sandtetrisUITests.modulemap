@@ -1,0 +1,6 @@
+framework module Pods_sandtetris_sandtetrisUITests {
+  umbrella header "Pods-sandtetris-sandtetrisUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

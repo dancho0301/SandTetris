@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import GoogleMobileAds
 
 struct GameView: View {
     @Environment(\.modelContext) private var modelContext
@@ -14,6 +15,8 @@ struct GameView: View {
     @State private var showSettings = false
     @State private var needsReset = false
     @State private var settings = GameSettings.shared
+    @StateObject private var interstitialAdManager = InterstitialAdManager()
+    @StateObject private var rewardedAdManager = RewardedAdManager()
 
     var body: some View {
         GeometryReader { geometry in
@@ -32,8 +35,12 @@ struct GameView: View {
                 .padding(.top, 8)
 
                 // ゲームエリア（砂とテトリスピースが表示される）
-                GameAreaView(gameModel: gameModel)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                GameAreaView(
+                    gameModel: gameModel,
+                    interstitialAdManager: interstitialAdManager,
+                    rewardedAdManager: rewardedAdManager
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(
                         LinearGradient(
                             gradient: Gradient(colors: [
@@ -49,7 +56,11 @@ struct GameView: View {
 
                 // 操作ガイド
                 ControlGuideView(touchControlMode: settings.touchControlMode)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 8)
+
+                // バナー広告
+                BannerAdView()
+                    .padding(.bottom, 8)
             }
         }
         .background(
@@ -167,6 +178,8 @@ struct NextPiecePreview: View {
 // ゲームエリアビュー
 struct GameAreaView: View {
     let gameModel: GameModel
+    @ObservedObject var interstitialAdManager: InterstitialAdManager
+    @ObservedObject var rewardedAdManager: RewardedAdManager
     @State private var settings = GameSettings.shared
     @State private var dragStartLocation: CGPoint?
     @State private var lastDragY: CGFloat = 0
@@ -290,6 +303,15 @@ struct GameAreaView: View {
                     onRetry: {
                         gameModel.setupNewGame()
                         gameModel.startGame()
+                        // ゲームオーバー後にインタースティシャル広告を表示
+                        interstitialAdManager.showAd()
+                    },
+                    onContinue: {
+                        // リワード広告を表示してコンティニュー
+                        rewardedAdManager.showAd {
+                            // 報酬獲得時にゲームを継続
+                            gameModel.continueGame()
+                        }
                     }
                 )
             }
@@ -595,8 +617,16 @@ struct GameOverView: View {
     let score: Int
     let level: Int
     let onRetry: () -> Void
+    let onContinue: (() -> Void)?
 
     @Query(sort: \HighScore.score, order: .reverse) private var allHighScores: [HighScore]
+
+    init(score: Int, level: Int, onRetry: @escaping () -> Void, onContinue: (() -> Void)? = nil) {
+        self.score = score
+        self.level = level
+        self.onRetry = onRetry
+        self.onContinue = onContinue
+    }
 
     // 当日のハイスコアをフィルタリング
     private var todayHighScores: [HighScore] {
@@ -678,6 +708,35 @@ struct GameOverView: View {
                     }
                 }
                 .frame(maxHeight: 250)
+
+                // コンティニューボタン（リワード広告）
+                if let onContinue = onContinue {
+                    Button(action: onContinue) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "play.tv.fill")
+                                .font(.system(size: 20, weight: .semibold))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("動画広告を見て")
+                                    .font(.system(size: 12, weight: .medium))
+                                Text("コンティニュー")
+                                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                            }
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.green, Color.teal]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(16)
+                        .shadow(color: .green.opacity(0.5), radius: 10, x: 0, y: 5)
+                    }
+                    .buttonStyle(.plain)
+                }
 
                 // リトライボタン
                 Button(action: onRetry) {
