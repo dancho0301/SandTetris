@@ -6,7 +6,14 @@
 
 ### ci_post_clone.sh
 リポジトリのクローン後に自動実行されるスクリプトです。
-CocoaPods の依存関係をインストールします。
+- Xcode Command Line Toolsのパスを設定
+- CocoaPods の依存関係をインストール
+- Xcodeバージョンを表示
+
+### ci_pre_xcodebuild.sh
+xcodebuildコマンド実行前に自動実行されるスクリプトです。
+- DerivedDataをクリーン（Metalツールチェーンのキャッシュ問題を回避）
+- ビルド環境変数を表示
 
 ## Xcode Cloud の設定手順
 
