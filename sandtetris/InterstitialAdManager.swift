@@ -23,9 +23,8 @@ class InterstitialAdManager: NSObject, ObservableObject {
         return adUnitID
     }
 
-    // 広告表示の頻度制御
-    private var lastAdShowTime: Date?
-    private let minimumTimeBetweenAds: TimeInterval = 60 // 60秒以上の間隔を空ける
+    // 広告表示の頻度制御（2回に1回表示）
+    private var showAdCallCount: Int = 0
 
     override init() {
         super.init()
@@ -55,16 +54,18 @@ class InterstitialAdManager: NSObject, ObservableObject {
         }
     }
 
-    /// 広告を表示する（頻度制限付き）
+    /// 広告を表示する（2回に1回表示）
     func showAd() {
-        // 頻度制御チェック
-        if let lastShowTime = lastAdShowTime {
-            let timeSinceLastAd = Date().timeIntervalSince(lastShowTime)
-            if timeSinceLastAd < minimumTimeBetweenAds {
-                print("広告表示が早すぎます。\(minimumTimeBetweenAds - timeSinceLastAd)秒後に再試行してください。")
-                return
-            }
+        // 呼び出し回数をインクリメント
+        showAdCallCount += 1
+
+        // 2回に1回のみ広告を表示（奇数回目はスキップ）
+        if showAdCallCount % 2 != 0 {
+            print("広告表示スキップ（\(showAdCallCount)回目の呼び出し）")
+            return
         }
+
+        print("広告を表示します（\(showAdCallCount)回目の呼び出し）")
 
         guard let interstitialAd = interstitialAd else {
             print("インタースティシャル広告がまだ読み込まれていません")
@@ -78,7 +79,6 @@ class InterstitialAdManager: NSObject, ObservableObject {
         }
 
         interstitialAd.present(from: rootViewController)
-        lastAdShowTime = Date()
     }
 
     /// ルートビューコントローラーを取得
