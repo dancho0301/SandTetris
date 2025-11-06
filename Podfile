@@ -28,6 +28,17 @@ post_install do |installer|
 
       # Xcode Cloudのrealpath問題を回避
       config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+
+      # Metal Toolchainの不正なパスを削除
+      # Xcode Cloudで存在しないパスが参照されるとビルドが失敗する
+      ['LIBRARY_SEARCH_PATHS', 'FRAMEWORK_SEARCH_PATHS'].each do |key|
+        if config.build_settings[key]
+          paths = config.build_settings[key].is_a?(Array) ? config.build_settings[key] : [config.build_settings[key]]
+          # Metal Toolchainのパスを除外
+          filtered_paths = paths.reject { |path| path.to_s.include?('MetalToolchain') }
+          config.build_settings[key] = filtered_paths unless filtered_paths.empty?
+        end
+      end
     end
   end
 
