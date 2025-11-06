@@ -16,8 +16,8 @@ class RewardedAdManager: NSObject, ObservableObject {
     @Published var isLoading = false
     @Published var rewardEarned = false
 
-    // リワード広告ユニットID（砂テトリス用）
-    private let adUnitID = "ca-app-pub-3252418079692583/5324676577"
+    // リワード広告ユニットID（テスト用 - App Store審査完了まで使用）
+    private let adUnitID = "ca-app-pub-3940256099942544/1712485313"
 
     var onRewardEarned: (() -> Void)?
 
