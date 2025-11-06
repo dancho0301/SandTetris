@@ -155,26 +155,29 @@ if [ -f "$RESOURCES_SCRIPT" ]; then
     cat > "$RESOURCES_SCRIPT" << 'SCRIPT_EOF'
 #!/bin/sh
 set -e
-set -u
 set -o pipefail
 
 # Xcode Cloud対応版のリソースコピースクリプト
 # realpath -m を使用せず、標準的なbashコマンドのみを使用
 
-if [ -z ${UNLOCALIZED_RESOURCES_FOLDER_PATH+x} ]; then
+if [ -z "${UNLOCALIZED_RESOURCES_FOLDER_PATH}" ]; then
   echo "UNLOCALIZED_RESOURCES_FOLDER_PATH is not set, exiting"
   exit 0
 fi
 
 RSYNC_PROTECT_TMP_FILES=(--filter "P .*.??????")
 
-# リソースファイルのリストを処理
-if [ -n "${SCRIPT_INPUT_FILE_COUNT:-}" ]; then
-  for i in $(seq 0 $(($SCRIPT_INPUT_FILE_COUNT - 1))); do
-    VAR_NAME="SCRIPT_INPUT_FILE_$i"
-    eval RESOURCE_PATH=\$$VAR_NAME
+# Xcodeが生成した入力ファイルリストを読み取る
+# SCRIPT_INPUT_FILE_0 は通常 input-files.xcfilelist を指す
+INPUT_FILE_LIST="${SCRIPT_INPUT_FILE_0:-}"
 
-    if [ -z "$RESOURCE_PATH" ]; then
+if [ -n "$INPUT_FILE_LIST" ] && [ -f "$INPUT_FILE_LIST" ]; then
+  echo "Reading resources from: $INPUT_FILE_LIST"
+
+  # xcfilelistファイルから各リソースを読み取って処理
+  while IFS= read -r RESOURCE_PATH; do
+    # 空行やコメントをスキップ
+    if [ -z "$RESOURCE_PATH" ] || [[ "$RESOURCE_PATH" == \#* ]]; then
       continue
     fi
 
@@ -231,8 +234,32 @@ if [ -n "${SCRIPT_INPUT_FILE_COUNT:-}" ]; then
         rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
         ;;
       *)
-        echo "Copying resource: $RESOURCE_PATH"
-        rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+        if [ -e "$RESOURCE_PATH" ]; then
+          echo "Copying resource: $RESOURCE_PATH"
+          rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+        fi
+        ;;
+    esac
+  done < "$INPUT_FILE_LIST"
+else
+  echo "⚠️ No input file list found, attempting to use SCRIPT_INPUT_FILE_* variables"
+
+  # フォールバック: 個別のSCRIPT_INPUT_FILE_*変数を試す
+  for i in {3..20}; do
+    VAR_NAME="SCRIPT_INPUT_FILE_$i"
+    RESOURCE_PATH=$(eval echo \${$VAR_NAME:-})
+
+    if [ -z "$RESOURCE_PATH" ]; then
+      continue
+    fi
+
+    # .bundleファイルのみをコピー（GoogleMobileAdsResources.bundle等）
+    case "$RESOURCE_PATH" in
+      *.bundle)
+        if [ -e "$RESOURCE_PATH" ]; then
+          echo "Copying bundle: $RESOURCE_PATH"
+          rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" "$RESOURCE_PATH" "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+        fi
         ;;
     esac
   done
