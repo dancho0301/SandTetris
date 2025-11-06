@@ -16,8 +16,13 @@ class RewardedAdManager: NSObject, ObservableObject {
     @Published var isLoading = false
     @Published var rewardEarned = false
 
-    // リワード広告ユニットID（テスト用 - App Store審査完了まで使用）
-    private let adUnitID = "ca-app-pub-3940256099942544/1712485313"
+    // リワード広告ユニットIDをInfo.plistから取得
+    private var adUnitID: String {
+        guard let adUnitID = Bundle.main.object(forInfoDictionaryKey: "AdMobRewardedAdUnitID") as? String else {
+            fatalError("AdMobRewardedAdUnitID not found in Info.plist")
+        }
+        return adUnitID
+    }
 
     var onRewardEarned: (() -> Void)?
 

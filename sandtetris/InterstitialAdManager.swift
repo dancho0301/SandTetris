@@ -15,8 +15,13 @@ class InterstitialAdManager: NSObject, ObservableObject {
     @Published var interstitialAd: InterstitialAd?
     @Published var isLoading = false
 
-    // インタースティシャル広告ユニットID（テスト用 - App Store審査完了まで使用）
-    private let adUnitID = "ca-app-pub-3940256099942544/4411468910"
+    // インタースティシャル広告ユニットIDをInfo.plistから取得
+    private var adUnitID: String {
+        guard let adUnitID = Bundle.main.object(forInfoDictionaryKey: "AdMobInterstitialAdUnitID") as? String else {
+            fatalError("AdMobInterstitialAdUnitID not found in Info.plist")
+        }
+        return adUnitID
+    }
 
     // 広告表示の頻度制御
     private var lastAdShowTime: Date?
