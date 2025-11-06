@@ -22,8 +22,13 @@ struct BannerAdView: View {
 struct BannerViewRepresentable: UIViewRepresentable {
     @Binding var bannerHeight: CGFloat
 
-    // バナー広告ユニットID（テスト用 - App Store審査完了まで使用）
-    private let adUnitID = "ca-app-pub-3940256099942544/2934735716"
+    // バナー広告ユニットIDをInfo.plistから取得
+    private var adUnitID: String {
+        guard let adUnitID = Bundle.main.object(forInfoDictionaryKey: "AdMobBannerAdUnitID") as? String else {
+            fatalError("AdMobBannerAdUnitID not found in Info.plist")
+        }
+        return adUnitID
+    }
 
     func makeUIView(context: Context) -> BannerView {
         let banner = BannerView(adSize: AdSizeBanner)
