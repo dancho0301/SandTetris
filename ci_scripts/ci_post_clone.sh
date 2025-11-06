@@ -65,6 +65,15 @@ fi
 
 echo "✅ Podfile found!"
 
+# pod installの前にメインプロジェクトからMetal Toolchainのパスを削除
+echo "Pre-cleaning: Removing Metal Toolchain paths from main project..."
+if [ -f "sandtetris.xcodeproj/project.pbxproj" ]; then
+    # MetalToolchainを含む行を削除（macOS sedの構文）
+    sed -i '' '/MetalToolchain/d' "sandtetris.xcodeproj/project.pbxproj" 2>/dev/null || \
+    sed -i.backup '/MetalToolchain/d' "sandtetris.xcodeproj/project.pbxproj"
+    echo "✅ Pre-cleaned main project file"
+fi
+
 # CocoaPodsのキャッシュをクリア
 pod cache clean --all
 
@@ -82,21 +91,50 @@ echo "🔧 Xcode Cloud用のスクリプト修正..."
 echo "========================================="
 
 # Metal Toolchainの不正なパスを削除
-echo "Removing Metal Toolchain paths from project files..."
+echo "Post-cleaning: Removing Metal Toolchain paths from all project files..."
 
-# メインプロジェクトからMetal Toolchainのパスを削除
+# メインプロジェクトからMetal Toolchainのパスを削除（再度実行）
 if [ -f "sandtetris.xcodeproj/project.pbxproj" ]; then
-    echo "Cleaning sandtetris.xcodeproj..."
-    sed -i.backup '/MetalToolchain/d' "sandtetris.xcodeproj/project.pbxproj"
-    echo "✅ Cleaned main project file"
+    echo "Post-cleaning sandtetris.xcodeproj..."
+    # MetalToolchainを含む行の数を確認
+    METAL_COUNT=$(grep -c "MetalToolchain" "sandtetris.xcodeproj/project.pbxproj" 2>/dev/null || echo "0")
+    echo "Found $METAL_COUNT lines containing MetalToolchain in main project"
+
+    if [ "$METAL_COUNT" != "0" ]; then
+        sed -i '' '/MetalToolchain/d' "sandtetris.xcodeproj/project.pbxproj" 2>/dev/null || \
+        sed -i.backup '/MetalToolchain/d' "sandtetris.xcodeproj/project.pbxproj"
+        echo "✅ Removed MetalToolchain references from main project"
+    else
+        echo "✅ No MetalToolchain references in main project"
+    fi
 fi
 
 # Podsプロジェクトが存在する場合も修正
 if [ -f "Pods/Pods.xcodeproj/project.pbxproj" ]; then
-    echo "Cleaning Pods.xcodeproj..."
-    sed -i.backup '/MetalToolchain/d' "Pods/Pods.xcodeproj/project.pbxproj"
-    echo "✅ Cleaned Pods project file"
+    echo "Post-cleaning Pods.xcodeproj..."
+    # MetalToolchainを含む行の数を確認
+    METAL_COUNT=$(grep -c "MetalToolchain" "Pods/Pods.xcodeproj/project.pbxproj" 2>/dev/null || echo "0")
+    echo "Found $METAL_COUNT lines containing MetalToolchain in Pods project"
+
+    if [ "$METAL_COUNT" != "0" ]; then
+        sed -i '' '/MetalToolchain/d' "Pods/Pods.xcodeproj/project.pbxproj" 2>/dev/null || \
+        sed -i.backup '/MetalToolchain/d' "Pods/Pods.xcodeproj/project.pbxproj"
+        echo "✅ Removed MetalToolchain references from Pods project"
+    else
+        echo "✅ No MetalToolchain references in Pods project"
+    fi
 fi
+
+# 全ての.xcconfig ファイルもチェック
+echo "Checking .xcconfig files for MetalToolchain..."
+find Pods -name "*.xcconfig" -type f 2>/dev/null | while read xcconfig_file; do
+    if grep -q "MetalToolchain" "$xcconfig_file" 2>/dev/null; then
+        echo "Found MetalToolchain in $xcconfig_file, removing..."
+        sed -i '' '/MetalToolchain/d' "$xcconfig_file" 2>/dev/null || \
+        sed -i.backup '/MetalToolchain/d' "$xcconfig_file"
+        echo "✅ Cleaned $xcconfig_file"
+    fi
+done
 
 # CocoaPodsのリソーススクリプトを完全に書き換える
 # Xcode Cloudのrealpathは-mオプションをサポートしていない
