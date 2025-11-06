@@ -258,6 +258,98 @@ struct GameAreaView: View {
                             }
                         }
                     }
+
+                    // ゲームオーバーラインを描画
+                    let pieceCellHeight = cellHeight * CGFloat(GameModel.particleSubdivision)
+                    let gameOverLineY = CGFloat(GameModel.gameOverLineRow) * pieceCellHeight
+
+                    // 点線のパターンを作成
+                    let dashPattern: [CGFloat] = [10, 5] // 10ピクセルの線、5ピクセルの空白
+
+                    var path = Path()
+                    path.move(to: CGPoint(x: 0, y: gameOverLineY))
+                    path.addLine(to: CGPoint(x: size.width, y: gameOverLineY))
+
+                    context.stroke(
+                        path,
+                        with: .color(.red.opacity(0.6)),
+                        style: StrokeStyle(
+                            lineWidth: 3,
+                            lineCap: .round,
+                            dash: dashPattern
+                        )
+                    )
+
+                    // ラインの上に警告アイコンを描画（左右に配置）
+                    let warningSize: CGFloat = 20
+                    let warningY = gameOverLineY - warningSize / 2
+
+                    // 左側の警告マーク
+                    let leftWarningRect = CGRect(
+                        x: 10,
+                        y: warningY,
+                        width: warningSize,
+                        height: warningSize
+                    )
+
+                    // 右側の警告マーク
+                    let rightWarningRect = CGRect(
+                        x: size.width - warningSize - 10,
+                        y: warningY,
+                        width: warningSize,
+                        height: warningSize
+                    )
+
+                    // 三角形の警告マークを描画（左）
+                    var leftTriangle = Path()
+                    leftTriangle.move(to: CGPoint(x: leftWarningRect.midX, y: leftWarningRect.minY))
+                    leftTriangle.addLine(to: CGPoint(x: leftWarningRect.minX, y: leftWarningRect.maxY))
+                    leftTriangle.addLine(to: CGPoint(x: leftWarningRect.maxX, y: leftWarningRect.maxY))
+                    leftTriangle.closeSubpath()
+
+                    context.fill(leftTriangle, with: .color(.red.opacity(0.8)))
+                    context.stroke(leftTriangle, with: .color(.white), lineWidth: 1.5)
+
+                    // 三角形の警告マークを描画（右）
+                    var rightTriangle = Path()
+                    rightTriangle.move(to: CGPoint(x: rightWarningRect.midX, y: rightWarningRect.minY))
+                    rightTriangle.addLine(to: CGPoint(x: rightWarningRect.minX, y: rightWarningRect.maxY))
+                    rightTriangle.addLine(to: CGPoint(x: rightWarningRect.maxX, y: rightWarningRect.maxY))
+                    rightTriangle.closeSubpath()
+
+                    context.fill(rightTriangle, with: .color(.red.opacity(0.8)))
+                    context.stroke(rightTriangle, with: .color(.white), lineWidth: 1.5)
+
+                    // 三角形内に「!」マークを描画（簡易版：小さな円と線）
+                    let exclamationMarkSize: CGFloat = 8
+
+                    // 左側の「!」
+                    var leftExclamation = Path()
+                    leftExclamation.move(to: CGPoint(x: leftWarningRect.midX, y: leftWarningRect.minY + 4))
+                    leftExclamation.addLine(to: CGPoint(x: leftWarningRect.midX, y: leftWarningRect.midY + 1))
+                    context.stroke(leftExclamation, with: .color(.white), style: StrokeStyle(lineWidth: 2, lineCap: .round))
+
+                    let leftDot = Path(ellipseIn: CGRect(
+                        x: leftWarningRect.midX - 1.5,
+                        y: leftWarningRect.maxY - 5,
+                        width: 3,
+                        height: 3
+                    ))
+                    context.fill(leftDot, with: .color(.white))
+
+                    // 右側の「!」
+                    var rightExclamation = Path()
+                    rightExclamation.move(to: CGPoint(x: rightWarningRect.midX, y: rightWarningRect.minY + 4))
+                    rightExclamation.addLine(to: CGPoint(x: rightWarningRect.midX, y: rightWarningRect.midY + 1))
+                    context.stroke(rightExclamation, with: .color(.white), style: StrokeStyle(lineWidth: 2, lineCap: .round))
+
+                    let rightDot = Path(ellipseIn: CGRect(
+                        x: rightWarningRect.midX - 1.5,
+                        y: rightWarningRect.maxY - 5,
+                        width: 3,
+                        height: 3
+                    ))
+                    context.fill(rightDot, with: .color(.white))
                 }
 
             }

@@ -39,6 +39,9 @@ class GameModel {
     // 粒子の細分化レベル（1ピースセルをN×Nの粒子に分割）
     static let particleSubdivision = 12
 
+    // ゲームオーバー判定ライン（ピースグリッド座標）
+    static let gameOverLineRow = 3
+
     // 実際の粒子グリッドサイズ（物理的なサイズ）
     static var gridWidth: Int {
         return pieceGridWidth * particleSubdivision
@@ -545,7 +548,7 @@ class GameModel {
         }
 
         // ピースが生成される上部エリア（ピースグリッド座標で上から3行分）をチェック
-        let checkRows = 3 // ピースグリッド座標での行数
+        let checkRows = GameModel.gameOverLineRow // ピースグリッド座標での行数
         let checkHeight = checkRows * GameModel.particleSubdivision // 粒子グリッド座標での行数
 
         // 上部エリアの砂粒子をカウント
