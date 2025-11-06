@@ -81,6 +81,23 @@ echo "========================================="
 echo "🔧 Xcode Cloud用のスクリプト修正..."
 echo "========================================="
 
+# Metal Toolchainの不正なパスを削除
+echo "Removing Metal Toolchain paths from project files..."
+
+# メインプロジェクトからMetal Toolchainのパスを削除
+if [ -f "sandtetris.xcodeproj/project.pbxproj" ]; then
+    echo "Cleaning sandtetris.xcodeproj..."
+    sed -i.backup '/MetalToolchain/d' "sandtetris.xcodeproj/project.pbxproj"
+    echo "✅ Cleaned main project file"
+fi
+
+# Podsプロジェクトが存在する場合も修正
+if [ -f "Pods/Pods.xcodeproj/project.pbxproj" ]; then
+    echo "Cleaning Pods.xcodeproj..."
+    sed -i.backup '/MetalToolchain/d' "Pods/Pods.xcodeproj/project.pbxproj"
+    echo "✅ Cleaned Pods project file"
+fi
+
 # CocoaPodsのリソーススクリプトを完全に書き換える
 # Xcode Cloudのrealpathは-mオプションをサポートしていない
 RESOURCES_SCRIPT="Pods/Target Support Files/Pods-sandtetris/Pods-sandtetris-resources.sh"
