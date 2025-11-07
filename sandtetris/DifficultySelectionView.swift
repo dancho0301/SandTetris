@@ -42,11 +42,11 @@ struct DifficultySelectionView: View {
         var displayName: String {
             switch self {
             case .easy:
-                return "かんたん"
+                return NSLocalizedString("difficulty_easy", comment: "")
             case .normal:
-                return "ふつう"
+                return NSLocalizedString("difficulty_normal", comment: "")
             case .hard:
-                return "むずかしい"
+                return NSLocalizedString("difficulty_hard", comment: "")
             }
         }
 
@@ -64,11 +64,11 @@ struct DifficultySelectionView: View {
         var description: String {
             switch self {
             case .easy:
-                return "3色で遊びやすい"
+                return NSLocalizedString("difficulty_easy_desc", comment: "")
             case .normal:
-                return "5色でバランスが良い"
+                return NSLocalizedString("difficulty_normal_desc", comment: "")
             case .hard:
-                return "7色で挑戦的"
+                return NSLocalizedString("difficulty_hard_desc", comment: "")
             }
         }
 
@@ -99,7 +99,7 @@ struct DifficultySelectionView: View {
         VStack(spacing: 0) {
             // タイトル
             VStack(spacing: 16) {
-                Text("砂テトリス")
+                Text(LocalizedStringKey("app_name"))
                     .font(.system(size: 48, weight: .heavy, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(
@@ -110,7 +110,7 @@ struct DifficultySelectionView: View {
                     )
                     .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
 
-                Text("難易度を選択してください")
+                Text(LocalizedStringKey("title_select_difficulty"))
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.secondary)
             }
@@ -136,8 +136,8 @@ struct DifficultySelectionView: View {
             // ハイスコア表示（コンパクト版）
             ScrollView {
                 VStack(spacing: 12) {
-                    HighScoreSectionCompact(title: "トータルTOP3", scores: topScores)
-                    HighScoreSectionCompact(title: "本日のTOP3", scores: todayTopScores)
+                    HighScoreSectionCompact(title: NSLocalizedString("high_scores_total", comment: ""), scores: topScores)
+                    HighScoreSectionCompact(title: NSLocalizedString("high_scores_today", comment: ""), scores: todayTopScores)
                 }
             }
             .frame(maxHeight: 200)

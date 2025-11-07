@@ -115,7 +115,7 @@ struct HeaderView: View {
 
             // スコア表示
             VStack(alignment: .leading, spacing: 4) {
-                Text("スコア")
+                Text(LocalizedStringKey("header_score"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Text("\(score)")
@@ -126,7 +126,7 @@ struct HeaderView: View {
 
             // 次のピース表示
             VStack(spacing: 4) {
-                Text("次のピース")
+                Text(LocalizedStringKey("header_next_piece"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 NextPiecePreview(piece: nextPiece)
@@ -258,6 +258,98 @@ struct GameAreaView: View {
                             }
                         }
                     }
+
+                    // ゲームオーバーラインを描画
+                    let pieceCellHeight = cellHeight * CGFloat(GameModel.particleSubdivision)
+                    let gameOverLineY = CGFloat(GameModel.gameOverLineRow) * pieceCellHeight
+
+                    // 点線のパターンを作成
+                    let dashPattern: [CGFloat] = [10, 5] // 10ピクセルの線、5ピクセルの空白
+
+                    var path = Path()
+                    path.move(to: CGPoint(x: 0, y: gameOverLineY))
+                    path.addLine(to: CGPoint(x: size.width, y: gameOverLineY))
+
+                    context.stroke(
+                        path,
+                        with: .color(.red.opacity(0.6)),
+                        style: StrokeStyle(
+                            lineWidth: 3,
+                            lineCap: .round,
+                            dash: dashPattern
+                        )
+                    )
+
+                    // ラインの上に警告アイコンを描画（左右に配置）
+                    let warningSize: CGFloat = 20
+                    let warningY = gameOverLineY - warningSize / 2
+
+                    // 左側の警告マーク
+                    let leftWarningRect = CGRect(
+                        x: 10,
+                        y: warningY,
+                        width: warningSize,
+                        height: warningSize
+                    )
+
+                    // 右側の警告マーク
+                    let rightWarningRect = CGRect(
+                        x: size.width - warningSize - 10,
+                        y: warningY,
+                        width: warningSize,
+                        height: warningSize
+                    )
+
+                    // 三角形の警告マークを描画（左）
+                    var leftTriangle = Path()
+                    leftTriangle.move(to: CGPoint(x: leftWarningRect.midX, y: leftWarningRect.minY))
+                    leftTriangle.addLine(to: CGPoint(x: leftWarningRect.minX, y: leftWarningRect.maxY))
+                    leftTriangle.addLine(to: CGPoint(x: leftWarningRect.maxX, y: leftWarningRect.maxY))
+                    leftTriangle.closeSubpath()
+
+                    context.fill(leftTriangle, with: .color(.red.opacity(0.8)))
+                    context.stroke(leftTriangle, with: .color(.white), lineWidth: 1.5)
+
+                    // 三角形の警告マークを描画（右）
+                    var rightTriangle = Path()
+                    rightTriangle.move(to: CGPoint(x: rightWarningRect.midX, y: rightWarningRect.minY))
+                    rightTriangle.addLine(to: CGPoint(x: rightWarningRect.minX, y: rightWarningRect.maxY))
+                    rightTriangle.addLine(to: CGPoint(x: rightWarningRect.maxX, y: rightWarningRect.maxY))
+                    rightTriangle.closeSubpath()
+
+                    context.fill(rightTriangle, with: .color(.red.opacity(0.8)))
+                    context.stroke(rightTriangle, with: .color(.white), lineWidth: 1.5)
+
+                    // 三角形内に「!」マークを描画（簡易版：小さな円と線）
+                    let exclamationMarkSize: CGFloat = 8
+
+                    // 左側の「!」
+                    var leftExclamation = Path()
+                    leftExclamation.move(to: CGPoint(x: leftWarningRect.midX, y: leftWarningRect.minY + 4))
+                    leftExclamation.addLine(to: CGPoint(x: leftWarningRect.midX, y: leftWarningRect.midY + 1))
+                    context.stroke(leftExclamation, with: .color(.white), style: StrokeStyle(lineWidth: 2, lineCap: .round))
+
+                    let leftDot = Path(ellipseIn: CGRect(
+                        x: leftWarningRect.midX - 1.5,
+                        y: leftWarningRect.maxY - 5,
+                        width: 3,
+                        height: 3
+                    ))
+                    context.fill(leftDot, with: .color(.white))
+
+                    // 右側の「!」
+                    var rightExclamation = Path()
+                    rightExclamation.move(to: CGPoint(x: rightWarningRect.midX, y: rightWarningRect.minY + 4))
+                    rightExclamation.addLine(to: CGPoint(x: rightWarningRect.midX, y: rightWarningRect.midY + 1))
+                    context.stroke(rightExclamation, with: .color(.white), style: StrokeStyle(lineWidth: 2, lineCap: .round))
+
+                    let rightDot = Path(ellipseIn: CGRect(
+                        x: rightWarningRect.midX - 1.5,
+                        y: rightWarningRect.maxY - 5,
+                        width: 3,
+                        height: 3
+                    ))
+                    context.fill(rightDot, with: .color(.white))
                 }
 
             }
@@ -541,12 +633,12 @@ struct ControlGuideView: View {
 
     var body: some View {
         HStack(spacing: 20) {
-            GuideItem(icon: "hand.tap", text: "タップで回転")
+            GuideItem(icon: "hand.tap", text: NSLocalizedString("control_guide_tap", comment: ""))
             GuideItem(
                 icon: "hand.point.up.left",
-                text: touchControlMode == .delta ? "横ドラッグで移動" : "横ドラッグで指に追従"
+                text: touchControlMode == .delta ? NSLocalizedString("control_guide_drag_delta", comment: "") : NSLocalizedString("control_guide_drag_position", comment: "")
             )
-            GuideItem(icon: "arrow.down", text: "下スワイプで急速落下")
+            GuideItem(icon: "arrow.down", text: NSLocalizedString("control_guide_swipe", comment: ""))
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
@@ -639,7 +731,7 @@ struct GameOverView: View {
             // ゲームオーバーカード
             VStack(spacing: 20) {
                 // ゲームオーバーテキスト
-                Text("ゲームオーバー")
+                Text(LocalizedStringKey("game_over_title"))
                     .font(.system(size: 36, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
@@ -648,7 +740,7 @@ struct GameOverView: View {
                 VStack(spacing: 16) {
                     // レベル表示
                     HStack(spacing: 12) {
-                        Text("レベル")
+                        Text(LocalizedStringKey("game_over_level"))
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
                         Text("\(level)")
@@ -662,7 +754,7 @@ struct GameOverView: View {
 
                     // スコア表示
                     VStack(spacing: 6) {
-                        Text("スコア")
+                        Text(LocalizedStringKey("game_over_score"))
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
 
@@ -683,10 +775,10 @@ struct GameOverView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         // トータルTOP3
-                        HighScoreSection(title: "トータルTOP3", scores: topScores)
+                        HighScoreSection(title: NSLocalizedString("high_scores_total", comment: ""), scores: topScores)
 
                         // 当日TOP3
-                        HighScoreSection(title: "本日のTOP3", scores: todayTopScores)
+                        HighScoreSection(title: NSLocalizedString("high_scores_today", comment: ""), scores: todayTopScores)
                     }
                 }
                 .frame(maxHeight: 250)
@@ -696,7 +788,7 @@ struct GameOverView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "arrow.clockwise")
                             .font(.system(size: 24, weight: .semibold))
-                        Text("もう一度プレイ")
+                        Text(LocalizedStringKey("game_over_retry"))
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                     }
                     .foregroundColor(.white)
@@ -749,7 +841,7 @@ struct HighScoreSection: View {
                 .padding(.horizontal, 12)
 
             if scores.isEmpty {
-                Text("記録なし")
+                Text(LocalizedStringKey("high_scores_no_records"))
                     .font(.system(size: 14))
                     .foregroundColor(.white.opacity(0.6))
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -845,7 +937,7 @@ struct HighScoreRow: View {
 
         if calendar.isDateInToday(date) {
             formatter.dateFormat = "HH:mm"
-            return "今日 " + formatter.string(from: date)
+            return NSLocalizedString("high_score_today", comment: "") + " " + formatter.string(from: date)
         } else {
             formatter.dateFormat = "MM/dd"
             return formatter.string(from: date)

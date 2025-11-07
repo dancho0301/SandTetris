@@ -1,0 +1,79 @@
+/* App name */
+"app_name" = "Sand Drop";
+
+/* Title screen */
+"title_select_difficulty" = "Select Difficulty";
+"difficulty_easy" = "Easy";
+"difficulty_easy_desc" = "3 colors - Easy to play";
+"difficulty_normal" = "Normal";
+"difficulty_normal_desc" = "5 colors - Well balanced";
+"difficulty_hard" = "Hard";
+"difficulty_hard_desc" = "7 colors - Challenging";
+
+/* Game screen */
+"header_level" = "LEVEL";
+"header_score" = "Score";
+"header_next_piece" = "Next Piece";
+"control_guide_tap" = "Tap to rotate";
+"control_guide_drag_delta" = "Drag to move";
+"control_guide_drag_position" = "Drag to follow";
+"control_guide_swipe" = "Swipe down to drop";
+
+/* Game over screen */
+"game_over_title" = "Game Over";
+"game_over_level" = "Level";
+"game_over_score" = "Score";
+"high_scores_total" = "Top 3 Overall";
+"high_scores_today" = "Top 3 Today";
+"high_scores_no_records" = "No records";
+"game_over_retry" = "Play Again";
+"high_score_today" = "Today";
+"high_score_level_prefix" = "Lv.";
+
+/* Settings screen */
+"settings_title" = "Settings";
+"settings_done" = "Done";
+
+/* Section headers */
+"settings_section_touch_control" = "Touch Control";
+"settings_section_movement_sensitivity" = "Movement Sensitivity";
+"settings_section_game_area" = "Game Area";
+"settings_section_difficulty" = "Difficulty";
+"settings_section_app_info" = "App Info";
+
+/* Touch control */
+"settings_touch_control_description" = "Choose how to move blocks horizontally";
+"settings_control_mode_delta" = "Delta Movement";
+"settings_control_mode_delta_desc" = "Control based on drag distance from initial touch position";
+"settings_control_mode_position" = "Position Follow";
+"settings_control_mode_position_desc" = "Blocks follow your finger position directly";
+
+/* Movement sensitivity */
+"settings_sensitivity_label" = "Sensitivity";
+"settings_speed_slow" = "Slow";
+"settings_speed_normal" = "Normal";
+"settings_speed_fast" = "Fast";
+"settings_sensitivity_description" = "Adjust horizontal movement responsiveness. Higher values make blocks move faster in response to finger movement";
+
+/* Game area */
+"settings_width_label" = "Width";
+"settings_cells_unit" = "cells";
+"settings_width_narrow" = "Narrow";
+"settings_width_wide" = "Wide";
+"settings_game_area_description" = "Adjust the width of the game area. Changing this value will reset the game";
+
+/* Difficulty */
+"settings_color_count_label" = "Color Count";
+"settings_colors_unit" = "colors";
+"settings_difficulty_easy" = "Easy";
+"settings_difficulty_hard" = "Hard";
+"settings_color_count_description" = "Adjust the number of colors that appear as blocks. More colors increase difficulty. Changing this value will reset the game";
+
+/* App info */
+"settings_version_label" = "Version";
+
+/* Game settings changed alert */
+"settings_game_settings_changed_title" = "Game Settings Changed";
+"settings_reset_button" = "Reset";
+"settings_revert_button" = "Revert";
+"settings_game_settings_changed_message" = "Game settings have been changed. Do you want to reset the game?\n\nChoose \"Revert\" to restore settings to their previous state.";

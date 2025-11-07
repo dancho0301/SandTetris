@@ -30,7 +30,7 @@ struct SettingsView: View {
         NavigationView {
             Form {
                 Section {
-                    Text("ブロックの横移動の操作方法を選択できます")
+                    Text(LocalizedStringKey("settings_touch_control_description"))
                         .font(.caption)
                         .foregroundColor(.secondary)
 
@@ -61,13 +61,13 @@ struct SettingsView: View {
                         .buttonStyle(.plain)
                     }
                 } header: {
-                    Text("タッチ操作")
+                    Text(LocalizedStringKey("settings_section_touch_control"))
                 }
 
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text("感度")
+                            Text(LocalizedStringKey("settings_sensitivity_label"))
                                 .font(.body)
                             Spacer()
                             Text(sensitivityLabel)
@@ -84,35 +84,35 @@ struct SettingsView: View {
                         .tint(.blue)
 
                         HStack {
-                            Text("遅い")
+                            Text(LocalizedStringKey("settings_speed_slow"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text("標準")
+                            Text(LocalizedStringKey("settings_speed_normal"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text("速い")
+                            Text(LocalizedStringKey("settings_speed_fast"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
                     .padding(.vertical, 4)
 
-                    Text("横移動の反応速度を調整できます。値が大きいほど、指の動きに対してブロックが速く移動します")
+                    Text(LocalizedStringKey("settings_sensitivity_description"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } header: {
-                    Text("移動感度")
+                    Text(LocalizedStringKey("settings_section_movement_sensitivity"))
                 }
 
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text("横幅")
+                            Text(LocalizedStringKey("settings_width_label"))
                                 .font(.body)
                             Spacer()
-                            Text("\(settings.gameAreaWidth)マス")
+                            Text("\(settings.gameAreaWidth)\(NSLocalizedString("settings_cells_unit", comment: ""))")
                                 .font(.body)
                                 .foregroundColor(.blue)
                                 .fontWeight(.semibold)
@@ -129,35 +129,35 @@ struct SettingsView: View {
                         .tint(.blue)
 
                         HStack {
-                            Text("狭い")
+                            Text(LocalizedStringKey("settings_width_narrow"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text("標準")
+                            Text(LocalizedStringKey("settings_speed_normal"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text("広い")
+                            Text(LocalizedStringKey("settings_width_wide"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
                     .padding(.vertical, 4)
 
-                    Text("ゲームエリアの横幅を調整できます。値を変更するとゲームがリセットされます")
+                    Text(LocalizedStringKey("settings_game_area_description"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } header: {
-                    Text("ゲームエリア")
+                    Text(LocalizedStringKey("settings_section_game_area"))
                 }
 
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text("色の数")
+                            Text(LocalizedStringKey("settings_color_count_label"))
                                 .font(.body)
                             Spacer()
-                            Text("\(settings.colorCount)色")
+                            Text("\(settings.colorCount)\(NSLocalizedString("settings_colors_unit", comment: ""))")
                                 .font(.body)
                                 .foregroundColor(.blue)
                                 .fontWeight(.semibold)
@@ -174,44 +174,44 @@ struct SettingsView: View {
                         .tint(.blue)
 
                         HStack {
-                            Text("簡単")
+                            Text(LocalizedStringKey("settings_difficulty_easy"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text("標準")
+                            Text(LocalizedStringKey("settings_speed_normal"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             Spacer()
-                            Text("難しい")
+                            Text(LocalizedStringKey("settings_difficulty_hard"))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                     }
                     .padding(.vertical, 4)
 
-                    Text("ブロックとして出現する色の数を調整できます。色が多いほど難易度が上がります。値を変更するとゲームがリセットされます")
+                    Text(LocalizedStringKey("settings_color_count_description"))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } header: {
-                    Text("難易度")
+                    Text(LocalizedStringKey("settings_section_difficulty"))
                 }
 
                 Section {
                     HStack {
-                        Text("バージョン")
+                        Text(LocalizedStringKey("settings_version_label"))
                         Spacer()
                         Text("1.0.0")
                             .foregroundColor(.secondary)
                     }
                 } header: {
-                    Text("アプリ情報")
+                    Text(LocalizedStringKey("settings_section_app_info"))
                 }
             }
-            .navigationTitle("設定")
+            .navigationTitle(LocalizedStringKey("settings_title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("完了") {
+                    Button(LocalizedStringKey("settings_done")) {
                         handleDismiss()
                     }
                 }
@@ -221,20 +221,20 @@ struct SettingsView: View {
                 originalGameAreaWidth = settings.gameAreaWidth
                 originalColorCount = settings.colorCount
             }
-            .alert("ゲーム設定の変更", isPresented: $showResetConfirmation) {
-                Button("リセットする", role: .destructive) {
+            .alert(LocalizedStringKey("settings_game_settings_changed_title"), isPresented: $showResetConfirmation) {
+                Button(LocalizedStringKey("settings_reset_button"), role: .destructive) {
                     // 新しい設定でゲームをリセット
                     needsReset = true
                     dismiss()
                 }
-                Button("元に戻す", role: .cancel) {
+                Button(LocalizedStringKey("settings_revert_button"), role: .cancel) {
                     // 設定を元に戻す
                     settings.gameAreaWidth = originalGameAreaWidth
                     settings.colorCount = originalColorCount
                     dismiss()
                 }
             } message: {
-                Text("ゲーム設定が変更されました。ゲームをリセットしますか？\n\n「元に戻す」を選ぶと、設定を変更前の状態に戻します。")
+                Text(LocalizedStringKey("settings_game_settings_changed_message"))
             }
         }
     }

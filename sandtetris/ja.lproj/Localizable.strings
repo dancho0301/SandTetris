@@ -1,0 +1,79 @@
+/* アプリ名 */
+"app_name" = "サンドドロップ";
+
+/* タイトル画面 */
+"title_select_difficulty" = "難易度を選択してください";
+"difficulty_easy" = "かんたん";
+"difficulty_easy_desc" = "3色で遊びやすい";
+"difficulty_normal" = "ふつう";
+"difficulty_normal_desc" = "5色でバランスが良い";
+"difficulty_hard" = "むずかしい";
+"difficulty_hard_desc" = "7色で挑戦的";
+
+/* ゲーム画面 */
+"header_level" = "LEVEL";
+"header_score" = "スコア";
+"header_next_piece" = "次のピース";
+"control_guide_tap" = "タップで回転";
+"control_guide_drag_delta" = "横ドラッグで移動";
+"control_guide_drag_position" = "横ドラッグで指に追従";
+"control_guide_swipe" = "下スワイプで急速落下";
+
+/* ゲームオーバー画面 */
+"game_over_title" = "ゲームオーバー";
+"game_over_level" = "レベル";
+"game_over_score" = "スコア";
+"high_scores_total" = "トータルTOP3";
+"high_scores_today" = "本日のTOP3";
+"high_scores_no_records" = "記録なし";
+"game_over_retry" = "もう一度プレイ";
+"high_score_today" = "今日";
+"high_score_level_prefix" = "Lv.";
+
+/* 設定画面 */
+"settings_title" = "設定";
+"settings_done" = "完了";
+
+/* セクションヘッダー */
+"settings_section_touch_control" = "タッチ操作";
+"settings_section_movement_sensitivity" = "移動感度";
+"settings_section_game_area" = "ゲームエリア";
+"settings_section_difficulty" = "難易度";
+"settings_section_app_info" = "アプリ情報";
+
+/* タッチ操作 */
+"settings_touch_control_description" = "ブロックの横移動の操作方法を選択できます";
+"settings_control_mode_delta" = "移動量ベース";
+"settings_control_mode_delta_desc" = "最初にタッチした位置からの移動量で操作";
+"settings_control_mode_position" = "指の位置に追従";
+"settings_control_mode_position_desc" = "指の位置に直接ブロックが追従";
+
+/* 移動感度 */
+"settings_sensitivity_label" = "感度";
+"settings_speed_slow" = "遅い";
+"settings_speed_normal" = "標準";
+"settings_speed_fast" = "速い";
+"settings_sensitivity_description" = "横移動の反応速度を調整できます。値が大きいほど、指の動きに対してブロックが速く移動します";
+
+/* ゲームエリア */
+"settings_width_label" = "横幅";
+"settings_cells_unit" = "マス";
+"settings_width_narrow" = "狭い";
+"settings_width_wide" = "広い";
+"settings_game_area_description" = "ゲームエリアの横幅を調整できます。値を変更するとゲームがリセットされます";
+
+/* 難易度 */
+"settings_color_count_label" = "色の数";
+"settings_colors_unit" = "色";
+"settings_difficulty_easy" = "簡単";
+"settings_difficulty_hard" = "難しい";
+"settings_color_count_description" = "ブロックとして出現する色の数を調整できます。色が多いほど難易度が上がります。値を変更するとゲームがリセットされます";
+
+/* アプリ情報 */
+"settings_version_label" = "バージョン";
+
+/* ゲーム設定変更アラート */
+"settings_game_settings_changed_title" = "ゲーム設定の変更";
+"settings_reset_button" = "リセットする";
+"settings_revert_button" = "元に戻す";
+"settings_game_settings_changed_message" = "ゲーム設定が変更されました。ゲームをリセットしますか？\n\n「元に戻す」を選ぶと、設定を変更前の状態に戻します。";
