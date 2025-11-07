@@ -99,7 +99,7 @@ struct DifficultySelectionView: View {
         VStack(spacing: 0) {
             // タイトル
             VStack(spacing: 16) {
-                Text("砂テトリス")
+                Text("サンドドロップ")
                     .font(.system(size: 48, weight: .heavy, design: .rounded))
                     .foregroundStyle(
                         LinearGradient(

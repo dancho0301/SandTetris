@@ -416,7 +416,7 @@ class GameModel {
         }
     }
 
-    // ラインのチェックと消去（砂テトリスルール：左から右に同じ色が繋がったら消える）
+    // ラインのチェックと消去（サンドドロップルール：左から右に同じ色が繋がったら消える）
     private func checkAndClearLines() {
         // グリッドサイズが変更されている場合は処理をスキップ
         guard currentGridWidth > 0 && currentGridHeight > 0 &&

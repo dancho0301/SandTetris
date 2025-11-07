@@ -12,7 +12,7 @@ sandtetris is an iOS application built with SwiftUI and SwiftData. The project u
 
 ### Game Concept
 
-砂テトリス（Sand Tetris）ゲームを作成するプロジェクト。既存の砂テトリスゲームは操作感が今ひとつなので、以下の点を重視して開発する：
+サンドドロップ（Sand Drop）ゲームを作成するプロジェクト。既存の砂テトリスゲームは操作感が今ひとつなので、以下の点を重視して開発する：
 
 - **手に馴染む操作感**: 直感的で快適な操作性を実現
 - **日本人受けしやすいポップなデザイン**: 親しみやすく魅力的なビジュアル
