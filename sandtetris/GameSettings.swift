@@ -18,18 +18,18 @@ class GameSettings {
         var displayName: String {
             switch self {
             case .delta:
-                return "移動量ベース"
+                return NSLocalizedString("settings_control_mode_delta", comment: "")
             case .position:
-                return "指の位置に追従"
+                return NSLocalizedString("settings_control_mode_position", comment: "")
             }
         }
 
         var description: String {
             switch self {
             case .delta:
-                return "最初にタッチした位置からの移動量で操作"
+                return NSLocalizedString("settings_control_mode_delta_desc", comment: "")
             case .position:
-                return "指の位置に直接ブロックが追従"
+                return NSLocalizedString("settings_control_mode_position_desc", comment: "")
             }
         }
     }

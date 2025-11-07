@@ -32,17 +32,48 @@
 
 /* Settings screen */
 "settings_title" = "Settings";
-"settings_control_mode" = "Control Mode";
-"settings_control_mode_delta" = "Delta Movement";
-"settings_control_mode_delta_desc" = "Move pieces based on drag distance from initial touch";
-"settings_control_mode_position" = "Position Follow";
-"settings_control_mode_position_desc" = "Pieces follow your finger position";
-"settings_movement_sensitivity" = "Movement Sensitivity";
-"settings_game_area_width" = "Game Area Width";
-"settings_game_area_width_unit" = "cells";
-"settings_reset_game" = "Reset Game";
-"settings_reset_confirm_title" = "Reset Game?";
-"settings_reset_confirm_message" = "The current game will end and\na new game will begin.";
-"settings_reset_confirm_button" = "Reset";
-"settings_cancel" = "Cancel";
 "settings_done" = "Done";
+
+/* Section headers */
+"settings_section_touch_control" = "Touch Control";
+"settings_section_movement_sensitivity" = "Movement Sensitivity";
+"settings_section_game_area" = "Game Area";
+"settings_section_difficulty" = "Difficulty";
+"settings_section_app_info" = "App Info";
+
+/* Touch control */
+"settings_touch_control_description" = "Choose how to move blocks horizontally";
+"settings_control_mode_delta" = "Delta Movement";
+"settings_control_mode_delta_desc" = "Control based on drag distance from initial touch position";
+"settings_control_mode_position" = "Position Follow";
+"settings_control_mode_position_desc" = "Blocks follow your finger position directly";
+
+/* Movement sensitivity */
+"settings_sensitivity_label" = "Sensitivity";
+"settings_speed_slow" = "Slow";
+"settings_speed_normal" = "Normal";
+"settings_speed_fast" = "Fast";
+"settings_sensitivity_description" = "Adjust horizontal movement responsiveness. Higher values make blocks move faster in response to finger movement";
+
+/* Game area */
+"settings_width_label" = "Width";
+"settings_cells_unit" = "cells";
+"settings_width_narrow" = "Narrow";
+"settings_width_wide" = "Wide";
+"settings_game_area_description" = "Adjust the width of the game area. Changing this value will reset the game";
+
+/* Difficulty */
+"settings_color_count_label" = "Color Count";
+"settings_colors_unit" = "colors";
+"settings_difficulty_easy" = "Easy";
+"settings_difficulty_hard" = "Hard";
+"settings_color_count_description" = "Adjust the number of colors that appear as blocks. More colors increase difficulty. Changing this value will reset the game";
+
+/* App info */
+"settings_version_label" = "Version";
+
+/* Game settings changed alert */
+"settings_game_settings_changed_title" = "Game Settings Changed";
+"settings_reset_button" = "Reset";
+"settings_revert_button" = "Revert";
+"settings_game_settings_changed_message" = "Game settings have been changed. Do you want to reset the game?\n\nChoose \"Revert\" to restore settings to their previous state.";

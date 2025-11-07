@@ -32,17 +32,48 @@
 
 /* 設定画面 */
 "settings_title" = "設定";
-"settings_control_mode" = "操作方式";
-"settings_control_mode_delta" = "移動量ベース";
-"settings_control_mode_delta_desc" = "最初のタッチ位置からの移動量でピースを動かす";
-"settings_control_mode_position" = "位置追従";
-"settings_control_mode_position_desc" = "指の位置にピースが追従する";
-"settings_movement_sensitivity" = "移動感度";
-"settings_game_area_width" = "ゲームエリア幅";
-"settings_game_area_width_unit" = "マス";
-"settings_reset_game" = "ゲームをリセット";
-"settings_reset_confirm_title" = "ゲームをリセットしますか？";
-"settings_reset_confirm_message" = "現在のゲームが終了し、\n新しいゲームが始まります。";
-"settings_reset_confirm_button" = "リセットする";
-"settings_cancel" = "キャンセル";
 "settings_done" = "完了";
+
+/* セクションヘッダー */
+"settings_section_touch_control" = "タッチ操作";
+"settings_section_movement_sensitivity" = "移動感度";
+"settings_section_game_area" = "ゲームエリア";
+"settings_section_difficulty" = "難易度";
+"settings_section_app_info" = "アプリ情報";
+
+/* タッチ操作 */
+"settings_touch_control_description" = "ブロックの横移動の操作方法を選択できます";
+"settings_control_mode_delta" = "移動量ベース";
+"settings_control_mode_delta_desc" = "最初にタッチした位置からの移動量で操作";
+"settings_control_mode_position" = "指の位置に追従";
+"settings_control_mode_position_desc" = "指の位置に直接ブロックが追従";
+
+/* 移動感度 */
+"settings_sensitivity_label" = "感度";
+"settings_speed_slow" = "遅い";
+"settings_speed_normal" = "標準";
+"settings_speed_fast" = "速い";
+"settings_sensitivity_description" = "横移動の反応速度を調整できます。値が大きいほど、指の動きに対してブロックが速く移動します";
+
+/* ゲームエリア */
+"settings_width_label" = "横幅";
+"settings_cells_unit" = "マス";
+"settings_width_narrow" = "狭い";
+"settings_width_wide" = "広い";
+"settings_game_area_description" = "ゲームエリアの横幅を調整できます。値を変更するとゲームがリセットされます";
+
+/* 難易度 */
+"settings_color_count_label" = "色の数";
+"settings_colors_unit" = "色";
+"settings_difficulty_easy" = "簡単";
+"settings_difficulty_hard" = "難しい";
+"settings_color_count_description" = "ブロックとして出現する色の数を調整できます。色が多いほど難易度が上がります。値を変更するとゲームがリセットされます";
+
+/* アプリ情報 */
+"settings_version_label" = "バージョン";
+
+/* ゲーム設定変更アラート */
+"settings_game_settings_changed_title" = "ゲーム設定の変更";
+"settings_reset_button" = "リセットする";
+"settings_revert_button" = "元に戻す";
+"settings_game_settings_changed_message" = "ゲーム設定が変更されました。ゲームをリセットしますか？\n\n「元に戻す」を選ぶと、設定を変更前の状態に戻します。";
