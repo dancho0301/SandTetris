@@ -83,6 +83,18 @@ struct GameView: View {
         }) {
             SettingsView(needsReset: $needsReset)
         }
+        .onChange(of: interstitialAdManager.isShowingAd) { oldValue, newValue in
+            // 広告が表示されたらゲームを一時停止
+            if newValue {
+                gameModel.pauseGame()
+                print("広告表示中：ゲームを一時停止")
+            }
+            // 広告が閉じられたらゲームを再開（ただしゲームオーバーでない場合のみ）
+            else if gameModel.gameState == .paused {
+                gameModel.resumeGame()
+                print("広告終了：ゲームを再開")
+            }
+        }
     }
 }
 
@@ -904,10 +916,10 @@ struct HighScoreRow: View {
             Text("\(score.score)")
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(.white)
-                .frame(minWidth: 60, alignment: .leading)
+                .frame(minWidth: 70, alignment: .leading)
 
             // レベル
-            HStack(spacing: 4) {
+            HStack(spacing: 2) {
                 Text("Lv.")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.white.opacity(0.6))
@@ -915,6 +927,7 @@ struct HighScoreRow: View {
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundColor(.orange.opacity(0.8))
             }
+            .frame(minWidth: 55, alignment: .leading)
 
             Spacer()
 
