@@ -83,6 +83,18 @@ struct GameView: View {
         }) {
             SettingsView(needsReset: $needsReset)
         }
+        .onChange(of: interstitialAdManager.isShowingAd) { oldValue, newValue in
+            // 広告が表示されたらゲームを一時停止
+            if newValue {
+                gameModel.pauseGame()
+                print("広告表示中：ゲームを一時停止")
+            }
+            // 広告が閉じられたらゲームを再開（ただしゲームオーバーでない場合のみ）
+            else if gameModel.gameState == .paused {
+                gameModel.resumeGame()
+                print("広告終了：ゲームを再開")
+            }
+        }
     }
 }
 

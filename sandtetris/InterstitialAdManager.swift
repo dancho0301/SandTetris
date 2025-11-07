@@ -14,6 +14,7 @@ import UIKit
 class InterstitialAdManager: NSObject, ObservableObject {
     @Published var interstitialAd: InterstitialAd?
     @Published var isLoading = false
+    @Published var isShowingAd = false  // 広告表示中かどうかを追跡
 
     // インタースティシャル広告ユニットIDをInfo.plistから取得
     private var adUnitID: String {
@@ -96,16 +97,19 @@ class InterstitialAdManager: NSObject, ObservableObject {
 extension InterstitialAdManager: FullScreenContentDelegate {
     func adDidDismissFullScreenContent(_ ad: any FullScreenPresentingAd) {
         print("インタースティシャル広告が閉じられました")
+        isShowingAd = false  // 広告が閉じられたことを通知
         // 広告が閉じられたら次の広告をプリロード
         loadAd()
     }
 
     func ad(_ ad: any FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
         print("インタースティシャル広告の表示に失敗: \(error.localizedDescription)")
+        isShowingAd = false  // 失敗時も広告が表示されていない状態に
         loadAd()
     }
 
     func adWillPresentFullScreenContent(_ ad: any FullScreenPresentingAd) {
         print("インタースティシャル広告を表示します")
+        isShowingAd = true  // 広告表示開始を通知
     }
 }
