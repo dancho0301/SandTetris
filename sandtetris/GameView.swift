@@ -904,10 +904,10 @@ struct HighScoreRow: View {
             Text("\(score.score)")
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundColor(.white)
-                .frame(minWidth: 60, alignment: .leading)
+                .frame(minWidth: 70, alignment: .leading)
 
             // レベル
-            HStack(spacing: 4) {
+            HStack(spacing: 2) {
                 Text("Lv.")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.white.opacity(0.6))
@@ -915,6 +915,7 @@ struct HighScoreRow: View {
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundColor(.orange.opacity(0.8))
             }
+            .frame(minWidth: 55, alignment: .leading)
 
             Spacer()
 
