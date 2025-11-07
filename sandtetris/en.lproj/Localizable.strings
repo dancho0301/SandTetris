@@ -1,0 +1,48 @@
+/* App name */
+"app_name" = "Sand Drop";
+
+/* Title screen */
+"title_select_difficulty" = "Select Difficulty";
+"difficulty_easy" = "Easy";
+"difficulty_easy_desc" = "3 colors - Easy to play";
+"difficulty_normal" = "Normal";
+"difficulty_normal_desc" = "5 colors - Well balanced";
+"difficulty_hard" = "Hard";
+"difficulty_hard_desc" = "7 colors - Challenging";
+
+/* Game screen */
+"header_level" = "LEVEL";
+"header_score" = "Score";
+"header_next_piece" = "Next Piece";
+"control_guide_tap" = "Tap to rotate";
+"control_guide_drag_delta" = "Drag to move";
+"control_guide_drag_position" = "Drag to follow";
+"control_guide_swipe" = "Swipe down to drop";
+
+/* Game over screen */
+"game_over_title" = "Game Over";
+"game_over_level" = "Level";
+"game_over_score" = "Score";
+"high_scores_total" = "Top 3 Overall";
+"high_scores_today" = "Top 3 Today";
+"high_scores_no_records" = "No records";
+"game_over_retry" = "Play Again";
+"high_score_today" = "Today";
+"high_score_level_prefix" = "Lv.";
+
+/* Settings screen */
+"settings_title" = "Settings";
+"settings_control_mode" = "Control Mode";
+"settings_control_mode_delta" = "Delta Movement";
+"settings_control_mode_delta_desc" = "Move pieces based on drag distance from initial touch";
+"settings_control_mode_position" = "Position Follow";
+"settings_control_mode_position_desc" = "Pieces follow your finger position";
+"settings_movement_sensitivity" = "Movement Sensitivity";
+"settings_game_area_width" = "Game Area Width";
+"settings_game_area_width_unit" = "cells";
+"settings_reset_game" = "Reset Game";
+"settings_reset_confirm_title" = "Reset Game?";
+"settings_reset_confirm_message" = "The current game will end and\na new game will begin.";
+"settings_reset_confirm_button" = "Reset";
+"settings_cancel" = "Cancel";
+"settings_done" = "Done";

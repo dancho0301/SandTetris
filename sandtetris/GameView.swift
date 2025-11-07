@@ -115,7 +115,7 @@ struct HeaderView: View {
 
             // スコア表示
             VStack(alignment: .leading, spacing: 4) {
-                Text("スコア")
+                Text(LocalizedStringKey("header_score"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Text("\(score)")
@@ -126,7 +126,7 @@ struct HeaderView: View {
 
             // 次のピース表示
             VStack(spacing: 4) {
-                Text("次のピース")
+                Text(LocalizedStringKey("header_next_piece"))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 NextPiecePreview(piece: nextPiece)
@@ -633,12 +633,12 @@ struct ControlGuideView: View {
 
     var body: some View {
         HStack(spacing: 20) {
-            GuideItem(icon: "hand.tap", text: "タップで回転")
+            GuideItem(icon: "hand.tap", text: NSLocalizedString("control_guide_tap", comment: ""))
             GuideItem(
                 icon: "hand.point.up.left",
-                text: touchControlMode == .delta ? "横ドラッグで移動" : "横ドラッグで指に追従"
+                text: touchControlMode == .delta ? NSLocalizedString("control_guide_drag_delta", comment: "") : NSLocalizedString("control_guide_drag_position", comment: "")
             )
-            GuideItem(icon: "arrow.down", text: "下スワイプで急速落下")
+            GuideItem(icon: "arrow.down", text: NSLocalizedString("control_guide_swipe", comment: ""))
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
@@ -731,7 +731,7 @@ struct GameOverView: View {
             // ゲームオーバーカード
             VStack(spacing: 20) {
                 // ゲームオーバーテキスト
-                Text("ゲームオーバー")
+                Text(LocalizedStringKey("game_over_title"))
                     .font(.system(size: 36, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
@@ -740,7 +740,7 @@ struct GameOverView: View {
                 VStack(spacing: 16) {
                     // レベル表示
                     HStack(spacing: 12) {
-                        Text("レベル")
+                        Text(LocalizedStringKey("game_over_level"))
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
                         Text("\(level)")
@@ -754,7 +754,7 @@ struct GameOverView: View {
 
                     // スコア表示
                     VStack(spacing: 6) {
-                        Text("スコア")
+                        Text(LocalizedStringKey("game_over_score"))
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
 
@@ -775,10 +775,10 @@ struct GameOverView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         // トータルTOP3
-                        HighScoreSection(title: "トータルTOP3", scores: topScores)
+                        HighScoreSection(title: NSLocalizedString("high_scores_total", comment: ""), scores: topScores)
 
                         // 当日TOP3
-                        HighScoreSection(title: "本日のTOP3", scores: todayTopScores)
+                        HighScoreSection(title: NSLocalizedString("high_scores_today", comment: ""), scores: todayTopScores)
                     }
                 }
                 .frame(maxHeight: 250)
@@ -788,7 +788,7 @@ struct GameOverView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "arrow.clockwise")
                             .font(.system(size: 24, weight: .semibold))
-                        Text("もう一度プレイ")
+                        Text(LocalizedStringKey("game_over_retry"))
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                     }
                     .foregroundColor(.white)
@@ -841,7 +841,7 @@ struct HighScoreSection: View {
                 .padding(.horizontal, 12)
 
             if scores.isEmpty {
-                Text("記録なし")
+                Text(LocalizedStringKey("high_scores_no_records"))
                     .font(.system(size: 14))
                     .foregroundColor(.white.opacity(0.6))
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -937,7 +937,7 @@ struct HighScoreRow: View {
 
         if calendar.isDateInToday(date) {
             formatter.dateFormat = "HH:mm"
-            return "今日 " + formatter.string(from: date)
+            return NSLocalizedString("high_score_today", comment: "") + " " + formatter.string(from: date)
         } else {
             formatter.dateFormat = "MM/dd"
             return formatter.string(from: date)

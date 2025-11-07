@@ -1,0 +1,48 @@
+/* アプリ名 */
+"app_name" = "サンドドロップ";
+
+/* タイトル画面 */
+"title_select_difficulty" = "難易度を選択してください";
+"difficulty_easy" = "かんたん";
+"difficulty_easy_desc" = "3色で遊びやすい";
+"difficulty_normal" = "ふつう";
+"difficulty_normal_desc" = "5色でバランスが良い";
+"difficulty_hard" = "むずかしい";
+"difficulty_hard_desc" = "7色で挑戦的";
+
+/* ゲーム画面 */
+"header_level" = "LEVEL";
+"header_score" = "スコア";
+"header_next_piece" = "次のピース";
+"control_guide_tap" = "タップで回転";
+"control_guide_drag_delta" = "横ドラッグで移動";
+"control_guide_drag_position" = "横ドラッグで指に追従";
+"control_guide_swipe" = "下スワイプで急速落下";
+
+/* ゲームオーバー画面 */
+"game_over_title" = "ゲームオーバー";
+"game_over_level" = "レベル";
+"game_over_score" = "スコア";
+"high_scores_total" = "トータルTOP3";
+"high_scores_today" = "本日のTOP3";
+"high_scores_no_records" = "記録なし";
+"game_over_retry" = "もう一度プレイ";
+"high_score_today" = "今日";
+"high_score_level_prefix" = "Lv.";
+
+/* 設定画面 */
+"settings_title" = "設定";
+"settings_control_mode" = "操作方式";
+"settings_control_mode_delta" = "移動量ベース";
+"settings_control_mode_delta_desc" = "最初のタッチ位置からの移動量でピースを動かす";
+"settings_control_mode_position" = "位置追従";
+"settings_control_mode_position_desc" = "指の位置にピースが追従する";
+"settings_movement_sensitivity" = "移動感度";
+"settings_game_area_width" = "ゲームエリア幅";
+"settings_game_area_width_unit" = "マス";
+"settings_reset_game" = "ゲームをリセット";
+"settings_reset_confirm_title" = "ゲームをリセットしますか？";
+"settings_reset_confirm_message" = "現在のゲームが終了し、\n新しいゲームが始まります。";
+"settings_reset_confirm_button" = "リセットする";
+"settings_cancel" = "キャンセル";
+"settings_done" = "完了";
