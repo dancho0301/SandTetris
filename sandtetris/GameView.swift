@@ -219,6 +219,10 @@ struct GameAreaView: View {
 
                 // 砂とピースの表示
                 Canvas { context, size in
+                    // Canvas のサイズから cellWidth と cellHeight を計算（GeometryReader ではなく）
+                    let canvasCellWidth = size.width / CGFloat(GameModel.gridWidth)
+                    let canvasCellHeight = size.height / CGFloat(GameModel.gridHeight)
+
                     // グリッド内の砂を描画（粒子レベル）
                     // 実際のgrid配列のサイズを使用して安全にアクセス
                     let gridHeight = gameModel.grid.count
@@ -229,10 +233,10 @@ struct GameAreaView: View {
                             let cell = gameModel.grid[y][x]
                             if case .sand(let color) = cell {
                                 let rect = CGRect(
-                                    x: CGFloat(x) * cellWidth,
-                                    y: CGFloat(y) * cellHeight,
-                                    width: cellWidth,
-                                    height: cellHeight
+                                    x: CGFloat(x) * canvasCellWidth,
+                                    y: CGFloat(y) * canvasCellHeight,
+                                    width: canvasCellWidth,
+                                    height: canvasCellHeight
                                 )
                                 context.fill(
                                     Path(roundedRect: rect, cornerRadius: 1),
@@ -244,8 +248,8 @@ struct GameAreaView: View {
 
                     // 現在のピースを描画（ピースグリッド座標系）
                     if let piece = gameModel.currentPiece {
-                        let pieceCellWidth = cellWidth * CGFloat(GameModel.particleSubdivision)
-                        let pieceCellHeight = cellHeight * CGFloat(GameModel.particleSubdivision)
+                        let pieceCellWidth = canvasCellWidth * CGFloat(GameModel.particleSubdivision)
+                        let pieceCellHeight = canvasCellHeight * CGFloat(GameModel.particleSubdivision)
 
                         for (dy, row) in piece.shape.enumerated() {
                             for (dx, cell) in row.enumerated() {
@@ -272,7 +276,7 @@ struct GameAreaView: View {
                     }
 
                     // ゲームオーバーラインを描画
-                    let pieceCellHeight = cellHeight * CGFloat(GameModel.particleSubdivision)
+                    let pieceCellHeight = canvasCellHeight * CGFloat(GameModel.particleSubdivision)
                     let gameOverLineY = CGFloat(GameModel.gameOverLineRow) * pieceCellHeight
 
                     // 点線のパターンを作成
