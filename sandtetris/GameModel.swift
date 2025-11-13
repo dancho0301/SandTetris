@@ -407,10 +407,8 @@ class GameModel {
 
                 if particleY >= 0 && particleY < currentGridHeight &&
                    particleX >= 0 && particleX < currentGridWidth {
-                    // ランダムに一部の粒子を空にして、よりリアルな砂の見た目に
-                    if Bool.random() || (dx == 1 && dy == 1) { // 中心は必ず埋める
-                        grid[particleY][particleX] = .sand(color)
-                    }
+                    // すべての粒子を配置（ピースが下部で固定されたときに明確に見えるように）
+                    grid[particleY][particleX] = .sand(color)
                 }
             }
         }
