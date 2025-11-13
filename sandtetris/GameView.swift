@@ -387,7 +387,7 @@ struct GameAreaView: View {
                         }
                     }
                     .onEnded { value in
-                        handleGestureEnd(start: value.startLocation, end: value.location)
+                        handleGestureEnd(start: value.startLocation, end: value.location, screenWidth: geometry.size.width)
                         dragStartLocation = nil
                         lastDragY = 0
                         dropMoveThreshold = 0
@@ -419,10 +419,13 @@ struct GameAreaView: View {
     private func handleDragChange(start: CGPoint, current: CGPoint, screenWidth: CGFloat, cellHeight: CGFloat) {
         let dx = current.x - start.x
         let dy = current.y - start.y
-        let tapThreshold: CGFloat = 20
-        let hardDropThreshold: CGFloat = 100
-        let directionThreshold: CGFloat = 30  // 方向を判定するための閾値
-        let stopThreshold: CGFloat = 5  // 停止判定の閾値
+
+        // 画面幅に基づいて閾値をスケーリング（基準: iPhone 375pt）
+        let scaleFactor = screenWidth / 375.0
+        let tapThreshold: CGFloat = 20 * scaleFactor
+        let hardDropThreshold: CGFloat = 100 * scaleFactor
+        let directionThreshold: CGFloat = 30 * scaleFactor  // 方向を判定するための閾値
+        let stopThreshold: CGFloat = 5 * scaleFactor  // 停止判定の閾値
         let stopTimeInterval: TimeInterval = 0.2  // 停止とみなす時間（秒）
 
         // タップ判定範囲内なら何もしない
@@ -582,10 +585,13 @@ struct GameAreaView: View {
         }
     }
 
-    private func handleGestureEnd(start: CGPoint, end: CGPoint) {
+    private func handleGestureEnd(start: CGPoint, end: CGPoint, screenWidth: CGFloat) {
         let dx = end.x - start.x
         let dy = end.y - start.y
-        let tapThreshold: CGFloat = 20
+
+        // 画面幅に基づいて閾値をスケーリング（基準: iPhone 375pt）
+        let scaleFactor = screenWidth / 375.0
+        let tapThreshold: CGFloat = 20 * scaleFactor
 
         // タップ判定（移動も落下もしていない場合）
         if abs(dx) < tapThreshold && abs(dy) < tapThreshold {
