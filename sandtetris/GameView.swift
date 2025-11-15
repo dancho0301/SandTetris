@@ -83,6 +83,16 @@ struct GameView: View {
         }) {
             SettingsView(needsReset: $needsReset)
         }
+        .onChange(of: showSettings) { oldValue, newValue in
+            // 設定画面が表示されたらゲームを一時停止
+            if newValue {
+                gameModel.pauseGame()
+            }
+            // 設定画面が閉じられたらゲームを再開（ただしゲームオーバーでない場合のみ）
+            else if gameModel.gameState == .paused {
+                gameModel.resumeGame()
+            }
+        }
         .onChange(of: interstitialAdManager.isShowingAd) { oldValue, newValue in
             // 広告が表示されたらゲームを一時停止
             if newValue {
