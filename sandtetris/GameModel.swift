@@ -452,7 +452,11 @@ class GameModel {
         }
 
         if particlesCleared > 0 {
-            score += particlesCleared
+            // 難易度に応じてスコアに倍率を適用
+            // 3色 (easy): 1.0倍, 5色 (normal): 1.5倍, 7色 (hard): 2.0倍
+            let difficultyMultiplier = 1.0 + Double(GameSettings.shared.colorCount - 3) * 0.25
+            let scoreGain = Int(Double(particlesCleared) * difficultyMultiplier)
+            score += scoreGain
             updateFallSpeed() // スコアに応じて落下速度を更新
         }
     }
