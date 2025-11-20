@@ -370,7 +370,10 @@ class GameModel {
                     let gridX = currentPosition.x + dx
                     let gridY = currentPosition.y + dy
 
-                    if gridY >= 0 && gridY < GameModel.pieceGridHeight && gridX >= 0 && gridX < GameModel.pieceGridWidth {
+                    // 範囲チェックを簡素化（subdivideIntoParticlesが詳細なチェックを行う）
+                    // iPadでアスペクト比が変更された際の問題を回避するため、
+                    // pieceGridHeight/Widthの範囲チェックを削除
+                    if gridY >= 0 {
                         // 1つのピースセルを12x12の細かい粒子に分割
                         subdivideIntoParticles(at: (x: gridX, y: gridY), color: piece.color)
                     }
