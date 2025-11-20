@@ -267,8 +267,9 @@ struct GameAreaView: View {
                                     let pieceGridX = gameModel.currentPosition.x + dx
                                     let pieceGridY = gameModel.currentPosition.y + dy
 
-                                    if pieceGridY >= 0 && pieceGridY < GameModel.pieceGridHeight &&
-                                       pieceGridX >= 0 && pieceGridX < GameModel.pieceGridWidth {
+                                    // iPadでアスペクト比が変更された際、pieceGridHeightが変更される可能性があるため、
+                                    // Y座標の上限チェックを削除。X座標は変更されないのでチェックを残す。
+                                    if pieceGridY >= 0 && pieceGridX >= 0 && pieceGridX < GameModel.pieceGridWidth {
                                         let rect = CGRect(
                                             x: CGFloat(pieceGridX) * pieceCellWidth + 1,
                                             y: CGFloat(pieceGridY) * pieceCellHeight + 1,

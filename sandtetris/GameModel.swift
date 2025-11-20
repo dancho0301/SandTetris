@@ -301,7 +301,9 @@ class GameModel {
                     let gridY = position.y + dy
 
                     // グリッド外チェック（ピースグリッド座標系）
-                    if gridX < 0 || gridX >= GameModel.pieceGridWidth || gridY >= GameModel.pieceGridHeight {
+                    // iPadでアスペクト比が変更された際、pieceGridHeightが変更される可能性があるため、
+                    // Y座標の上限チェックを削除。X座標は変更されないのでチェックを残す。
+                    if gridX < 0 || gridX >= GameModel.pieceGridWidth {
                         return false
                     }
 
@@ -370,7 +372,9 @@ class GameModel {
                     let gridX = currentPosition.x + dx
                     let gridY = currentPosition.y + dy
 
-                    if gridY >= 0 && gridY < GameModel.pieceGridHeight && gridX >= 0 && gridX < GameModel.pieceGridWidth {
+                    // iPadでアスペクト比が変更された際、pieceGridHeightが変更される可能性があるため、
+                    // Y座標の上限チェックを削除。X座標は変更されないのでチェックを残す。
+                    if gridY >= 0 && gridX >= 0 && gridX < GameModel.pieceGridWidth {
                         // 1つのピースセルを12x12の細かい粒子に分割
                         subdivideIntoParticles(at: (x: gridX, y: gridY), color: piece.color)
                     }
