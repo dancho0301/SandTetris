@@ -63,6 +63,14 @@ class GameModel {
     private var currentGridWidth: Int = 0
     private var currentGridHeight: Int = 0
 
+    // 実際のピースグリッドサイズ（実際の配列サイズから計算）
+    var currentPieceGridWidth: Int {
+        return currentGridWidth / GameModel.particleSubdivision
+    }
+    var currentPieceGridHeight: Int {
+        return currentGridHeight / GameModel.particleSubdivision
+    }
+
     // 現在のピース
     var currentPiece: TetrisPiece?
     var currentPosition: (x: Int, y: Int) = (0, 0)
@@ -301,9 +309,8 @@ class GameModel {
                     let gridY = position.y + dy
 
                     // グリッド外チェック（ピースグリッド座標系）
-                    // iPadでアスペクト比が変更された際、pieceGridHeightが変更される可能性があるため、
-                    // Y座標の上限チェックを削除。X座標は変更されないのでチェックを残す。
-                    if gridX < 0 || gridX >= GameModel.pieceGridWidth {
+                    // 実際の配列サイズから計算したピースグリッドサイズを使用
+                    if gridX < 0 || gridX >= currentPieceGridWidth || gridY >= currentPieceGridHeight {
                         return false
                     }
 
@@ -372,10 +379,8 @@ class GameModel {
                     let gridX = currentPosition.x + dx
                     let gridY = currentPosition.y + dy
 
-                    // 範囲チェックを簡素化（subdivideIntoParticlesが詳細なチェックを行う）
-                    // iPadでアスペクト比が変更された際の問題を回避するため、
-                    // pieceGridHeight/Widthの範囲チェックを削除
-                    if gridY >= 0 {
+                    // 実際の配列サイズから計算したピースグリッドサイズを使用
+                    if gridY >= 0 && gridY < currentPieceGridHeight && gridX >= 0 && gridX < currentPieceGridWidth {
                         // 1つのピースセルを12x12の細かい粒子に分割
                         subdivideIntoParticles(at: (x: gridX, y: gridY), color: piece.color)
                     }

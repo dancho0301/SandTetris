@@ -267,9 +267,9 @@ struct GameAreaView: View {
                                     let pieceGridX = gameModel.currentPosition.x + dx
                                     let pieceGridY = gameModel.currentPosition.y + dy
 
-                                    // 範囲チェックを削除（Canvasが自動的にクリップし、
-                                    // iPadでアスペクト比が変更された際の問題を回避）
-                                    if pieceGridY >= 0 {
+                                    // 実際の配列サイズから計算したピースグリッドサイズを使用
+                                    if pieceGridY >= 0 && pieceGridY < gameModel.currentPieceGridHeight &&
+                                       pieceGridX >= 0 && pieceGridX < gameModel.currentPieceGridWidth {
                                         let rect = CGRect(
                                             x: CGFloat(pieceGridX) * pieceCellWidth + 1,
                                             y: CGFloat(pieceGridY) * pieceCellHeight + 1,
