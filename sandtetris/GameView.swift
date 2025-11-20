@@ -610,7 +610,7 @@ struct GameAreaView: View {
         }
     }
 
-    // アスペクト比を更新（変更があった場合のみ）
+    // アスペクト比を更新（初回のみ）
     private func updateAspectRatioIfNeeded(aspectRatio: CGFloat) {
         let currentAspectRatio = settings.gameAreaAspectRatio
         let newAspectRatio = Double(aspectRatio)
@@ -618,8 +618,8 @@ struct GameAreaView: View {
         // アスペクト比が正の値であることを確認
         guard newAspectRatio > 0 else { return }
 
-        // 初回または誤差が5%以上ある場合のみ更新（頻繁な更新を避ける）
-        if currentAspectRatio <= 0 || abs(currentAspectRatio - newAspectRatio) / currentAspectRatio > 0.05 {
+        // 初回のみ更新（画面サイズが変わってもゲームエリアのマス数を固定するため）
+        if currentAspectRatio <= 0 {
             settings.gameAreaAspectRatio = newAspectRatio
         }
     }
