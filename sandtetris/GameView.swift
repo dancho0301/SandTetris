@@ -105,6 +105,20 @@ struct GameView: View {
                 print("広告終了：ゲームを再開")
             }
         }
+        .onChange(of: settings.gameAreaWidth) { oldValue, newValue in
+            // ゲームエリアの横幅が変更されたらゲームをリセット
+            if oldValue != newValue {
+                gameModel.setupNewGame()
+                gameModel.startGame()
+            }
+        }
+        .onChange(of: settings.colorCount) { oldValue, newValue in
+            // 色の数が変更されたらゲームをリセット
+            if oldValue != newValue {
+                gameModel.setupNewGame()
+                gameModel.startGame()
+            }
+        }
     }
 }
 
