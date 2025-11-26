@@ -11,7 +11,7 @@ import GoogleMobileAds
 
 /// Google AdMobを管理するシングルトンクラス
 class AdMobManager: ObservableObject {
-    static let shared = AdMobManager()
+    nonisolated(unsafe) static let shared = AdMobManager()
 
     @Published var isInitialized = false
 

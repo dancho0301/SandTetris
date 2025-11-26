@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// ゲームの設定を管理するクラス
-@Observable
+@Observable @MainActor
 class GameSettings {
     /// タッチ操作の方式
     enum TouchControlMode: String, CaseIterable {
@@ -87,7 +87,7 @@ class GameSettings {
     }
 
     /// シングルトンインスタンス
-    static let shared = GameSettings()
+    nonisolated(unsafe) static let shared = GameSettings()
 
     private init() {
         // UserDefaultsから設定を読み込み
