@@ -24,7 +24,7 @@ enum GameState {
     case gameOver
 }
 
-@Observable
+@Observable @MainActor
 class GameModel {
     // テトリスピースのグリッドサイズ（論理的なサイズ）
     static var pieceGridWidth: Int {

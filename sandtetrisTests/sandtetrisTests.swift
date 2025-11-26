@@ -11,14 +11,17 @@ import SwiftUI
 
 struct sandtetrisTests {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    @Test @MainActor func example() async throws {
+        // 基本的なテスト例
+        let settings = GameSettings.shared
+        #expect(settings.gameAreaWidth >= 10, "ゲームエリアの幅は最低10")
+        #expect(settings.gameAreaAspectRatio > 0, "アスペクト比は正の数")
     }
 
     // MARK: - レスポンシブ対応テスト
 
     /// グリッドサイズが異なるアスペクト比で正しく計算されることをテスト
-    @Test func testGridSizeCalculation() async throws {
+    @Test @MainActor func testGridSizeCalculation() async throws {
         // テスト前の設定を保存
         let originalWidth = GameSettings.shared.gameAreaWidth
         let originalAspectRatio = GameSettings.shared.gameAreaAspectRatio
@@ -29,7 +32,7 @@ struct sandtetrisTests {
 
         let seHeight = GameModel.pieceGridHeight
         #expect(seHeight >= 15, "iPhone SEの高さは最低15セル以上必要")
-        #expect(seHeight >= 17, "iPhone SEの高さは約17-18セル程度")
+        #expect(seHeight == 18, "iPhone SEの高さは18セル")
 
         // iPhone 15 Pro Max (縦向き) のアスペクト比 (430x932)
         GameSettings.shared.gameAreaAspectRatio = 932.0 / 430.0 // ≈2.17
@@ -37,7 +40,7 @@ struct sandtetrisTests {
 
         let proMaxHeight = GameModel.pieceGridHeight
         #expect(proMaxHeight >= 15, "iPhone 15 Pro Maxの高さは最低15セル以上必要")
-        #expect(proMaxHeight >= 21, "iPhone 15 Pro Maxの高さは約21-22セル程度")
+        #expect(proMaxHeight == 22, "iPhone 15 Pro Maxの高さは22セル")
 
         // iPad mini (縦向き) のアスペクト比 (744x1133)
         GameSettings.shared.gameAreaAspectRatio = 1133.0 / 744.0 // ≈1.52
@@ -45,13 +48,14 @@ struct sandtetrisTests {
 
         let iPadHeight = GameModel.pieceGridHeight
         #expect(iPadHeight >= 15, "iPad miniの高さは最低15セル以上必要")
+        #expect(iPadHeight == 16, "iPad miniの高さは16セル")
 
         // 横向きモード (16:9)
         GameSettings.shared.gameAreaAspectRatio = 9.0 / 16.0 // ≈0.56
         GameSettings.shared.gameAreaWidth = 10
 
         let landscapeHeight = GameModel.pieceGridHeight
-        #expect(landscapeHeight >= 15, "横向きでも最低15セル以上必要")
+        #expect(landscapeHeight == 15, "横向きは最小値の15セル")
 
         // 正方形 (1:1)
         GameSettings.shared.gameAreaAspectRatio = 1.0
@@ -59,6 +63,7 @@ struct sandtetrisTests {
 
         let squareHeight = GameModel.pieceGridHeight
         #expect(squareHeight >= 15, "正方形でも最低15セル以上必要")
+        #expect(squareHeight == 15, "正方形は15セル（10 * 1.0を切り上げて10、最小値15が適用される）")
 
         // 設定を元に戻す
         GameSettings.shared.gameAreaWidth = originalWidth
@@ -66,7 +71,11 @@ struct sandtetrisTests {
     }
 
     /// 粒子グリッドサイズが正しく計算されることをテスト
-    @Test func testParticleGridSize() async throws {
+    @Test @MainActor func testParticleGridSize() async throws {
+        // テスト前の設定を保存
+        let originalWidth = GameSettings.shared.gameAreaWidth
+        let originalAspectRatio = GameSettings.shared.gameAreaAspectRatio
+
         // 粒子の細分化レベルが12であることを確認
         #expect(GameModel.particleSubdivision == 12, "粒子の細分化レベルは12である必要がある")
 
@@ -83,41 +92,49 @@ struct sandtetrisTests {
         // 粒子グリッドはピースグリッドの12倍であることを確認
         #expect(particleWidth == pieceWidth * 12, "粒子グリッドの幅はピースグリッドの12倍")
         #expect(particleHeight == pieceHeight * 12, "粒子グリッドの高さはピースグリッドの12倍")
+
+        // 設定を元に戻す
+        GameSettings.shared.gameAreaWidth = originalWidth
+        GameSettings.shared.gameAreaAspectRatio = originalAspectRatio
     }
 
     /// GameModelが異なる画面サイズで正しく初期化されることをテスト
-    @Test func testGameModelInitializationWithDifferentScreenSizes() async throws {
+    @Test @MainActor func testGameModelInitializationWithDifferentScreenSizes() async throws {
         // テスト前の設定を保存
         let originalWidth = GameSettings.shared.gameAreaWidth
         let originalAspectRatio = GameSettings.shared.gameAreaAspectRatio
 
-        // 小さい画面（iPhone SE）
-        GameSettings.shared.gameAreaWidth = 10
-        GameSettings.shared.gameAreaAspectRatio = 1.78
+        let testCases: [(width: Int, aspectRatio: Double, name: String)] = [
+            (10, 1.78, "iPhone SE"),
+            (10, 1.33, "iPad"),
+            (10, 0.56, "横向き")
+        ]
 
-        let smallModel = GameModel()
-        #expect(smallModel.grid.count > 0, "グリッドが初期化されている")
-        #expect(smallModel.grid[0].count > 0, "グリッドの各行が初期化されている")
-        #expect(smallModel.currentPiece != nil, "現在のピースが初期化されている")
-        #expect(smallModel.nextPiece != nil, "次のピースが初期化されている")
+        for testCase in testCases {
+            GameSettings.shared.gameAreaWidth = testCase.width
+            GameSettings.shared.gameAreaAspectRatio = testCase.aspectRatio
 
-        // 大きい画面（iPad）
-        GameSettings.shared.gameAreaWidth = 10
-        GameSettings.shared.gameAreaAspectRatio = 1.33
+            let model = GameModel()
 
-        let largeModel = GameModel()
-        #expect(largeModel.grid.count > 0, "グリッドが初期化されている")
-        #expect(largeModel.grid[0].count > 0, "グリッドの各行が初期化されている")
-        #expect(largeModel.currentPiece != nil, "現在のピースが初期化されている")
-        #expect(largeModel.nextPiece != nil, "次のピースが初期化されている")
+            // グリッドの基本チェック
+            #expect(model.grid.count > 0, "\(testCase.name): グリッドが初期化されている")
+            #expect(model.grid[0].count > 0, "\(testCase.name): グリッドの各行が初期化されている")
 
-        // 横向き
-        GameSettings.shared.gameAreaWidth = 10
-        GameSettings.shared.gameAreaAspectRatio = 0.56
+            // グリッドサイズが期待通りか
+            let expectedHeight = GameModel.gridHeight
+            let expectedWidth = GameModel.gridWidth
+            #expect(model.grid.count == expectedHeight, "\(testCase.name): グリッドの高さが正しい")
+            #expect(model.grid[0].count == expectedWidth, "\(testCase.name): グリッドの幅が正しい")
 
-        let landscapeModel = GameModel()
-        #expect(landscapeModel.grid.count > 0, "グリッドが初期化されている")
-        #expect(landscapeModel.grid[0].count > 0, "グリッドの各行が初期化されている")
+            // ピースの初期化チェック
+            #expect(model.currentPiece != nil, "\(testCase.name): 現在のピースが初期化されている")
+            #expect(model.nextPiece != nil, "\(testCase.name): 次のピースが初期化されている")
+
+            // ゲーム状態の初期値チェック
+            #expect(model.gameState == .ready, "\(testCase.name): 初期状態はready")
+            #expect(model.score == 0, "\(testCase.name): 初期スコアは0")
+            #expect(model.currentLevel == 1, "\(testCase.name): 初期レベルは1")
+        }
 
         // 設定を元に戻す
         GameSettings.shared.gameAreaWidth = originalWidth
@@ -125,7 +142,7 @@ struct sandtetrisTests {
     }
 
     /// ピースが画面サイズに関わらず正しく配置できることをテスト
-    @Test func testPiecePlacementAcrossScreenSizes() async throws {
+    @Test @MainActor func testPiecePlacementAcrossScreenSizes() async throws {
         // テスト前の設定を保存
         let originalWidth = GameSettings.shared.gameAreaWidth
         let originalAspectRatio = GameSettings.shared.gameAreaAspectRatio
@@ -169,7 +186,7 @@ struct sandtetrisTests {
     }
 
     /// ゲームオーバーラインが画面サイズに関わらず正しく機能することをテスト
-    @Test func testGameOverLineAcrossScreenSizes() async throws {
+    @Test @MainActor func testGameOverLineAcrossScreenSizes() async throws {
         // ゲームオーバーラインが常に上から3行目であることを確認
         #expect(GameModel.gameOverLineRow == 3, "ゲームオーバーラインはピースグリッドの上から3行目")
 
@@ -190,6 +207,42 @@ struct sandtetrisTests {
         // 設定を元に戻す
         GameSettings.shared.gameAreaWidth = originalWidth
         GameSettings.shared.gameAreaAspectRatio = originalAspectRatio
+    }
+
+    // MARK: - 設定値テスト
+
+    /// GameSettingsのデフォルト値が正しいことをテスト
+    @Test @MainActor func testGameSettingsDefaults() async throws {
+        let settings = GameSettings.shared
+
+        // 基本的な制約のチェック
+        #expect(settings.gameAreaWidth >= 10 && settings.gameAreaWidth <= 30,
+                "ゲームエリアの幅は10〜30の範囲内")
+        #expect(settings.gameAreaAspectRatio > 0,
+                "アスペクト比は正の数")
+        #expect(settings.colorCount >= 2 && settings.colorCount <= 7,
+                "色の数は2〜7の範囲内")
+        #expect(settings.movementSensitivity >= 0.5 && settings.movementSensitivity <= 2.0,
+                "移動感度は0.5〜2.0の範囲内")
+    }
+
+    /// ゲームの定数が正しく定義されていることをテスト
+    @Test @MainActor func testGameConstants() async throws {
+        // 粒子細分化レベル
+        #expect(GameModel.particleSubdivision == 12,
+                "粒子細分化レベルは12")
+
+        // ゲームオーバーライン
+        #expect(GameModel.gameOverLineRow == 3,
+                "ゲームオーバーラインは3行目")
+        #expect(GameModel.gameOverLineRow >= 0,
+                "ゲームオーバーラインは0以上")
+
+        // グリッドサイズの最小値
+        #expect(GameModel.pieceGridWidth >= 10,
+                "ピースグリッドの幅は最低10")
+        #expect(GameModel.pieceGridHeight >= 15,
+                "ピースグリッドの高さは最低15")
     }
 
 }
