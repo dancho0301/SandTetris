@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// ゲームの設定を管理するクラス
-@Observable @MainActor
+@Observable
 class GameSettings {
     /// タッチ操作の方式
     enum TouchControlMode: String, CaseIterable {
@@ -45,51 +45,51 @@ class GameSettings {
     }
 
     /// タッチ操作モード
-    nonisolated var touchControlMode: TouchControlMode {
+    var touchControlMode: TouchControlMode {
         didSet {
             UserDefaults.standard.set(touchControlMode.rawValue, forKey: Keys.touchControlMode)
         }
     }
 
     /// 移動操作の感度（0.5〜2.0）
-    nonisolated var movementSensitivity: Double {
+    var movementSensitivity: Double {
         didSet {
             UserDefaults.standard.set(movementSensitivity, forKey: Keys.movementSensitivity)
         }
     }
 
     /// ゲームエリアの横幅（マス数：10〜30）
-    nonisolated var gameAreaWidth: Int {
+    var gameAreaWidth: Int {
         didSet {
             UserDefaults.standard.set(gameAreaWidth, forKey: Keys.gameAreaWidth)
         }
     }
 
     /// ゲームエリアのアスペクト比（高さ / 幅）
-    nonisolated var gameAreaAspectRatio: Double {
+    var gameAreaAspectRatio: Double {
         didSet {
             UserDefaults.standard.set(gameAreaAspectRatio, forKey: Keys.gameAreaAspectRatio)
         }
     }
 
     /// 色の数（難易度：2〜7色）
-    nonisolated var colorCount: Int {
+    var colorCount: Int {
         didSet {
             UserDefaults.standard.set(colorCount, forKey: Keys.colorCount)
         }
     }
 
     /// 初回起動時に難易度を選択したかどうか
-    nonisolated var hasSelectedDifficulty: Bool {
+    var hasSelectedDifficulty: Bool {
         didSet {
             UserDefaults.standard.set(hasSelectedDifficulty, forKey: Keys.hasSelectedDifficulty)
         }
     }
 
     /// シングルトンインスタンス
-    nonisolated(unsafe) static let shared = GameSettings()
+    static let shared = GameSettings()
 
-    nonisolated private init() {
+    private init() {
         // UserDefaultsから設定を読み込み
         if let savedMode = UserDefaults.standard.string(forKey: Keys.touchControlMode),
            let mode = TouchControlMode(rawValue: savedMode) {
