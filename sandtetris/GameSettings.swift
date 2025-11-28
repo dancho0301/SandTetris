@@ -89,7 +89,7 @@ class GameSettings {
     /// シングルトンインスタンス
     nonisolated(unsafe) static let shared = GameSettings()
 
-    private init() {
+    nonisolated private init() {
         // UserDefaultsから設定を読み込み
         if let savedMode = UserDefaults.standard.string(forKey: Keys.touchControlMode),
            let mode = TouchControlMode(rawValue: savedMode) {
