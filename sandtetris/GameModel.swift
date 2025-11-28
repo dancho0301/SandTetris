@@ -79,7 +79,7 @@ class GameModel {
     var nextPiece: TetrisPiece?
 
     // タイマー
-    private var gameTimer: Timer?
+    nonisolated(unsafe) private var gameTimer: Timer?
     private let tickInterval: TimeInterval = 0.016 // 約60fps
     private var accumulatedTime: TimeInterval = 0
     private var fallSpeed: TimeInterval = 1.0 // 1秒ごとにピースが落下（スコアに応じて変化）
