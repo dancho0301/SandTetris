@@ -45,42 +45,42 @@ class GameSettings {
     }
 
     /// タッチ操作モード
-    var touchControlMode: TouchControlMode {
+    nonisolated var touchControlMode: TouchControlMode {
         didSet {
             UserDefaults.standard.set(touchControlMode.rawValue, forKey: Keys.touchControlMode)
         }
     }
 
     /// 移動操作の感度（0.5〜2.0）
-    var movementSensitivity: Double {
+    nonisolated var movementSensitivity: Double {
         didSet {
             UserDefaults.standard.set(movementSensitivity, forKey: Keys.movementSensitivity)
         }
     }
 
     /// ゲームエリアの横幅（マス数：10〜30）
-    var gameAreaWidth: Int {
+    nonisolated var gameAreaWidth: Int {
         didSet {
             UserDefaults.standard.set(gameAreaWidth, forKey: Keys.gameAreaWidth)
         }
     }
 
     /// ゲームエリアのアスペクト比（高さ / 幅）
-    var gameAreaAspectRatio: Double {
+    nonisolated var gameAreaAspectRatio: Double {
         didSet {
             UserDefaults.standard.set(gameAreaAspectRatio, forKey: Keys.gameAreaAspectRatio)
         }
     }
 
     /// 色の数（難易度：2〜7色）
-    var colorCount: Int {
+    nonisolated var colorCount: Int {
         didSet {
             UserDefaults.standard.set(colorCount, forKey: Keys.colorCount)
         }
     }
 
     /// 初回起動時に難易度を選択したかどうか
-    var hasSelectedDifficulty: Bool {
+    nonisolated var hasSelectedDifficulty: Bool {
         didSet {
             UserDefaults.standard.set(hasSelectedDifficulty, forKey: Keys.hasSelectedDifficulty)
         }
