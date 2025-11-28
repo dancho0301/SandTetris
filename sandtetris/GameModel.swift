@@ -618,7 +618,7 @@ class GameModel {
         }
     }
 
-    deinit {
-        stopTimer()
+    nonisolated deinit {
+        gameTimer?.invalidate()
     }
 }
