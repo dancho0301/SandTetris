@@ -15,11 +15,13 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-3252418079692583~9312023043</string>
 	<key>AdMobBannerAdUnitID</key>
-	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<string>ca-app-pub-3252418079692583/1427284854</string>
 	<key>AdMobInterstitialAdUnitID</key>
-	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<string>ca-app-pub-3252418079692583/1044141474</string>
+	<key>AdMobRewardedAdUnitID</key>
+	<string>ca-app-pub-3252418079692583/5324676577</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
