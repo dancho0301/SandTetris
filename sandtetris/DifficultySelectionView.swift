@@ -13,9 +13,11 @@ struct DifficultySelectionView: View {
     @State private var selectedDifficulty: Difficulty = .normal
     @State private var showDailyBonus: Bool = false
     @State private var showAchievements: Bool = false
+    @State private var showSkinShop: Bool = false
     @State private var dailyBonusManager = DailyBonusManager.shared
     @State private var achievementManager = AchievementManager.shared
     @State private var coinManager = CoinManager.shared
+    @State private var skinManager = SkinManager.shared
 
     @Query(sort: \HighScore.score, order: .reverse) private var allHighScores: [HighScore]
 
@@ -170,6 +172,19 @@ struct DifficultySelectionView: View {
                         }
                     }
                 }
+
+                // スキンショップボタン
+                Button(action: { showSkinShop = true }) {
+                    Image(systemName: "paintpalette.fill")
+                        .font(.system(size: 22))
+                        .foregroundColor(.purple)
+                        .padding(10)
+                        .background(
+                            Circle()
+                                .fill(Color.white.opacity(0.8))
+                                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        )
+                }
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
@@ -270,6 +285,9 @@ struct DifficultySelectionView: View {
         }
         .sheet(isPresented: $showAchievements) {
             AchievementView()
+        }
+        .sheet(isPresented: $showSkinShop) {
+            SkinShopView()
         }
     }
 }

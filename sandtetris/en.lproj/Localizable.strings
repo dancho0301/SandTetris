@@ -163,3 +163,53 @@
 /* Menu Buttons */
 "menu_daily_bonus" = "Daily Bonus";
 "menu_achievements" = "Achievements";
+
+/* Skin Shop */
+"skin_shop_title" = "Skin Shop";
+"skin_equipped" = "Equipped";
+"skin_owned" = "Owned";
+"skin_purchased" = "Skin Purchased!";
+
+/* Skin Categories */
+"skin_category_basic" = "Basic";
+"skin_category_nature" = "Nature";
+"skin_category_neon" = "Neon";
+"skin_category_seasonal" = "Seasonal";
+"skin_category_premium" = "Premium";
+
+/* Skin Names and Descriptions */
+"skin_default_name" = "Default";
+"skin_default_desc" = "Standard color palette";
+
+"skin_pastel_dream_name" = "Pastel Dream";
+"skin_pastel_dream_desc" = "Soft pastel colors";
+
+"skin_monochrome_name" = "Monochrome";
+"skin_monochrome_desc" = "Simple black and white gradient";
+
+"skin_forest_name" = "Forest";
+"skin_forest_desc" = "Natural colors inspired by deep forests";
+
+"skin_ocean_name" = "Ocean";
+"skin_ocean_desc" = "Blue gradients of sea and sky";
+
+"skin_sunset_name" = "Sunset";
+"skin_sunset_desc" = "Warm colors of the evening sky";
+
+"skin_cyberpunk_name" = "Cyberpunk";
+"skin_cyberpunk_desc" = "Vibrant neon colors";
+
+"skin_retro_wave_name" = "Retro Wave";
+"skin_retro_wave_desc" = "80s-style retro neon";
+
+"skin_sakura_name" = "Sakura";
+"skin_sakura_desc" = "Spring cherry blossom pink";
+
+"skin_winter_name" = "Winter";
+"skin_winter_desc" = "Icy blue-white winter colors";
+
+"skin_galaxy_name" = "Galaxy";
+"skin_galaxy_desc" = "Mystical space and nebula colors";
+
+"skin_golden_name" = "Golden";
+"skin_golden_desc" = "Luxurious gold tones";

@@ -163,3 +163,53 @@
 /* メニューボタン */
 "menu_daily_bonus" = "デイリーボーナス";
 "menu_achievements" = "アチーブメント";
+
+/* スキンショップ */
+"skin_shop_title" = "スキンショップ";
+"skin_equipped" = "装備中";
+"skin_owned" = "所持済み";
+"skin_purchased" = "スキンを購入しました！";
+
+/* スキンカテゴリ */
+"skin_category_basic" = "ベーシック";
+"skin_category_nature" = "ネイチャー";
+"skin_category_neon" = "ネオン";
+"skin_category_seasonal" = "シーズン";
+"skin_category_premium" = "プレミアム";
+
+/* スキン名と説明 */
+"skin_default_name" = "デフォルト";
+"skin_default_desc" = "標準のカラーパレット";
+
+"skin_pastel_dream_name" = "パステルドリーム";
+"skin_pastel_dream_desc" = "柔らかいパステルカラー";
+
+"skin_monochrome_name" = "モノクローム";
+"skin_monochrome_desc" = "シンプルな白黒グラデーション";
+
+"skin_forest_name" = "フォレスト";
+"skin_forest_desc" = "深い森をイメージした自然な色合い";
+
+"skin_ocean_name" = "オーシャン";
+"skin_ocean_desc" = "海と空の青いグラデーション";
+
+"skin_sunset_name" = "サンセット";
+"skin_sunset_desc" = "夕焼け空の温かい色合い";
+
+"skin_cyberpunk_name" = "サイバーパンク";
+"skin_cyberpunk_desc" = "鮮やかなネオンカラー";
+
+"skin_retro_wave_name" = "レトロウェーブ";
+"skin_retro_wave_desc" = "80年代風のレトロなネオン";
+
+"skin_sakura_name" = "サクラ";
+"skin_sakura_desc" = "春の桜をイメージしたピンク";
+
+"skin_winter_name" = "ウィンター";
+"skin_winter_desc" = "冬の雪景色のような青白い色";
+
+"skin_galaxy_name" = "ギャラクシー";
+"skin_galaxy_desc" = "宇宙と星雲をイメージした神秘的な色";
+
+"skin_golden_name" = "ゴールデン";
+"skin_golden_desc" = "高級感あふれるゴールド";
