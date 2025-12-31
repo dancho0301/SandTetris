@@ -55,8 +55,13 @@ struct TetrisPiece {
         }
     }
 
-    // 利用可能な色のパレット
-    static let colorPalette: [Color] = [
+    // 利用可能な色のパレット（スキンから取得）
+    static var colorPalette: [Color] {
+        SkinManager.shared.currentSkin.sandColors.map { $0.color }
+    }
+
+    // デフォルトの色パレット（スキン未適用時のフォールバック）
+    static let defaultColorPalette: [Color] = [
         Color(red: 0.4, green: 0.8, blue: 1.0), // シアン
         Color(red: 1.0, green: 0.9, blue: 0.3), // イエロー
         Color(red: 0.8, green: 0.4, blue: 1.0), // パープル

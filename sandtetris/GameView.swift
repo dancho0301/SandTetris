@@ -15,6 +15,7 @@ struct GameView: View {
     @State private var showSettings = false
     @State private var needsReset = false
     @State private var settings = GameSettings.shared
+    @State private var skinManager = SkinManager.shared
     @StateObject private var interstitialAdManager = InterstitialAdManager()
 
     var body: some View {
@@ -36,15 +37,13 @@ struct GameView: View {
                 // ゲームエリア（砂とテトリスピースが表示される）
                 GameAreaView(
                     gameModel: gameModel,
-                    interstitialAdManager: interstitialAdManager
+                    interstitialAdManager: interstitialAdManager,
+                    skinManager: skinManager
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(
                         LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color(red: 0.15, green: 0.15, blue: 0.2),
-                                Color(red: 0.1, green: 0.1, blue: 0.15)
-                            ]),
+                            gradient: Gradient(colors: skinManager.currentSkin.backgroundColors.map { $0.color }),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -199,6 +198,7 @@ struct NextPiecePreview: View {
 struct GameAreaView: View {
     let gameModel: GameModel
     @ObservedObject var interstitialAdManager: InterstitialAdManager
+    let skinManager: SkinManager
     @State private var settings = GameSettings.shared
     @State private var dragStartLocation: CGPoint?
     @State private var lastDragY: CGFloat = 0
@@ -225,7 +225,7 @@ struct GameAreaView: View {
 
             ZStack {
                 // グリッド背景
-                GridBackgroundView()
+                GridBackgroundView(gridLineColor: skinManager.currentSkin.gridLineColor.color)
 
                 // 砂とピースの表示
                 Canvas { context, size in
@@ -299,7 +299,7 @@ struct GameAreaView: View {
 
                     context.stroke(
                         path,
-                        with: .color(.red.opacity(0.6)),
+                        with: .color(skinManager.currentSkin.gameOverLineColor.color),
                         style: StrokeStyle(
                             lineWidth: 3,
                             lineCap: .round,
@@ -629,6 +629,7 @@ struct GameAreaView: View {
 struct GridBackgroundView: View {
     let columns = GameModel.pieceGridWidth
     let rows = GameModel.pieceGridHeight
+    var gridLineColor: Color = .white.opacity(0.15)
 
     var body: some View {
         GeometryReader { geometry in
@@ -652,7 +653,7 @@ struct GridBackgroundView: View {
                             path.addLine(to: CGPoint(x: size.width, y: y))
                         }
                     },
-                    with: .color(.white.opacity(0.15)),
+                    with: .color(gridLineColor),
                     lineWidth: 1
                 )
             }

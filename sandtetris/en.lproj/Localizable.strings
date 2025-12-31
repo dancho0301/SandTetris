@@ -77,3 +77,139 @@
 "settings_reset_button" = "Reset";
 "settings_revert_button" = "Revert";
 "settings_game_settings_changed_message" = "Game settings have been changed. Do you want to reset the game?\n\nChoose \"Revert\" to restore settings to their previous state.";
+
+/* Daily Bonus */
+"daily_bonus_title" = "Daily Bonus";
+"coins_unit" = "coins";
+"streak_current" = "Current Streak";
+"streak_best" = "Best Streak";
+"days_unit" = "days";
+"weekly_bonus" = "Weekly Bonus";
+"day_1" = "Day 1";
+"day_2" = "Day 2";
+"day_3" = "Day 3";
+"day_4" = "Day 4";
+"day_5" = "Day 5";
+"day_6" = "Day 6";
+"day_7" = "Day 7";
+"claim_bonus" = "Claim Bonus";
+"next_bonus_in" = "Next bonus in";
+"already_claimed_today" = "Today's bonus already claimed";
+"bonus_received" = "Bonus Received!";
+
+/* Achievements */
+"achievements_title" = "Achievements";
+"claim_all_rewards" = "Claim All";
+"achievement_unlocked" = "Achievement Unlocked!";
+"reward_claimed" = "Reward Claimed!";
+
+/* Achievement Categories */
+"achievement_category_score" = "Score";
+"achievement_category_level" = "Level";
+"achievement_category_play" = "Play";
+"achievement_category_streak" = "Streak";
+"achievement_category_difficulty" = "Difficulty";
+
+/* Score Achievements */
+"achievement_score_100_name" = "First Steps";
+"achievement_score_100_desc" = "Reach 100 points";
+"achievement_score_500_name" = "Score Hunter";
+"achievement_score_500_desc" = "Reach 500 points";
+"achievement_score_1000_name" = "Thousand Club";
+"achievement_score_1000_desc" = "Reach 1000 points";
+"achievement_score_5000_name" = "Score Master";
+"achievement_score_5000_desc" = "Reach 5000 points";
+"achievement_score_10000_name" = "Score Legend";
+"achievement_score_10000_desc" = "Reach 10000 points";
+
+/* Level Achievements */
+"achievement_level_3_name" = "Level 3";
+"achievement_level_3_desc" = "Reach level 3";
+"achievement_level_5_name" = "Level 5";
+"achievement_level_5_desc" = "Reach level 5";
+"achievement_level_10_name" = "Double Digits";
+"achievement_level_10_desc" = "Reach level 10";
+"achievement_level_20_name" = "Level Master";
+"achievement_level_20_desc" = "Reach level 20";
+
+/* Play Count Achievements */
+"achievement_play_1_name" = "Welcome!";
+"achievement_play_1_desc" = "Play your first game";
+"achievement_play_10_name" = "Regular";
+"achievement_play_10_desc" = "Play 10 games";
+"achievement_play_50_name" = "Dedicated Player";
+"achievement_play_50_desc" = "Play 50 games";
+"achievement_play_100_name" = "Veteran";
+"achievement_play_100_desc" = "Play 100 games";
+
+/* Streak Achievements */
+"achievement_streak_3_name" = "3-Day Streak";
+"achievement_streak_3_desc" = "Log in for 3 consecutive days";
+"achievement_streak_7_name" = "Week Streak";
+"achievement_streak_7_desc" = "Log in for 7 consecutive days";
+"achievement_streak_14_name" = "2-Week Streak";
+"achievement_streak_14_desc" = "Log in for 14 consecutive days";
+"achievement_streak_30_name" = "Month Streak";
+"achievement_streak_30_desc" = "Log in for 30 consecutive days";
+
+/* Difficulty Achievements */
+"achievement_easy_mode_name" = "Relaxed Mode";
+"achievement_easy_mode_desc" = "Play on Easy mode";
+"achievement_hard_mode_name" = "Challenger";
+"achievement_hard_mode_desc" = "Play on Hard mode";
+"achievement_hard_score_1000_name" = "Hardcore";
+"achievement_hard_score_1000_desc" = "Score 1000 on Hard mode";
+
+/* Menu Buttons */
+"menu_daily_bonus" = "Daily Bonus";
+"menu_achievements" = "Achievements";
+
+/* Skin Shop */
+"skin_shop_title" = "Skin Shop";
+"skin_equipped" = "Equipped";
+"skin_owned" = "Owned";
+"skin_purchased" = "Skin Purchased!";
+
+/* Skin Categories */
+"skin_category_basic" = "Basic";
+"skin_category_nature" = "Nature";
+"skin_category_neon" = "Neon";
+"skin_category_seasonal" = "Seasonal";
+"skin_category_premium" = "Premium";
+
+/* Skin Names and Descriptions */
+"skin_default_name" = "Default";
+"skin_default_desc" = "Standard color palette";
+
+"skin_pastel_dream_name" = "Pastel Dream";
+"skin_pastel_dream_desc" = "Soft pastel colors";
+
+"skin_monochrome_name" = "Monochrome";
+"skin_monochrome_desc" = "Simple black and white gradient";
+
+"skin_forest_name" = "Forest";
+"skin_forest_desc" = "Natural colors inspired by deep forests";
+
+"skin_ocean_name" = "Ocean";
+"skin_ocean_desc" = "Blue gradients of sea and sky";
+
+"skin_sunset_name" = "Sunset";
+"skin_sunset_desc" = "Warm colors of the evening sky";
+
+"skin_cyberpunk_name" = "Cyberpunk";
+"skin_cyberpunk_desc" = "Vibrant neon colors";
+
+"skin_retro_wave_name" = "Retro Wave";
+"skin_retro_wave_desc" = "80s-style retro neon";
+
+"skin_sakura_name" = "Sakura";
+"skin_sakura_desc" = "Spring cherry blossom pink";
+
+"skin_winter_name" = "Winter";
+"skin_winter_desc" = "Icy blue-white winter colors";
+
+"skin_galaxy_name" = "Galaxy";
+"skin_galaxy_desc" = "Mystical space and nebula colors";
+
+"skin_golden_name" = "Golden";
+"skin_golden_desc" = "Luxurious gold tones";
