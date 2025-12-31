@@ -19,56 +19,165 @@ sandtetris is an iOS application built with SwiftUI and SwiftData. The project u
 
 ## Build and Test Commands
 
+**IMPORTANT**: This project uses CocoaPods. You must run `pod install` before building.
+
+### CocoaPods Setup
+- Install dependencies: `pod install`
+- If pods are outdated: `pod deintegrate && pod install`
+
 ### Building the App
-- Build the project: Open `sandtetris.xcodeproj` in Xcode and use Cmd+B, or use `xcodebuild -project sandtetris.xcodeproj -scheme sandtetris -configuration Debug build`
-- Build for release: `xcodebuild -project sandtetris.xcodeproj -scheme sandtetris -configuration Release build`
+- Build the project: Open `sandtetris.xcworkspace` (not .xcodeproj) in Xcode and use Cmd+B
+- Build via command line: `xcodebuild -workspace sandtetris.xcworkspace -scheme sandtetris -configuration Debug build`
+- Build for release: `xcodebuild -workspace sandtetris.xcworkspace -scheme sandtetris -configuration Release build`
 
 ### Running Tests
-- Run unit tests: `xcodebuild test -project sandtetris.xcodeproj -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15'`
-- Run specific test: `xcodebuild test -project sandtetris.xcodeproj -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:sandtetrisTests/sandtetrisTests/example`
-- Run UI tests: `xcodebuild test -project sandtetris.xcodeproj -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:sandtetrisUITests`
+- Run unit tests: `xcodebuild test -workspace sandtetris.xcworkspace -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15'`
+- Run specific test: `xcodebuild test -workspace sandtetris.xcworkspace -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:sandtetrisTests/sandtetrisTests/example`
+- Run UI tests: `xcodebuild test -workspace sandtetris.xcworkspace -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:sandtetrisUITests`
 
 ### Running the App
-- Run in simulator: Open project in Xcode and use Cmd+R, or `xcodebuild -project sandtetris.xcodeproj -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' run`
+- Run in simulator: Open `sandtetris.xcworkspace` in Xcode and use Cmd+R
+- Run via command line: `xcodebuild -workspace sandtetris.xcworkspace -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' run`
 
 ## Architecture
 
-### Core Components
+### Game Architecture
 
-**sandtetrisApp.swift** (sandtetris/sandtetrisApp.swift:12-32)
-- Main app entry point using `@main` attribute
-- Sets up SwiftData `ModelContainer` with the `Item` schema
-- Configures persistent storage (not in-memory)
-- Injects model container into the SwiftUI environment via `.modelContainer()` modifier
+This is a sand physics simulation game with tetris pieces that decompose into sand particles.
 
-**ContentView.swift** (sandtetris/ContentView.swift:11-61)
-- Main view displaying a list of items with timestamps
-- Uses `NavigationSplitView` for iPad-optimized layout
-- Accesses SwiftData via `@Environment(\.modelContext)` and `@Query`
-- Implements add/delete operations with animations
+#### Core Game Components
 
-**Item.swift** (sandtetris/Item.swift:11-18)
-- SwiftData model marked with `@Model` macro
-- Simple data structure containing only a timestamp property
-- Represents the core data entity in the app
+**GameModel.swift** - Main game state and logic
+- `@Observable @MainActor class GameModel`: Core game engine with 60fps update loop
+- Dual grid system:
+  - Piece grid: Logical grid for tetris pieces (10×15 default)
+  - Particle grid: Physical grid for sand simulation (piece grid × 12 subdivision)
+- Sand physics: Gravity-based falling sand with diagonal flow
+- Line clearing: Flood-fill algorithm checks for color connections from left to right edge
+- Score system: Dynamic difficulty with fall speed increase every 500 points
 
-### Data Flow
+**TetrisPiece.swift** - Tetris piece definitions
+- Standard tetris shapes (I, O, T, S, Z, J, L)
+- Each piece has a color from configurable palette (3, 5, or 7 colors)
+- Rotation support with boundary checking
 
-The app uses SwiftData for persistence:
-1. `sandtetrisApp` creates the `ModelContainer` and injects it into the view hierarchy
-2. `ContentView` accesses the model context and queries items automatically
-3. All CRUD operations on `Item` objects go through the model context
-4. SwiftData handles persistence automatically
+**GameView.swift** - Main game UI
+- Header with score, level, next piece preview
+- Game area with sand particle rendering
+- Control guide and touch gesture handling
+- AdMob integration (banner + interstitial)
 
-### Test Structure
+#### Monetization System
 
-- **sandtetrisTests/**: Unit tests using Swift Testing framework (`@Test` attribute)
-- **sandtetrisUITests/**: UI tests for end-to-end testing
+**CoinManager.swift** - Virtual currency management
+- Singleton managing coins via UserDefaults
+- Earned through achievements and daily bonuses
+- Used for purchasing skins
+
+**AchievementManager.swift** - Achievement tracking
+- Tracks play count, high scores, difficulty levels
+- Unlocks award coins when milestones are reached
+- Persists state via UserDefaults
+
+**DailyBonusManager.swift** - Daily reward system
+- Awards coins for consecutive daily logins
+- Streak tracking with last claim date
+
+**SkinManager.swift** & **SkinTheme.swift** - Visual customization
+- Manages owned and selected skins
+- Skins define background colors and sand particle colors
+- Default skin is free, others purchasable with coins
+
+**SkinShopView.swift** - In-game shop UI
+- Purchase and select skins using coins
+- Preview available and owned skins
+
+#### Ad Integration
+
+**AdMobManager.swift** - AdMob SDK initialization and configuration
+- Shared singleton initializing Google Mobile Ads SDK on app launch
+- Manages app-level ad configuration
+
+**BannerAdView.swift** - Banner ad display
+- GADBannerView wrapper as SwiftUI view
+- Displayed at bottom of game screen
+
+**InterstitialAdManager.swift** - Interstitial ad management
+- Shows full-screen ads periodically (every 3 games)
+- Pauses game during ad display
+- Handles ad loading and presentation
+
+#### Settings & Configuration
+
+**GameSettings.swift** - Game configuration singleton
+- Color count (difficulty: 3/5/7 colors)
+- Game area dimensions and aspect ratio
+- Touch control modes
+- Persisted via UserDefaults
+
+**SettingsView.swift** - Settings UI
+- Color count selection
+- Game reset option
+- Links to achievements, daily bonus, skin shop
+
+#### Data Models
+
+**HighScore.swift** - SwiftData model for score persistence
+- Stores score, level, play date, color count
+- Queried in settings to show high scores by difficulty
+
+**Item.swift** - Legacy SwiftData model (may be unused)
+
+### App Structure
+
+**sandtetrisApp.swift**
+- App entry point with `@main` attribute
+- Sets up SwiftData `ModelContainer` for `Item` and `HighScore` models
+- Initializes AdMob on app launch
+- Injects `AdMobManager` as environment object
+
+**ContentView.swift**
+- Root view presenting `DifficultySelectionView` or `GameView`
+- Difficulty selection sets color count before starting game
+
+**DifficultySelectionView.swift**
+- Initial screen for choosing difficulty (3/5/7 colors)
+- Launches game after selection
+
+### Key Patterns
+
+1. **Observable Pattern**: Game state uses Swift's `@Observable` macro for reactive UI updates
+2. **Singleton Managers**: Settings, coins, achievements, skins, ads all use shared singletons
+3. **SwiftData**: High scores persisted via SwiftData with ModelContainer/ModelContext
+4. **UserDefaults**: Achievements, coins, skins, settings stored in UserDefaults
+5. **60fps Game Loop**: Timer-based update at ~16ms intervals for smooth physics
+6. **Physics Simulation**: Bottom-up iteration for sand gravity with diagonal flow
+
+### Important Implementation Details
+
+- **Grid Resizing**: GameModel checks grid bounds on every physics update to handle dynamic resizing
+- **Piece Subdivision**: Each tetris cell becomes 12×12 sand particles when locked
+- **Game Over Conditions**: (1) New piece can't spawn, (2) Sand fills top 50% of upper 3 rows
+- **Line Clearing**: Only triggers after sand is stable for ~0.5 seconds (30 frames)
+- **Ad Timing**: Interstitial ads show after every 3rd game over
 
 ## Project Configuration
 
 - **Bundle Identifier**: jp.dancho.sandtetris
 - **Development Team**: 6549AY6J4G
-- **Deployment Target**: iOS 26.0
+- **Deployment Target**: iOS 17.0 (Podfile), iOS 26.0 (Xcode project)
 - **Swift Features**: Approachable concurrency, MainActor isolation, member import visibility
-- **Supported Devices**: iPhone and iPad (1,2)
+- **Supported Devices**: iPhone and iPad
+- **Dependencies**: Google-Mobile-Ads-SDK (via CocoaPods)
+
+## Dependencies
+
+### CocoaPods
+- **Google-Mobile-Ads-SDK**: AdMob integration for banner and interstitial ads
+- Platform: iOS 17.0+
+- Uses dynamic frameworks
+
+### Important Notes
+- Always use `sandtetris.xcworkspace`, NOT `sandtetris.xcodeproj` after running `pod install`
+- Podfile includes Xcode Cloud compatibility fixes for realpath and Metal Toolchain issues
+- Run `pod install` whenever pulling updates that modify Podfile or Podfile.lock
