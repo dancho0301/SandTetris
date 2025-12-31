@@ -11,6 +11,11 @@ import SwiftData
 struct DifficultySelectionView: View {
     let onDifficultySelected: (Difficulty) -> Void
     @State private var selectedDifficulty: Difficulty = .normal
+    @State private var showDailyBonus: Bool = false
+    @State private var showAchievements: Bool = false
+    @State private var dailyBonusManager = DailyBonusManager.shared
+    @State private var achievementManager = AchievementManager.shared
+    @State private var coinManager = CoinManager.shared
 
     @Query(sort: \HighScore.score, order: .reverse) private var allHighScores: [HighScore]
 
@@ -97,6 +102,78 @@ struct DifficultySelectionView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // トップバー（コイン表示とメニューボタン）
+            HStack {
+                // コイン残高
+                HStack(spacing: 4) {
+                    Image(systemName: "dollarsign.circle.fill")
+                        .font(.system(size: 18))
+                        .foregroundColor(.yellow)
+                    Text("\(coinManager.coins)")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.white.opacity(0.8))
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                )
+
+                Spacer()
+
+                // デイリーボーナスボタン
+                Button(action: { showDailyBonus = true }) {
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: "gift.fill")
+                            .font(.system(size: 22))
+                            .foregroundColor(.orange)
+                            .padding(10)
+                            .background(
+                                Circle()
+                                    .fill(Color.white.opacity(0.8))
+                                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                            )
+
+                        // 受け取り可能の場合はバッジ表示
+                        if dailyBonusManager.canClaimToday {
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 12, height: 12)
+                                .offset(x: 2, y: -2)
+                        }
+                    }
+                }
+
+                // アチーブメントボタン
+                Button(action: { showAchievements = true }) {
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: 22))
+                            .foregroundColor(.yellow)
+                            .padding(10)
+                            .background(
+                                Circle()
+                                    .fill(Color.white.opacity(0.8))
+                                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                            )
+
+                        // 未受け取り報酬がある場合はバッジ表示
+                        if achievementManager.hasUnclaimedRewards {
+                            Text("\(achievementManager.unclaimedRewardCount)")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.white)
+                                .frame(minWidth: 16, minHeight: 16)
+                                .background(Circle().fill(Color.red))
+                                .offset(x: 4, y: -4)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+
             // タイトル
             VStack(spacing: 16) {
                 Text(LocalizedStringKey("app_name"))
@@ -114,8 +191,8 @@ struct DifficultySelectionView: View {
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(.secondary)
             }
-            .padding(.top, 60)
-            .padding(.bottom, 40)
+            .padding(.top, 20)
+            .padding(.bottom, 30)
 
             // 難易度選択
             VStack(spacing: 20) {
@@ -184,6 +261,16 @@ struct DifficultySelectionView: View {
             )
             .ignoresSafeArea()
         )
+        .sheet(isPresented: $showDailyBonus) {
+            DailyBonusView()
+                .onDisappear {
+                    // デイリーボーナス受け取り後に連続ログインアチーブメントをチェック
+                    achievementManager.checkStreakAchievements(streak: dailyBonusManager.currentStreak)
+                }
+        }
+        .sheet(isPresented: $showAchievements) {
+            AchievementView()
+        }
     }
 }
 

@@ -77,3 +77,89 @@
 "settings_reset_button" = "リセットする";
 "settings_revert_button" = "元に戻す";
 "settings_game_settings_changed_message" = "ゲーム設定が変更されました。ゲームをリセットしますか？\n\n「元に戻す」を選ぶと、設定を変更前の状態に戻します。";
+
+/* デイリーボーナス */
+"daily_bonus_title" = "デイリーボーナス";
+"coins_unit" = "コイン";
+"streak_current" = "連続ログイン";
+"streak_best" = "最長記録";
+"days_unit" = "日";
+"weekly_bonus" = "週間ボーナス";
+"day_1" = "1日目";
+"day_2" = "2日目";
+"day_3" = "3日目";
+"day_4" = "4日目";
+"day_5" = "5日目";
+"day_6" = "6日目";
+"day_7" = "7日目";
+"claim_bonus" = "ボーナスを受け取る";
+"next_bonus_in" = "次のボーナスまで";
+"already_claimed_today" = "本日のボーナスは受け取り済みです";
+"bonus_received" = "ボーナス獲得！";
+
+/* アチーブメント */
+"achievements_title" = "アチーブメント";
+"claim_all_rewards" = "すべて受け取る";
+"achievement_unlocked" = "アチーブメント解除！";
+"reward_claimed" = "報酬獲得！";
+
+/* アチーブメントカテゴリ */
+"achievement_category_score" = "スコア";
+"achievement_category_level" = "レベル";
+"achievement_category_play" = "プレイ";
+"achievement_category_streak" = "連続";
+"achievement_category_difficulty" = "難易度";
+
+/* スコアアチーブメント */
+"achievement_score_100_name" = "はじめの一歩";
+"achievement_score_100_desc" = "100点を達成する";
+"achievement_score_500_name" = "スコアハンター";
+"achievement_score_500_desc" = "500点を達成する";
+"achievement_score_1000_name" = "千点突破";
+"achievement_score_1000_desc" = "1000点を達成する";
+"achievement_score_5000_name" = "スコアマスター";
+"achievement_score_5000_desc" = "5000点を達成する";
+"achievement_score_10000_name" = "スコアレジェンド";
+"achievement_score_10000_desc" = "10000点を達成する";
+
+/* レベルアチーブメント */
+"achievement_level_3_name" = "レベル3到達";
+"achievement_level_3_desc" = "レベル3に到達する";
+"achievement_level_5_name" = "レベル5到達";
+"achievement_level_5_desc" = "レベル5に到達する";
+"achievement_level_10_name" = "二桁レベル";
+"achievement_level_10_desc" = "レベル10に到達する";
+"achievement_level_20_name" = "レベルマスター";
+"achievement_level_20_desc" = "レベル20に到達する";
+
+/* プレイ回数アチーブメント */
+"achievement_play_1_name" = "ようこそ！";
+"achievement_play_1_desc" = "初めてゲームをプレイする";
+"achievement_play_10_name" = "常連さん";
+"achievement_play_10_desc" = "10回ゲームをプレイする";
+"achievement_play_50_name" = "熱心なプレイヤー";
+"achievement_play_50_desc" = "50回ゲームをプレイする";
+"achievement_play_100_name" = "ベテラン";
+"achievement_play_100_desc" = "100回ゲームをプレイする";
+
+/* 連続ログインアチーブメント */
+"achievement_streak_3_name" = "3日連続";
+"achievement_streak_3_desc" = "3日連続でログインする";
+"achievement_streak_7_name" = "1週間連続";
+"achievement_streak_7_desc" = "7日連続でログインする";
+"achievement_streak_14_name" = "2週間連続";
+"achievement_streak_14_desc" = "14日連続でログインする";
+"achievement_streak_30_name" = "1ヶ月連続";
+"achievement_streak_30_desc" = "30日連続でログインする";
+
+/* 難易度アチーブメント */
+"achievement_easy_mode_name" = "リラックスモード";
+"achievement_easy_mode_desc" = "かんたんモードでプレイする";
+"achievement_hard_mode_name" = "チャレンジャー";
+"achievement_hard_mode_desc" = "むずかしいモードでプレイする";
+"achievement_hard_score_1000_name" = "ハードコア";
+"achievement_hard_score_1000_desc" = "むずかしいモードで1000点達成";
+
+/* メニューボタン */
+"menu_daily_bonus" = "デイリーボーナス";
+"menu_achievements" = "アチーブメント";

@@ -616,6 +616,13 @@ class GameModel {
         } catch {
             print("Failed to save high score: \(error)")
         }
+
+        // アチーブメントのチェック
+        AchievementManager.shared.onGameOver(
+            score: score,
+            level: currentLevel,
+            colorCount: GameSettings.shared.colorCount
+        )
     }
 
     nonisolated deinit {
