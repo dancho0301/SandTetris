@@ -242,7 +242,7 @@ struct DifficultySelectionView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "play.fill")
                         .font(.system(size: 24, weight: .bold))
-                    Text("ゲームスタート")
+                    Text(LocalizedStringKey("game_start_button"))
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                 }
                 .foregroundColor(.white)
@@ -361,7 +361,7 @@ struct HighScoreSectionCompact: View {
                 .padding(.horizontal, 12)
 
             if scores.isEmpty {
-                Text("記録なし")
+                Text(LocalizedStringKey("high_scores_no_records"))
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -458,7 +458,7 @@ struct HighScoreRowCompact: View {
 
         if calendar.isDateInToday(date) {
             formatter.dateFormat = "HH:mm"
-            return "今日 " + formatter.string(from: date)
+            return NSLocalizedString("high_score_today", comment: "") + " " + formatter.string(from: date)
         } else {
             formatter.dateFormat = "MM/dd"
             return formatter.string(from: date)
