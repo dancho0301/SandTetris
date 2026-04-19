@@ -16,3 +16,4 @@ xcuserdata/
 
 # Backups
 *.bak
+build_derived/
