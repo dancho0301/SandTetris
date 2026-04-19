@@ -213,6 +213,12 @@
 				en,
 				ja,
 				"zh-Hans",
+				"zh-Hant",
+				ko,
+				fr,
+				de,
+				es,
+				"pt-BR",
 				Base,
 			);
 			mainGroup = 5A85C79C2EAD703C009743D8;
