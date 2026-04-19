@@ -28,12 +28,12 @@ enum GameState {
 class GameModel {
     // テトリスピースのグリッドサイズ（論理的なサイズ）
     static var pieceGridWidth: Int {
-        return max(10, GameSettings.shared.gameAreaWidth)
+        return 15
     }
     static var pieceGridHeight: Int {
         let aspectRatio = max(1.0, GameSettings.shared.gameAreaAspectRatio)
         let height = Int(ceil(Double(pieceGridWidth) * aspectRatio))
-        return max(15, height)  // 最小高さ15を保証
+        return max(20, height)  // 最小高さ20を保証
     }
 
     // 粒子の細分化レベル（1ピースセルをN×Nの粒子に分割）
@@ -93,6 +93,10 @@ class GameModel {
     private var sandStableFrames: Int = 0
     private let stableFramesThreshold: Int = 30 // 約0.5秒間変化がなければ静止とみなす
 
+    // ミッションシステム
+    var currentMission: Mission?
+    var missionEnabled: Bool = true // ミッション機能の有効/無効
+
     init() {
         setupNewGame()
     }
@@ -111,6 +115,11 @@ class GameModel {
         nextPiece = TetrisPiece.random(colorCount: GameSettings.shared.colorCount)
         currentPosition = (x: GameModel.pieceGridWidth / 2 - 1, y: 0)
         gameState = .ready
+
+        // ミッションを生成
+        if missionEnabled {
+            generateNewMission()
+        }
     }
 
     // ゲーム開始
@@ -148,6 +157,21 @@ class GameModel {
     // ゲームループ更新
     private func update() {
         guard gameState == .playing else { return }
+
+        // ミッションタイマー更新
+        if var mission = currentMission, mission.state == .active {
+            mission.remainingTime -= tickInterval
+
+            // 時間切れチェック
+            if mission.isTimeUp {
+                mission.state = .failed
+                currentMission = mission
+                handleMissionFailed()
+                return
+            }
+
+            currentMission = mission
+        }
 
         // 新しいピースの出現待機中
         if waitingForNextPiece {
@@ -434,10 +458,18 @@ class GameModel {
         }
 
         var cellsToRemove: Set<String> = []
+        var linesCleared = 0
+        var processedRegions: Set<String> = [] // 処理済みの領域を記録
 
         // 全ての行について、左から右への繋がりをチェック
         for y in 0..<currentGridHeight {
             guard case .sand(let color) = grid[y][0] else { continue }
+
+            // この開始点が既に処理済みの領域に含まれているかチェック
+            let startKey = "0,\(y)"
+            if processedRegions.contains(startKey) {
+                continue
+            }
 
             // この行で左端から繋がっている同じ色のセルを探索
             var connectedCells: Set<String> = []
@@ -448,6 +480,8 @@ class GameModel {
             // 右端まで繋がっていたら消去対象に追加
             if reachedRight {
                 cellsToRemove.formUnion(connectedCells)
+                processedRegions.formUnion(connectedCells)
+                linesCleared += 1 // 左右に繋がった1つの領域 = 1ライン
             }
         }
 
@@ -467,7 +501,20 @@ class GameModel {
             let difficultyMultiplier = 1.0 + Double(GameSettings.shared.colorCount - 3) * 0.25
             let scoreGain = Int(Double(particlesCleared) * difficultyMultiplier)
             score += scoreGain
-            updateFallSpeed() // スコアに応じて落下速度を更新
+
+            // ミッション進捗を更新
+            if var mission = currentMission, mission.state == .active {
+                mission.clearedLines += linesCleared
+
+                // ミッション達成チェック
+                if mission.isCompleted {
+                    mission.state = .completed
+                    currentMission = mission
+                    handleMissionCompleted()
+                } else {
+                    currentMission = mission
+                }
+            }
         }
     }
 
@@ -520,11 +567,8 @@ class GameModel {
         #endif
     }
 
-    // スコアに応じた落下速度とレベルを計算
+    // レベルに応じた落下速度を計算（ミッションクリア時のみ呼ばれる）
     private func updateFallSpeed() {
-        // スコアに応じてレベルを計算（500点ごとにレベルアップ）
-        currentLevel = max(1, (score / 500) + 1)
-
         // レベルに応じて落下速度を設定
         // Level 1: 1.0秒
         // Level 2: 0.85秒
@@ -623,6 +667,44 @@ class GameModel {
             level: currentLevel,
             colorCount: GameSettings.shared.colorCount
         )
+    }
+
+    // MARK: - ミッション関連
+
+    /// 新しいミッションを生成
+    private func generateNewMission() {
+        currentMission = MissionGenerator.generate(
+            level: currentLevel,
+            colorCount: GameSettings.shared.colorCount
+        )
+    }
+
+    /// ミッション達成時の処理
+    private func handleMissionCompleted() {
+        // ボーナススコアを付与
+        let bonusScore = 500 * currentLevel
+        score += bonusScore
+
+        // レベルアップ
+        currentLevel += 1
+        updateFallSpeed()
+
+        // コインを付与
+        let coinReward = 10 * currentLevel
+        CoinManager.shared.addCoins(coinReward)
+
+        // 次のミッションを生成
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            self?.generateNewMission()
+        }
+    }
+
+    /// ミッション失敗時の処理
+    private func handleMissionFailed() {
+        // ゲームオーバー
+        gameState = .gameOver
+        stopTimer()
+        saveHighScore()
     }
 
     nonisolated deinit {

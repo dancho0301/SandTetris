@@ -10,35 +10,49 @@ import SwiftData
 import GoogleMobileAds
 
 struct GameView: View {
+    let onQuit: () -> Void
+
     @Environment(\.modelContext) private var modelContext
     @State private var gameModel = GameModel()
     @State private var showSettings = false
     @State private var needsReset = false
+    @State private var quitRequested = false
     @State private var settings = GameSettings.shared
     @State private var skinManager = SkinManager.shared
     @StateObject private var interstitialAdManager = InterstitialAdManager()
+    @State private var showMissionCompleted = false
 
     var body: some View {
         GeometryReader { geometry in
-            VStack(spacing: 0) {
-                // ヘッダー部分（スコア、レベル、次のピース、設定ボタン）
-                HeaderView(
-                    score: gameModel.score,
-                    level: gameModel.currentLevel,
-                    nextPiece: gameModel.nextPiece,
-                    onSettingsTapped: {
-                        showSettings = true
+            ZStack {
+                VStack(spacing: 0) {
+                    // ヘッダー部分（スコア、レベル、次のピース、設定ボタン）
+                    HeaderView(
+                        score: gameModel.score,
+                        level: gameModel.currentLevel,
+                        nextPiece: gameModel.nextPiece,
+                        onSettingsTapped: {
+                            showSettings = true
+                        }
+                    )
+                    .frame(height: geometry.size.height * 0.12)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+
+                    // ミッション表示
+                    if let mission = gameModel.currentMission, gameModel.missionEnabled {
+                        MissionView(mission: mission)
+                            .padding(.horizontal)
+                            .padding(.bottom, 8)
+                            .transition(.move(edge: .top).combined(with: .opacity))
                     }
-                )
-                .frame(height: geometry.size.height * 0.12)
-                .padding(.horizontal)
-                .padding(.top, 8)
 
                 // ゲームエリア（砂とテトリスピースが表示される）
                 GameAreaView(
                     gameModel: gameModel,
                     interstitialAdManager: interstitialAdManager,
-                    skinManager: skinManager
+                    skinManager: skinManager,
+                    onQuit: onQuit
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(
@@ -48,16 +62,19 @@ struct GameView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .cornerRadius(16)
                     .padding()
 
-                // 操作ガイド
-                ControlGuideView(touchControlMode: settings.touchControlMode)
-                    .padding(.bottom, 8)
+                    // バナー広告
+                    BannerAdView()
+                        .padding(.bottom, 8)
+                }
 
-                // バナー広告
-                BannerAdView()
-                    .padding(.bottom, 8)
+                // ミッション達成アニメーション
+                if showMissionCompleted, let mission = gameModel.currentMission {
+                    MissionCompletedView(mission: mission, level: gameModel.currentLevel - 1) {
+                        showMissionCompleted = false
+                    }
+                }
             }
         }
         .background(
@@ -73,6 +90,15 @@ struct GameView: View {
             gameModel.startGame()
         }
         .sheet(isPresented: $showSettings, onDismiss: {
+            // プレイ中止が選択された場合
+            if quitRequested {
+                // スコアを保存してからトップ画面に戻る
+                gameModel.saveHighScore()
+                quitRequested = false
+                onQuit()
+                return
+            }
+
             // ユーザーが「リセットする」を選択した場合のみゲームをリセット
             if needsReset {
                 gameModel.setupNewGame()
@@ -80,15 +106,15 @@ struct GameView: View {
                 needsReset = false
             }
         }) {
-            SettingsView(needsReset: $needsReset)
+            SettingsView(needsReset: $needsReset, quitRequested: $quitRequested)
         }
         .onChange(of: showSettings) { oldValue, newValue in
-            // 設定画面が表示されたらゲームを一時停止
-            if newValue {
+            // 設定画面が表示されたらゲームを一時停止（プレイ中の場合のみ）
+            if newValue && gameModel.gameState == .playing {
                 gameModel.pauseGame()
             }
-            // 設定画面が閉じられたらゲームを再開（ただしゲームオーバーでない場合のみ）
-            else if gameModel.gameState == .paused {
+            // 設定画面が閉じられたらゲームを再開（一時停止中の場合のみ）
+            else if !newValue && gameModel.gameState == .paused {
                 gameModel.resumeGame()
             }
         }
@@ -102,6 +128,12 @@ struct GameView: View {
             else if gameModel.gameState == .paused {
                 gameModel.resumeGame()
                 print("広告終了：ゲームを再開")
+            }
+        }
+        .onChange(of: gameModel.currentMission?.state) { oldValue, newValue in
+            // ミッション達成時にアニメーションを表示
+            if newValue == .completed {
+                showMissionCompleted = true
             }
         }
     }
@@ -199,6 +231,7 @@ struct GameAreaView: View {
     let gameModel: GameModel
     @ObservedObject var interstitialAdManager: InterstitialAdManager
     let skinManager: SkinManager
+    let onQuit: () -> Void
     @State private var settings = GameSettings.shared
     @State private var dragStartLocation: CGPoint?
     @State private var lastDragY: CGFloat = 0
@@ -421,6 +454,10 @@ struct GameAreaView: View {
                         gameModel.startGame()
                         // ゲームオーバー後にインタースティシャル広告を表示
                         interstitialAdManager.showAd()
+                    },
+                    onQuit: {
+                        gameModel.saveHighScore()
+                        onQuit()
                     }
                 )
             }
@@ -733,6 +770,7 @@ struct GameOverView: View {
     let score: Int
     let level: Int
     let onRetry: () -> Void
+    let onQuit: () -> Void
 
     @Query(sort: \HighScore.score, order: .reverse) private var allHighScores: [HighScore]
 
@@ -817,28 +855,49 @@ struct GameOverView: View {
                 }
                 .frame(maxHeight: 250)
 
-                // リトライボタン
-                Button(action: onRetry) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "arrow.clockwise")
-                            .font(.system(size: 24, weight: .semibold))
-                        Text(LocalizedStringKey("game_over_retry"))
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color.blue, Color.purple]),
-                            startPoint: .leading,
-                            endPoint: .trailing
+                // ボタン群
+                VStack(spacing: 12) {
+                    // リトライボタン
+                    Button(action: onRetry) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 24, weight: .semibold))
+                            Text(LocalizedStringKey("game_over_retry"))
+                                .font(.system(size: 20, weight: .bold, design: .rounded))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 18)
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(colors: [Color.blue, Color.purple]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
                         )
-                    )
-                    .cornerRadius(16)
-                    .shadow(color: .blue.opacity(0.5), radius: 10, x: 0, y: 5)
+                        .cornerRadius(16)
+                        .shadow(color: .blue.opacity(0.5), radius: 10, x: 0, y: 5)
+                    }
+                    .buttonStyle(.plain)
+
+                    // トップ画面に戻るボタン
+                    Button(action: onQuit) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "house")
+                                .font(.system(size: 20, weight: .semibold))
+                            Text("トップ画面に戻る")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            Color.gray.opacity(0.6)
+                        )
+                        .cornerRadius(16)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
             .padding(40)
             .background(
@@ -981,5 +1040,5 @@ struct HighScoreRow: View {
 }
 
 #Preview {
-    GameView()
+    GameView(onQuit: {})
 }

@@ -68,6 +68,18 @@ class AchievementManager {
         AchievementType.allCases.count
     }
 
+    /// 特定カテゴリの未受領報酬数を取得
+    /// - Parameter category: カテゴリ
+    /// - Returns: 未受領の報酬数
+    func unclaimedRewardCount(for category: AchievementCategory) -> Int {
+        return category.achievements.filter { type in
+            if let state = states[type] {
+                return state.isUnlocked && !state.isRewardClaimed
+            }
+            return false
+        }.count
+    }
+
     private init() {
         self.totalPlayCount = UserDefaults.standard.integer(forKey: Keys.totalPlayCount)
         self.highestScore = UserDefaults.standard.integer(forKey: Keys.highestScore)

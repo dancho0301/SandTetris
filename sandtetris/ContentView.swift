@@ -15,7 +15,9 @@ struct ContentView: View {
     var body: some View {
         Group {
             if showGame {
-                GameView()
+                GameView(onQuit: {
+                    showGame = false
+                })
             } else {
                 DifficultySelectionView { difficulty in
                     // 選択された難易度に応じて色数を設定
