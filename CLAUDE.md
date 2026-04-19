@@ -19,25 +19,24 @@ sandtetris is an iOS application built with SwiftUI and SwiftData. The project u
 
 ## Build and Test Commands
 
-**IMPORTANT**: This project uses CocoaPods. You must run `pod install` before building.
+**IMPORTANT**: This project uses Swift Package Manager (SPM) for dependencies. Open `sandtetris.xcodeproj` directly (no workspace needed).
 
-### CocoaPods Setup
-- Install dependencies: `pod install`
-- If pods are outdated: `pod deintegrate && pod install`
+### SPM Dependencies
+- Google Mobile Ads SDK: `https://github.com/googleads/swift-package-manager-google-mobile-ads.git`
+- Add via Xcode: File → Add Package Dependencies
+- Xcode automatically resolves packages on first build
 
 ### Building the App
-- Build the project: Open `sandtetris.xcworkspace` (not .xcodeproj) in Xcode and use Cmd+B
-- Build via command line: `xcodebuild -workspace sandtetris.xcworkspace -scheme sandtetris -configuration Debug build`
-- Build for release: `xcodebuild -workspace sandtetris.xcworkspace -scheme sandtetris -configuration Release build`
+- Build the project: Open `sandtetris.xcodeproj` in Xcode and use Cmd+B
+- Build via command line: `xcodebuild -project sandtetris.xcodeproj -scheme sandtetris -configuration Debug build`
+- Build for release: `xcodebuild -project sandtetris.xcodeproj -scheme sandtetris -configuration Release build`
 
 ### Running Tests
-- Run unit tests: `xcodebuild test -workspace sandtetris.xcworkspace -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15'`
-- Run specific test: `xcodebuild test -workspace sandtetris.xcworkspace -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:sandtetrisTests/sandtetrisTests/example`
-- Run UI tests: `xcodebuild test -workspace sandtetris.xcworkspace -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:sandtetrisUITests`
+- Run unit tests: `xcodebuild test -project sandtetris.xcodeproj -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15'`
+- Run UI tests: `xcodebuild test -project sandtetris.xcodeproj -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:sandtetrisUITests`
 
 ### Running the App
-- Run in simulator: Open `sandtetris.xcworkspace` in Xcode and use Cmd+R
-- Run via command line: `xcodebuild -workspace sandtetris.xcworkspace -scheme sandtetris -destination 'platform=iOS Simulator,name=iPhone 15' run`
+- Run in simulator: Open `sandtetris.xcodeproj` in Xcode and use Cmd+R
 
 ## Architecture
 
@@ -168,16 +167,16 @@ This is a sand physics simulation game with tetris pieces that decompose into sa
 - **Deployment Target**: iOS 17.0 (Podfile), iOS 26.0 (Xcode project)
 - **Swift Features**: Approachable concurrency, MainActor isolation, member import visibility
 - **Supported Devices**: iPhone and iPad
-- **Dependencies**: Google-Mobile-Ads-SDK (via CocoaPods)
+- **Dependencies**: Google Mobile Ads SDK (via Swift Package Manager)
 
 ## Dependencies
 
-### CocoaPods
-- **Google-Mobile-Ads-SDK**: AdMob integration for banner and interstitial ads
-- Platform: iOS 17.0+
-- Uses dynamic frameworks
+### Swift Package Manager
+- **Google Mobile Ads SDK**: `https://github.com/googleads/swift-package-manager-google-mobile-ads.git`
+  - AdMob integration for banner and interstitial ads
+  - Uses new Swift API (`MobileAds`, `BannerView`, `InterstitialAd`, `Request`)
 
 ### Important Notes
-- Always use `sandtetris.xcworkspace`, NOT `sandtetris.xcodeproj` after running `pod install`
-- Podfile includes Xcode Cloud compatibility fixes for realpath and Metal Toolchain issues
-- Run `pod install` whenever pulling updates that modify Podfile or Podfile.lock
+- Use `sandtetris.xcodeproj` directly (no workspace)
+- Xcode Cloud works natively with SPM — no workarounds needed
+- Package resolution is automatic on build

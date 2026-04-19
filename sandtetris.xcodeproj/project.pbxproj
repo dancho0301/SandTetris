@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1F7276B0BB58EA1EEF5392A3 /* Pods_sandtetris.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D82DBD6FDA23159D7984D23C /* Pods_sandtetris.framework */; };
-		9843556EA17EADB5EEABFCD2 /* Pods_sandtetris_sandtetrisUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D93BF84E05BD536ADA48A59D /* Pods_sandtetris_sandtetrisUITests.framework */; };
-		D68E5F11B5FDBFF09A3FD87C /* Pods_sandtetrisTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08524CD87DF39FAF4C37710A /* Pods_sandtetrisTests.framework */; };
+		5A7932D62F94649C00DFA11B /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 5A7932D52F94649C00DFA11B /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,18 +28,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		08524CD87DF39FAF4C37710A /* Pods_sandtetrisTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_sandtetrisTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4264567A606D6771F7FCB94A /* Pods-sandtetris-sandtetrisUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sandtetris-sandtetrisUITests.debug.xcconfig"; path = "Target Support Files/Pods-sandtetris-sandtetrisUITests/Pods-sandtetris-sandtetrisUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		5381E402D82320E911D1CC33 /* Pods-sandtetris.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sandtetris.debug.xcconfig"; path = "Target Support Files/Pods-sandtetris/Pods-sandtetris.debug.xcconfig"; sourceTree = "<group>"; };
 		5A85C7A52EAD703C009743D8 /* sandtetris.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sandtetris.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A85C7B62EAD703E009743D8 /* sandtetrisTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = sandtetrisTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A85C7C02EAD703E009743D8 /* sandtetrisUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = sandtetrisUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5BCD696980D80159F2135D38 /* Pods-sandtetris-sandtetrisUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sandtetris-sandtetrisUITests.release.xcconfig"; path = "Target Support Files/Pods-sandtetris-sandtetrisUITests/Pods-sandtetris-sandtetrisUITests.release.xcconfig"; sourceTree = "<group>"; };
-		98AEF085BDF74777B49ED5B2 /* Pods-sandtetrisTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sandtetrisTests.release.xcconfig"; path = "Target Support Files/Pods-sandtetrisTests/Pods-sandtetrisTests.release.xcconfig"; sourceTree = "<group>"; };
-		D82DBD6FDA23159D7984D23C /* Pods_sandtetris.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_sandtetris.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D93BF84E05BD536ADA48A59D /* Pods_sandtetris_sandtetrisUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_sandtetris_sandtetrisUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F05FFBB7D1E9D21076F56CF0 /* Pods-sandtetris.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sandtetris.release.xcconfig"; path = "Target Support Files/Pods-sandtetris/Pods-sandtetris.release.xcconfig"; sourceTree = "<group>"; };
-		F4E87D5D1E3408E52B674D4B /* Pods-sandtetrisTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sandtetrisTests.debug.xcconfig"; path = "Target Support Files/Pods-sandtetrisTests/Pods-sandtetrisTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,15 +54,11 @@
 		};
 		5A85C7B92EAD703E009743D8 /* sandtetrisTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = sandtetrisTests;
 			sourceTree = "<group>";
 		};
 		5A85C7C32EAD703E009743D8 /* sandtetrisUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = sandtetrisUITests;
 			sourceTree = "<group>";
 		};
@@ -84,7 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F7276B0BB58EA1EEF5392A3 /* Pods_sandtetris.framework in Frameworks */,
+				5A7932D62F94649C00DFA11B /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +77,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D68E5F11B5FDBFF09A3FD87C /* Pods_sandtetrisTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,7 +84,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9843556EA17EADB5EEABFCD2 /* Pods_sandtetris_sandtetrisUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,9 +93,6 @@
 		578CEEB45D98B7AB304D7CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D82DBD6FDA23159D7984D23C /* Pods_sandtetris.framework */,
-				D93BF84E05BD536ADA48A59D /* Pods_sandtetris_sandtetrisUITests.framework */,
-				08524CD87DF39FAF4C37710A /* Pods_sandtetrisTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -124,7 +104,6 @@
 				5A85C7B92EAD703E009743D8 /* sandtetrisTests */,
 				5A85C7C32EAD703E009743D8 /* sandtetrisUITests */,
 				5A85C7A62EAD703C009743D8 /* Products */,
-				B4117C3574757E8CE4043FE3 /* Pods */,
 				578CEEB45D98B7AB304D7CEA /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -139,20 +118,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B4117C3574757E8CE4043FE3 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				5381E402D82320E911D1CC33 /* Pods-sandtetris.debug.xcconfig */,
-				F05FFBB7D1E9D21076F56CF0 /* Pods-sandtetris.release.xcconfig */,
-				4264567A606D6771F7FCB94A /* Pods-sandtetris-sandtetrisUITests.debug.xcconfig */,
-				5BCD696980D80159F2135D38 /* Pods-sandtetris-sandtetrisUITests.release.xcconfig */,
-				F4E87D5D1E3408E52B674D4B /* Pods-sandtetrisTests.debug.xcconfig */,
-				98AEF085BDF74777B49ED5B2 /* Pods-sandtetrisTests.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -160,11 +125,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5A85C7C92EAD703E009743D8 /* Build configuration list for PBXNativeTarget "sandtetris" */;
 			buildPhases = (
-				C65333B6484CC19450B09A62 /* [CP] Check Pods Manifest.lock */,
 				5A85C7A12EAD703C009743D8 /* Sources */,
 				5A85C7A22EAD703C009743D8 /* Frameworks */,
 				5A85C7A32EAD703C009743D8 /* Resources */,
-				3BD39B1A5E5054B5243CAD27 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -182,7 +145,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5A85C7CE2EAD703E009743D8 /* Build configuration list for PBXNativeTarget "sandtetrisTests" */;
 			buildPhases = (
-				F8CADAA8A1AB7EFDAD83DCAC /* [CP] Check Pods Manifest.lock */,
 				5A85C7B22EAD703E009743D8 /* Sources */,
 				5A85C7B32EAD703E009743D8 /* Frameworks */,
 				5A85C7B42EAD703E009743D8 /* Resources */,
@@ -204,11 +166,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5A85C7D12EAD703E009743D8 /* Build configuration list for PBXNativeTarget "sandtetrisUITests" */;
 			buildPhases = (
-				50163D36DF0AB478F0BD3CC4 /* [CP] Check Pods Manifest.lock */,
 				5A85C7BC2EAD703E009743D8 /* Sources */,
 				5A85C7BD2EAD703E009743D8 /* Frameworks */,
 				5A85C7BE2EAD703E009743D8 /* Resources */,
-				9C625CCE32B6EAEB03D7F70D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -257,6 +217,9 @@
 			);
 			mainGroup = 5A85C79C2EAD703C009743D8;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5A7932D42F94627D00DFA11B /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5A85C7A62EAD703C009743D8 /* Products */;
 			projectDirPath = "";
@@ -292,109 +255,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		3BD39B1A5E5054B5243CAD27 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-sandtetris/Pods-sandtetris-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-sandtetris/Pods-sandtetris-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-sandtetris/Pods-sandtetris-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		50163D36DF0AB478F0BD3CC4 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-sandtetris-sandtetrisUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9C625CCE32B6EAEB03D7F70D /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-sandtetris-sandtetrisUITests/Pods-sandtetris-sandtetrisUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-sandtetris-sandtetrisUITests/Pods-sandtetris-sandtetrisUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-sandtetris-sandtetrisUITests/Pods-sandtetris-sandtetrisUITests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C65333B6484CC19450B09A62 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-sandtetris-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F8CADAA8A1AB7EFDAD83DCAC /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-sandtetrisTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5A85C7A12EAD703C009743D8 /* Sources */ = {
@@ -436,7 +296,6 @@
 /* Begin XCBuildConfiguration section */
 		5A85C7CA2EAD703E009743D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5381E402D82320E911D1CC33 /* Pods-sandtetris.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -475,7 +334,6 @@
 		};
 		5A85C7CB2EAD703E009743D8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F05FFBB7D1E9D21076F56CF0 /* Pods-sandtetris.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -635,7 +493,6 @@
 		};
 		5A85C7CF2EAD703E009743D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F4E87D5D1E3408E52B674D4B /* Pods-sandtetrisTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -658,7 +515,6 @@
 		};
 		5A85C7D02EAD703E009743D8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 98AEF085BDF74777B49ED5B2 /* Pods-sandtetrisTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -681,7 +537,6 @@
 		};
 		5A85C7D22EAD703E009743D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4264567A606D6771F7FCB94A /* Pods-sandtetris-sandtetrisUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
@@ -702,7 +557,6 @@
 		};
 		5A85C7D32EAD703E009743D8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5BCD696980D80159F2135D38 /* Pods-sandtetris-sandtetrisUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
@@ -761,6 +615,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5A7932D42F94627D00DFA11B /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5A7932D52F94649C00DFA11B /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A7932D42F94627D00DFA11B /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5A85C79D2EAD703C009743D8 /* Project object */;
 }
