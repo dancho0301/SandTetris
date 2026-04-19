@@ -11,11 +11,13 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var settings = GameSettings.shared
     @Binding var needsReset: Bool
+    @Binding var quitRequested: Bool
 
     // 元の設定値を保存
     @State private var originalGameAreaWidth: Int = 0
     @State private var originalColorCount: Int = 0
     @State private var showResetConfirmation = false
+    @State private var showQuitConfirmation = false
 
     private var sensitivityLabel: String {
         String(format: "%.1f×", settings.movementSensitivity)
@@ -206,6 +208,24 @@ struct SettingsView: View {
                 } header: {
                     Text(LocalizedStringKey("settings_section_app_info"))
                 }
+
+                // プレイ中止セクション
+                Section {
+                    Button(role: .destructive) {
+                        showQuitConfirmation = true
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("プレイを中止")
+                                .fontWeight(.bold)
+                            Spacer()
+                        }
+                    }
+                } footer: {
+                    Text("プレイを中止してトップ画面に戻ります。それまでのスコアは記録されます。")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
             .navigationTitle(LocalizedStringKey("settings_title"))
             .navigationBarTitleDisplayMode(.inline)
@@ -236,6 +256,15 @@ struct SettingsView: View {
             } message: {
                 Text(LocalizedStringKey("settings_game_settings_changed_message"))
             }
+            .alert("プレイを中止しますか？", isPresented: $showQuitConfirmation) {
+                Button("中止する", role: .destructive) {
+                    quitRequested = true
+                    dismiss()
+                }
+                Button("キャンセル", role: .cancel) { }
+            } message: {
+                Text("プレイを中止してトップ画面に戻ります。それまでのスコアは記録されます。")
+            }
         }
     }
 
@@ -250,5 +279,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(needsReset: .constant(false))
+    SettingsView(needsReset: .constant(false), quitRequested: .constant(false))
 }

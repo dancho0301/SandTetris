@@ -47,7 +47,7 @@ struct AchievementView: View {
                     }
 
                     // カテゴリセレクター
-                    CategorySelector(selectedCategory: $selectedCategory)
+                    CategorySelector(selectedCategory: $selectedCategory, achievementManager: achievementManager)
 
                     // アチーブメント一覧
                     ScrollView {
@@ -184,6 +184,7 @@ struct ClaimAllRewardsButton: View {
 // MARK: - カテゴリセレクター
 struct CategorySelector: View {
     @Binding var selectedCategory: AchievementCategory
+    let achievementManager: AchievementManager
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -192,6 +193,7 @@ struct CategorySelector: View {
                     CategoryTab(
                         category: category,
                         isSelected: selectedCategory == category,
+                        unclaimedCount: achievementManager.unclaimedRewardCount(for: category),
                         onTap: { selectedCategory = category }
                     )
                 }
@@ -204,19 +206,37 @@ struct CategorySelector: View {
 struct CategoryTab: View {
     let category: AchievementCategory
     let isSelected: Bool
+    let unclaimedCount: Int
     let onTap: () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            Text(LocalizedStringKey(category.nameKey))
-                .font(.system(size: 14, weight: isSelected ? .bold : .medium))
-                .foregroundColor(isSelected ? .white : .white.opacity(0.6))
+            ZStack(alignment: .topTrailing) {
+                HStack(spacing: 6) {
+                    Text(LocalizedStringKey(category.nameKey))
+                        .font(.system(size: 14, weight: isSelected ? .bold : .medium))
+                        .foregroundColor(isSelected ? .white : .white.opacity(0.6))
+
+                    // 未受領件数バッジ
+                    if unclaimedCount > 0 {
+                        Text("\(unclaimedCount)")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(
+                                Capsule()
+                                    .fill(Color.red)
+                            )
+                    }
+                }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
                         .fill(isSelected ? Color.blue : Color.white.opacity(0.1))
                 )
+            }
         }
         .buttonStyle(.plain)
     }

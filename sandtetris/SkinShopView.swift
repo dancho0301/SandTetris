@@ -15,6 +15,8 @@ struct SkinShopView: View {
     @State private var selectedCategory: SkinCategory = .basic
     @State private var showPurchaseAnimation: Bool = false
     @State private var purchasedSkin: SkinTheme?
+    @State private var showPurchaseConfirmation: Bool = false
+    @State private var skinToPurchase: SkinTheme?
 
     var body: some View {
         NavigationView {
@@ -78,6 +80,18 @@ struct SkinShopView: View {
             }
             .toolbarBackground(Color.clear, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .alert("スキンを購入しますか？", isPresented: $showPurchaseConfirmation) {
+                Button("購入する", role: .destructive) {
+                    confirmPurchase()
+                }
+                Button("キャンセル", role: .cancel) {
+                    skinToPurchase = nil
+                }
+            } message: {
+                if let skin = skinToPurchase {
+                    Text("\(Text(LocalizedStringKey(skin.nameKey)))を\(skin.price)コインで購入します。\n現在のコイン: \(coinManager.coins)")
+                }
+            }
         }
     }
 
@@ -86,14 +100,22 @@ struct SkinShopView: View {
             // 所有済み: 選択
             skinManager.selectSkin(skin)
         } else if skinManager.canPurchase(skin) {
-            // 購入可能: 購入
-            if skinManager.purchaseSkin(skin) {
-                purchasedSkin = skin
-                showPurchaseAnimation = true
-                // 購入後に自動選択
-                skinManager.selectSkin(skin)
-            }
+            // 購入可能: 確認画面を表示
+            skinToPurchase = skin
+            showPurchaseConfirmation = true
         }
+    }
+
+    private func confirmPurchase() {
+        guard let skin = skinToPurchase else { return }
+
+        if skinManager.purchaseSkin(skin) {
+            purchasedSkin = skin
+            showPurchaseAnimation = true
+            // 購入後に自動選択
+            skinManager.selectSkin(skin)
+        }
+        skinToPurchase = nil
     }
 }
 
@@ -299,24 +321,37 @@ struct SkinPreviewView: View {
 
                 // サンプルの砂粒子
                 Canvas { context, size in
-                    let cellSize: CGFloat = 8
-                    let startX = size.width * 0.2
-                    let startY = size.height * 0.3
+                    let cellSize: CGFloat = 6
+                    let blockSize: CGFloat = cellSize * 3 // 3x3ブロック
+                    let spacing: CGFloat = 4 // ブロック間のスペース
 
-                    // 砂の色をランダムに配置
-                    for i in 0..<7 {
-                        let color = skin.sandColors[i % skin.sandColors.count].color
-                        let x = startX + CGFloat(i % 4) * cellSize * 1.5
-                        let y = startY + CGFloat(i / 4) * cellSize * 1.5 + CGFloat(i % 2) * cellSize
+                    // 中央から開始
+                    let totalWidth = blockSize * 2 + spacing
+                    let totalHeight = blockSize * 2 + spacing
+                    let startX = (size.width - totalWidth) / 2
+                    let startY = (size.height - totalHeight) / 2
+
+                    // 2x2のグリッドで4つのブロックを配置
+                    let positions = [
+                        (col: 0, row: 0),
+                        (col: 1, row: 0),
+                        (col: 0, row: 1),
+                        (col: 1, row: 1)
+                    ]
+
+                    for (index, pos) in positions.enumerated() {
+                        let color = skin.sandColors[index % skin.sandColors.count].color
+                        let blockX = startX + CGFloat(pos.col) * (blockSize + spacing)
+                        let blockY = startY + CGFloat(pos.row) * (blockSize + spacing)
 
                         // 3x3の砂ブロック
                         for dy in 0..<3 {
                             for dx in 0..<3 {
                                 let rect = CGRect(
-                                    x: x + CGFloat(dx) * cellSize,
-                                    y: y + CGFloat(dy) * cellSize,
-                                    width: cellSize - 1,
-                                    height: cellSize - 1
+                                    x: blockX + CGFloat(dx) * cellSize,
+                                    y: blockY + CGFloat(dy) * cellSize,
+                                    width: cellSize - 0.5,
+                                    height: cellSize - 0.5
                                 )
                                 context.fill(
                                     Path(roundedRect: rect, cornerRadius: 1),
